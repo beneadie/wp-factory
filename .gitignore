@@ -1,0 +1,18 @@
+# telegram + local env
+.env
+.env.local
+
+# generated sites and build logs
+sites/
+logs/
+
+# queue state
+factory/queue.db
+.factory.lock
+
+# node
+node_modules/
+.next/
+
+__pycache__/
+*.pyc

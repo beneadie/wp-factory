@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Storefront build job",
+  "type": "object",
+  "required": ["slug", "name", "wp_url"],
+  "additionalProperties": false,
+  "properties": {
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "description": "Directory and repo name, e.g. acme-wool"
+    },
+    "name": { "type": "string", "description": "Client-facing name" },
+    "wp_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "WordPress origin, no trailing slash"
+    },
+    "niche": { "type": "string" },
+    "notes": { "type": "string" },
+    "repo": { "type": "string", "description": "owner/name for the private repo" }
+  }
+}
