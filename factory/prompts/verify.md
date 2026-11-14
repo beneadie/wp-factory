@@ -1,18 +1,24 @@
 Verify the build for {{name}} ({{slug}}) from {{wp_url}}.
-Niche: {{niche}}. Site mode: {{site_mode}}.
+Niche: {{niche}}.
 
-This is the final verification phase. Read `docs/site/00-status.md` and
-`docs/craft/*` if present, then load the `verification` skill and follow it.
+This is the final verification phase. Read `docs/site/00-status.md`,
+`docs/site/base.md` and `docs/craft/*` if present, then load the `verification`
+skill and follow it.
 
-Check the real site, not the test suite alone. In `store` mode that means routes
-resolve with the live catalogue and `/shop` and `/product-category` keep parity.
-In `content` mode it means the site's actual pages, menus and permalinks resolve
-with parity. In both modes: metadata is present, and there is no placeholder
-brand, fixture or stub copy left in `src/`.
+Check the real site, not the test suite alone: the site's actual pages, menus
+and permalinks resolve with parity to the WordPress origin, metadata and OG
+images are present, and there is no placeholder brand, fixture or stub copy left
+in `src/`. Confirm the build did not invent commerce: no product grid, cart,
+checkout or account flow unless the discovery docs prove the backend exposes it.
 
-Also confirm the build did not invent commerce: in `content` mode there must be
-no product grid, cart, checkout or account flow in the tree unless the discovery
-docs prove the backend exposes it.
+Then run the gates, not just typecheck/lint/build:
+
+    npm run check:perf
+
+It writes `docs/verification/perf.json`, which this phase must leave behind.
+Confirm: navigation paints within 200ms and is never blank over 500ms, every
+image slot shows a placeholder, and the icon/apple-touch/OG tags resolve (or
+discovery recorded them missing).
 
 Set this exact line in `docs/site/00-status.md` when the phase's exit gate is met:
 

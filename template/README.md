@@ -1,13 +1,14 @@
 # Site template
 
-The base that every generated storefront starts from. Next.js App Router +
-TypeScript, rendering a WordPress/WooCommerce backend.
+The neutral base every generated site starts from: Next.js App Router +
+TypeScript, rendering an existing WordPress site's pages and content. It is
+deliberately unstyled and commerce-free; the design pass comes later.
 
 ## Use it
 
 ```bash
-cp -a template/. ../sites/acme-wool/
-cd ../sites/acme-wool
+cp -a template/. ../sites/acme/
+cd ../sites/acme
 cp .env.example .env.local     # set WP_BASE_URL, SITE_NAME, SITE_URL
 npm install
 npm run dev
@@ -16,23 +17,36 @@ npm run dev
 To have an agent build it out, open OpenCode in the new directory. The
 `site-builder` agent is configured in `opencode.json`, and the full skill set is
 installed at `.opencode/skills/`. Given a domain, `project-bootstrap` normalizes
-it, proves it is WordPress + WooCommerce, and writes `.env.local` before
+it, proves it is WordPress, and writes `.env.local` before
 `project-orchestrator` starts Phase 0.
 
 ## What is in the box
 
 | Path | Purpose |
 |---|---|
-| `src/config/site.ts` | Every client-specific value: name, description, nav, currency |
-| `src/lib/wp/` | Typed Store API + `wp/v2` client |
-| `src/app/product-category/[...slug]` | Category archives, URL parity |
-| `src/app/shop/[slug]` | Product detail, URL parity |
-| `src/app/globals.css` | Design tokens as CSS variables (the design pass swaps values) |
+| `src/config/site.ts` | Client values: name, description, URL, optional nav override |
+| `src/lib/wp/` | Typed WordPress client: pages, media, fetcher |
+| `src/app/[...slug]` | Page routes with permalink parity and real 404s |
+| `src/app/page.tsx` | Neutral home: site name and top-level pages |
+| `src/app/globals.css` | Neutral tokens (grayscale, system font); the design pass swaps values |
+| `src/components/site-image.tsx` | Image slot: visible placeholder, aspect ratio, retry |
+| `src/components/navigation-pending.tsx` | Page-level pending skeleton for client navigation |
 | `docs/site/00-status.md` | Build state and what is stubbed |
 | `.opencode/skills/` | The build skills |
+| `commerce/` | Parked WooCommerce code, opt-in only (see its README) |
 
-## Deliberately not included yet
+## Deliberately not included
 
-- Cart, checkout, accounts, wholesale — add per site once the money path is proven.
-- A brand: colours are a neutral placeholder so the design pass is a token swap.
-- The image CDN pipeline — `SiteImage` is a thin wrapper until `frontend-substrate` adds it.
+- Commerce: no products, cart, checkout, accounts or wholesale. `commerce/`
+  holds the old implementation if a shop is ever in scope.
+- A brand: colours and fonts are neutral so the design pass is a token swap.
+- The image CDN pipeline — `SiteImage` is the contract, not the CDN.
+
+## Checks
+
+```bash
+npm run typecheck
+npm run lint
+npm run build
+npm run check:perf     # placeholders, pending state, brand assets
+```

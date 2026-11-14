@@ -27,7 +27,9 @@ If a page type is missing, write the assumption and how you will resolve it.
 ## Brand assets
 
 - Logo (files, clear space, dark/light variants):
-- Fonts (licensed? families?):
+- Icons: favicon 32/192, apple-touch-icon, `/favicon.ico`, manifest:
+- Social image: `og:image` (1200×630) and its alt/caption:
+- Fonts (licensed? families? files/weights?):
 - Existing colours that must stay:
 - Imagery available vs needed:
 - Legal/mandatory content (address, policies, consent, accessibility):

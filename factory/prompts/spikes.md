@@ -1,3 +1,7 @@
+# Spikes prompt — PARKED
+
+Not in `factory/phases.tsv`. Enable it only for an opt-in commerce build.
+
 Prove or skip write paths for {{name}} ({{slug}}) from {{wp_url}}.
 Niche: {{niche}}. Site mode: {{site_mode}}.
 

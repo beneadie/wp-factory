@@ -87,6 +87,7 @@ commit it — it is gitignored.
 - site name/description, locale, currency
 - WordPress version and namespaces from `/wp-json/`
 - Store API reachability and product/category counts
+- brand assets found (icons, manifest, OG image, logo, fonts) or "none found"
 - anything surprising (basic auth, redirect chain, multi-site, CDN)
 
 ## 5. Hand off

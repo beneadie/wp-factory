@@ -31,6 +31,21 @@ around with a skeleton around an empty list.
 A restyle must never change how the cart, loading, focus, or reduced-motion
 behave. A new section must never invent a second motion or loading system.
 
+## Perceived performance (contract)
+
+Every async transition is visible, and the content area never goes blank:
+
+- After a click, the content area paints **within 200ms** and is **never blank
+  for more than 500ms**. This is measured by `npm run check:perf`, not judged.
+- `loading.tsx` is a valid tool only where the segment can never call
+  `notFound()`: a segment fallback flushes the HTTP shell, so a later 404 can no
+  longer return a 404 status. Where 404s matter, use a client-driven pending
+  skeleton (`useLinkStatus` / `useTransition`) in the layout instead.
+- Prefetch must actually work: anything that forces dynamic rendering
+  (`searchParams` in a page, `cookies()`, `no-store`) silently disables it for
+  every link. Audit before adding a pending overlay.
+- Skeletons mirror the incoming layout so data landing causes no layout shift.
+
 ## Non-negotiables
 
 - **Server-first.** Fetch and render data in server components. Add `"use client"`
@@ -83,14 +98,21 @@ These are not optional; they are the product.
 - **Route transition** at the app template level. Pages do not add their own
   enter animation on top.
 - **Navigation progress** for client navigations, skipping external/hash/mailto
-  and same-path clicks.
+  and clicks that go nowhere. A **query-only** change (pagination, sort) is a
+  real navigation: skipping it on "same path" makes the page look frozen.
 - **Route skeletons** that mirror the real layout, plus `Suspense` around slow
-  sections so the page streams.
+  sections so the page streams. Where a segment cannot 404, a `loading.tsx` is
+  fine; where it can, use the navigation pending overlay instead (see above).
+- **Navigation pending state**: a route-level skeleton or overlay that appears
+  after ~120ms and clears on commit, so the screen is never static while the
+  server responds. The link-local spinner is not enough on its own.
 - **In-page pending state** for filters/sort/pagination, with scroll preserved.
 - **Optimistic cart feedback**: bump the count immediately, then reconcile with
   the authoritative cart; a single toast component for add/added/error.
-- **Image pipeline**: responsive `sizes`, LCP priority, placeholder until
-  decode, one retry, CDN fallback to the origin URL.
+- **Image pipeline**: responsive `sizes`, LCP priority, a **visible** placeholder
+  (never a transparent or blank slot) with `minVisibleMs` 600–900ms, one retry,
+  CDN/origin fallback. Reserve the slot with an explicit aspect ratio so nothing
+  shifts.
 - **Sticky shell**: header shrink with hysteresis (not a single threshold),
   hover-intent nav, safe-area aware sticky controls.
 - **Focus and ARIA**: visible focus, labelled icon buttons, `aria-expanded`,
@@ -104,6 +126,28 @@ Carousel/hero slideshow, parallax media, counters, cursor-zoom gallery,
 lightbox, sticky buy bar, mega-menu, testimonial marquee, disclosure. Each is a
 recipe, not a tax: add it when the reference calls for it, and record where it
 is used.
+
+## Selection controls
+
+Variable products are configured, not printed. A control per variation attribute
+(colour, size, option) must exist as soon as the product is `variable`, even when
+add-to-cart is out of scope — selection still drives the displayed price, stock,
+SKU and image, labelled as an availability preview.
+
+- Derive attributes and their order from the parent `variations[]`, never from
+  the `type=variation` query.
+- A combination that does not exist must be unavailable, not accepted silently.
+- Partial-null variation attributes degrade per `wp-catalog-cart`; never show a
+  raw id or an empty control.
+- Swatches need `aria-checked`/`aria-pressed`, a focus ring and a text fallback;
+  a `<select>` is a valid, accessible default.
+- The states live in `references/state-matrix.md` (variation selector row).
+
+## Content-only sites
+
+When `SITE_MODE=content` there is no Store API: apply the substrate to
+navigation, loading, images, focus and motion, and ship no cart, checkout,
+account or product UI. Selection controls do not apply.
 
 ## Motion scale
 
@@ -126,7 +170,14 @@ scroll-linked). No `transition-all`. No duration invented inline.
 
 - [ ] Page renders server-side; only leaves are client components.
 - [ ] Skeleton matches the real layout; no blank/spinner-only page.
+- [ ] Navigation paints within 200ms and is never blank longer than 500ms.
+- [ ] Every image slot shows a visible placeholder (min 600–900ms) and never the
+      LCP image hidden.
+- [ ] Variable products render a working selector; invalid combinations are
+      unavailable.
 - [ ] Every action has loading, success and error feedback.
+- [ ] List pagination and sorting show a pending state; no silent full-page
+      stall on a query-only navigation.
 - [ ] Cart count updates optimistically and reconciles with the server.
 - [ ] Every image has `sizes`; exactly one LCP priority; placeholder + retry.
 - [ ] All interactive elements satisfy the state matrix (hover, focus-visible,
@@ -145,6 +196,9 @@ scroll-linked). No `transition-all`. No duration invented inline.
 - `opacity: 0` initial state on the LCP element.
 - Caching a wholesale or account response in shared ISR.
 - Shipping a primitive nobody uses.
+- A query-only navigation (pagination, sort) with no pending state because the
+  progress bar skips same-path clicks. The route segment does not remount, so no
+  `loading.tsx` rescues it either — route it through the in-page pending state.
 - Treating typecheck + lint as "verified".
 
 ## References

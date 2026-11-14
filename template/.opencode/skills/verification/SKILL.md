@@ -32,6 +32,7 @@ npm run typecheck
 npm run lint
 npm run build
 npm run check:ui      # a11y + reduced-motion + interaction-state + parity smoke
+npm run check:perf    # navigation, placeholders, brand assets, CLS/LCP
 ```
 
 If `check:ui` does not exist yet, add it before shipping (see
@@ -39,20 +40,28 @@ If `check:ui` does not exist yet, add it before shipping (see
 
 ## Machine checks (preferred)
 
-- **Accessibility**: axe on home, category, PDP, cart, checkout, account. Fail on
-  serious/critical.
+- **Accessibility**: axe on home, page and index. Commerce routes (PDP, cart,
+  checkout, account) only in a commerce build. Fail on serious/critical.
 - **Reduced motion**: emulate `prefers-reduced-motion: reduce`; assert content is
   visible (no `opacity: 0`, no stuck transforms).
 - **Interaction states**: for the primary button, nav item, card, input and
   quantity control, assert hover, focus-visible, active and disabled render.
 - **Client navigation**: load, paginate/filter, then assert new items are visible
   (catches stale-instance reveal bugs).
-- **Parity**: for a sample covering every product type (simple, variable,
-  booking, on-sale, out-of-stock, variation sharing the parent slug), compare
-  name, price, gallery count/primary, breadcrumb and related products between the
+- **Parity**: for a sample covering page types (home, a nested page, an index,
+  a form or contact page), compare title, content and metadata between the
   original and the new site.
-- **Identity**: cart/account/wholesale responses have no shared cache; a guest
-  request never sees a signed-in response.
+- **Options** (commerce builds only): for variable products, assert a control
+  exists per attribute, a valid combination updates price/stock/image, and
+  invalid combinations are unavailable. This must hold even when no cart ships.
+- **Brand assets**: the built HTML contains `<link rel="icon">`,
+  `<link rel="apple-touch-icon">` and an `og:image`, and each URL resolves 200.
+- **Perceived performance**: `npm run check:perf` writes
+  `docs/verification/perf.json`. Navigation paints within 200ms and is never
+  blank for more than 500ms; every image slot shows a placeholder; CLS < 0.1;
+  LCP < 2.5s on Slow 3G where the browser measurement is available.
+- **Identity** (commerce builds only): cart/account/wholesale responses have no
+  shared cache; a guest request never sees a signed-in response.
 
 ## Manual checks (the part a machine misses)
 
@@ -82,6 +91,11 @@ For backend-driven features, the domain skill's acceptance list still applies:
 - [ ] `npm run lint` passes.
 - [ ] `npm run build` passes.
 - [ ] `check:ui` passes (or the manual equivalents are recorded).
+- [ ] `npm run check:perf` passes and `docs/verification/perf.json` exists.
+- [ ] Variable products are configurable, independent of cart availability.
+- [ ] Icons, apple-touch-icon and OG image are present and resolve.
+- [ ] Navigation paints within 200ms; no blank content over 500ms.
+- [ ] Every image slot shows a visible placeholder and the LCP image is never hidden.
 - [ ] Parity sample checked against the original.
 - [ ] Reduced motion and keyboard paths checked.
 - [ ] No cross-user caching.
@@ -95,3 +109,6 @@ For backend-driven features, the domain skill's acceptance list still applies:
 - Screenshot-diffing everything (brittle) instead of asserting text/attributes.
 - Comparing the new site to itself instead of to the original.
 - Ignoring a known-open spike check because the page "looks right".
+- Signing off without `check:perf`; typecheck/lint/build say nothing about a
+  blank screen or a missing favicon.
+- Treating "no cart in this build" as "no option selection needed".

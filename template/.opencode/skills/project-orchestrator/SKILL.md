@@ -28,10 +28,10 @@ write path behind it, the build is blocked.
 |---|---|---|
 | 0. Intake | `wp-intake` | Capability register has every money/inventory/identity/booking/legal row with source, auth, evidence, risk, owner. |
 | 1. Unknowns | `wp-unknowns` | Every residual route has a verdict; every expected journey is mapped/manual/third-party/out-of-scope/missing; `admin-ajax`/`wc-ajax`/iframes scanned. |
-| 2. Domain audit | `wp-catalog-cart`, `wp-checkout-payments`, `wp-bookings`, `wp-auth-wholesale`, `wp-content-seo` | One capability, one owner. No overlap unresolved. |
+| 2. Domain audit | `wp-catalog-cart`, `wp-checkout-payments`, `wp-bookings`, `wp-auth-wholesale`, `wp-content-seo` | One capability, one owner. No overlap unresolved. Commerce rows are discovery only; the base build ships no store UI. |
 | 3. Proof | `wp-spikes` | Every money/inventory/identity/booking/legal capability is PASS or has a written accepted risk. |
-| 4. Build | `site-base` then `frontend-substrate`, then `design-adaptation` | Data correct, substrate contracts in place, skin matches the reference. |
-| 5. Verify | `verification` | `check:ui` passes; parity, a11y, reduced-motion, states checked. |
+| 4. Build | `site-base` then `frontend-substrate`, then `design-adaptation` | Data correct; substrate contracts (pending paint, placeholders) in place; skin matches the reference. |
+| 5. Verify | `verification` | `check:ui` and `check:perf` pass; parity, a11y, reduced-motion, states, options and brand assets checked; `docs/verification/perf.json` exists. |
 | 6. Ship | `cutover` | Redirects, callbacks, DNS, SEO, rollback verified. |
 
 Phases 1 and 2 can run in parallel. Everything else is ordered.
@@ -63,8 +63,11 @@ docs/craft/            # generic substrate docs, usually shipped once per templa
   interaction-states.md
 docs/site/<client>/
   base.md              # route map, data source per route, what is stubbed
+  06-brand-assets.md   # icons, manifest, OG image, logo, fonts (or "missing")
   design-tokens.md     # per-client skin
   design-brief.md      # screenshot/reference intake
+docs/verification/
+  perf.json            # check:perf output; required by Phase 5
 docs/checkout.md       # integration notes for this backend
 docs/cutover.md        # ship runbook for this backend
 ```
@@ -86,8 +89,6 @@ WordPress origin: https://acme.ie
 Phase 0 Intake: PASS — register complete
 Phase 1 Unknowns: IN PROGRESS — 12 residual routes unclassified
 Phase 2a Content: PASS
-Phase 2b Commerce: BLOCKED — wholesale owner undecided
-Phase 3 Spikes: PENDING — Realex redirect, price parity
 Phase 4a Base: NOT STARTED
 Phase 4b Substrate: NOT STARTED
 Phase 5 Verify: NOT STARTED
@@ -118,11 +119,15 @@ phase. A phase is finished only when its line reads `PASS` or `SKIPPED`; use
 
 - [ ] Capability register complete and gated.
 - [ ] No unclassified residual route.
-- [ ] Every money/identity/booking/legal path has a PASS or accepted risk.
+- [ ] Every money/identity/booking/legal path the build claims is PASS or has an
+      accepted risk; commerce is out of scope for the base and recorded as such.
 - [ ] Product type census covers every type actually sold.
 - [ ] Panel/cart/checkout/account/booking work through the shipped path.
 - [ ] Substrate contracts (loading, optimistic cart, images, reduced motion,
       a11y) are present on every page type.
+- [ ] Navigation paints within 200ms; image slots never blank; LCP never hidden.
+- [ ] Icons, apple-touch-icon and OG image are present (or recorded missing).
+- [ ] `check:perf` passes and `docs/verification/perf.json` exists.
 - [ ] Skin matches the reference on desktop and mobile.
 - [ ] `check:ui` passes.
 - [ ] Redirect map and SEO parity verified.

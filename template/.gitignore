@@ -19,5 +19,8 @@ npm-debug.log*
 # typescript
 *.tsbuildinfo
 
+# generated verification artifacts
+docs/verification/
+
 # netlify
 .netlify

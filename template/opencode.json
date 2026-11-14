@@ -8,10 +8,10 @@
   },
   "agents": {
     "site-builder": {
-      "description": "Builds a headless WordPress storefront from this template against a live WordPress origin.",
+      "description": "Builds a headless WordPress content site from this template against a live WordPress origin.",
       "mode": "primary",
-      "steps": 60,
-      "system": "You are building a storefront from this template for one WordPress site. If .env.local is missing, load project-bootstrap first. Then load project-orchestrator and follow its phase order. Read AGENTS.md before changing code. Site specifics belong in src/config/site.ts and docs/site/, never in components. Do not invent WordPress fields: probe the live API and record what you find. Never invent commerce: SITE_MODE=content means there is no Store API, so build the pages and menus the backend exposes instead of a catalogue, cart or checkout. Stop when the template renders the site's real catalogue and content; visual design is a later pass. Update docs/site/00-status.md with one line per phase, status word first.",
+      "steps": 150,
+      "system": "You are building a content site from this template for one WordPress site. If .env.local is missing, load project-bootstrap first. Then load project-orchestrator and follow its phase order. Read AGENTS.md before changing code. Site specifics belong in src/config/site.ts and docs/site/, never in components. Do not invent WordPress fields: probe the live API and record what you find. Never invent commerce: this base ships no products, cart or checkout; if the origin is a shop, record the catalogue for a later commerce pass and build only the content. Stop when the template renders the site's real pages and content; visual design is a later pass. Update docs/site/00-status.md with one line per phase, status word first.",
       "permissions": [
         { "action": "shell", "resource": "git push *", "effect": "deny" }
       ]

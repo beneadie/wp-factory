@@ -32,6 +32,7 @@ It should compose:
     "lint": "eslint .",
     "build": "next build",
     "check:ui": "npm run typecheck && npm run lint && npm run test:a11y && npm run test:motion && npm run test:states",
+    "check:perf": "node scripts/check-perf.mjs",
     "test:a11y": "playwright test tests/a11y",
     "test:motion": "playwright test tests/motion",
     "test:states": "playwright test tests/states",
@@ -63,12 +64,40 @@ without spending model tokens.
 
 | Spec | Asserts |
 |---|---|
-| `tests/a11y` | axe on home, category, PDP, cart, checkout, account; no serious/critical |
+| `tests/a11y` | axe on home, page and index (PDP/cart/account only in a commerce build); no serious/critical |
 | `tests/motion` | under `prefers-reduced-motion: reduce`, content is visible and not stuck transformed |
-| `tests/states` | primary button, nav item, card, input, quantity control render hover, focus-visible, active, disabled |
-| `tests/parity` | sample per product type matches the original on name, price, gallery, breadcrumb, related |
+| `tests/states` | primary button, nav item, card, input render hover, focus-visible, active, disabled |
+| `tests/parity` | sample of page types matches the original on title, content and metadata |
 | `tests/nav` | client navigation: paginate/filter then new items are visible |
-| `tests/identity` | guest request never receives a signed-in/cart response; no shared cache |
+| `check:perf` | pending paint ≤200ms; no blank content >500ms; CLS <0.1; LCP <2.5s on Slow 3G; every image slot shows a placeholder |
+| `check:brand` | `<link rel=icon>` and `og:image` exist in the built HTML and resolve 200 |
+| `tests/options` | commerce builds only: variable products render selectors and valid combinations update price/stock |
+
+## Perceived performance, brand assets, selections
+
+These three are invisible to `typecheck`, `lint` and `build`. Enforce them by
+measurement or they will regress silently.
+
+- **Navigation:** after a click the content area must paint within **200ms** and
+  must never stay blank for more than **500ms**. `loading.tsx` is optional (a
+  segment fallback flushes a 200 shell, which breaks `notFound()`); a
+  client-side pending skeleton driven by `useLinkStatus`/`useTransition` gives
+  the same feel without that cost.
+- **Media:** no image slot may be transparent or blank while loading. Render a
+  placeholder (pattern, shimmer, or the client's brand asset) with
+  `minVisibleMs` 600–900ms, an explicit aspect ratio, and a reduced-motion static
+  fallback. Never hide the LCP image.
+- **Brand assets:** icons (32/192), apple-touch-icon, `/favicon.ico`, manifest,
+  `og:image`, logo and brand fonts are discovered from the origin, not invented.
+  Emit them via `src/app/icon.png`, `apple-icon.png`, `opengraph-image` and
+  `manifest.ts`.
+- **Selections:** variable products render a control per variation attribute
+  from the parent's `variations[]`, with invalid combinations unavailable. This
+  applies even when purchasing is out of scope; selection still updates the
+  displayed price, stock and image.
+
+`npm run check:perf` writes `docs/verification/perf.json`; it is a required
+artifact for the verify phase.
 
 ## Blessed component contract
 

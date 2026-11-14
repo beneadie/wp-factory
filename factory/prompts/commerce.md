@@ -1,3 +1,8 @@
+# Commerce prompt — PARKED
+
+This run is not in `factory/phases.tsv`. It exists for an opt-in commerce build
+after copying `template/commerce/` back into `src/`.
+
 Continue the build for {{name}} ({{slug}}) from {{wp_url}}.
 Niche: {{niche}}. Site mode: {{site_mode}}.
 

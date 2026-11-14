@@ -17,6 +17,7 @@ import json
 import re
 import sqlite3
 import sys
+import urllib.parse
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -78,10 +79,31 @@ def as_dict(row: sqlite3.Row | None) -> dict | None:
     return dict(row) if row is not None else None
 
 
+def normalize_url(value: str) -> str:
+    """Return a bare origin: scheme://host[:port], no path, query or trailing slash.
+
+    Accepts a bare domain (`acme.ie`) and assumes https, so anything that can
+    enqueue a row does not have to pre-validate the shape.
+    """
+    value = (value or "").strip()
+    if not value:
+        raise SystemExit("wp_url is empty")
+    if "://" not in value:
+        value = "https://" + value
+    parts = urllib.parse.urlsplit(value)
+    if not parts.netloc or "." not in parts.hostname:
+        raise SystemExit(f"invalid wp_url: {value!r} (expected a domain, e.g. acme.ie)")
+    return f"{parts.scheme.lower()}://{parts.netloc.lower()}"
+
+
 def enqueue(slug: str, name: str, wp_url: str, niche: str | None = None,
             notes: str | None = None, repo: str | None = None) -> dict:
     if not SLUG_RE.match(slug):
         raise SystemExit(f"invalid slug: {slug!r} (use a-z, 0-9, dashes)")
+    name = (name or "").strip()
+    if not name:
+        raise SystemExit("name is empty")
+    wp_url = normalize_url(wp_url)
     with connect() as conn:
         existing = conn.execute("SELECT * FROM jobs WHERE slug = ?", (slug,)).fetchone()
         if existing:

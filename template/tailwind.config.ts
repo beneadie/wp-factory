@@ -18,7 +18,6 @@ const config: Config = {
       },
       fontFamily: {
         sans: ["var(--font-sans)"],
-        serif: ["var(--font-serif)"],
       },
       maxWidth: {
         content: "84rem",

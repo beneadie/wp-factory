@@ -151,13 +151,12 @@ case "$wp_code" in
   *) block "not-wordpress" ;;
 esac
 
-# Classify the site instead of rejecting non-stores. `content` means no
-# WooCommerce Store API: build the pages the backend actually exposes, never a
-# placeholder catalogue.
-site_mode="store"
+# This factory builds content sites. A Store API means the prospect is a shop,
+# which is parked in `template/commerce/` and unsupported by the base.
+site_mode="content"
 store_code="$(probe "$wp_url/wp-json/wc/store/v1/products?per_page=1")"
 case "$store_code" in
-  2*) site_mode="store" ;;
+  2*) block "store-out-of-scope" ;;
   401|403) block "store-private" ;;
   000)
     if online; then
@@ -169,6 +168,7 @@ case "$store_code" in
   *) site_mode="content" ;;
 esac
 echo "site mode: $site_mode"
+notify "▶ $name ($slug) — building in $site_mode mode"
 
 # Copy, never clone, so the client repo never contains the factory or the queue.
 if [ ! -d "$dir" ]; then
@@ -188,23 +188,15 @@ fi
 
 # Per-site build config. The WordPress origin is prospect data, so it lives in
 # the site, never in the factory's .env. Keep the agent's edits on resume.
-description="A storefront for $name."
-if [ "$site_mode" = "content" ]; then
-  description="The website for $name."
-fi
-
 if [ ! -f "$dir/.env.local" ]; then
   cat > "$dir/.env.local" <<EOF
 WP_BASE_URL=$wp_url
 SITE_MODE=$site_mode
 SITE_NAME=$name
-SITE_DESCRIPTION=$description
+SITE_DESCRIPTION=The website for $name.
 SITE_URL=http://localhost:3000
 SITE_LOCALE=en-IE
 EOF
-  if [ "$site_mode" = "store" ]; then
-    printf 'SITE_CURRENCY=EUR\n' >> "$dir/.env.local"
-  fi
 fi
 
 # Keep the mode line authoritative on resume, including sites created before
@@ -253,9 +245,45 @@ if [ "${DRY_RUN:-0}" = "1" ]; then
   block "dry-run"
 fi
 
+check_phase() {
+  ok=1
+  failures=""
+  local row label require state
+  for row in "${rows[@]}"; do
+    label="${row%%$'\t'*}"
+    require="${row#*$'\t'}"
+    [ -n "$label" ] || continue
+    state="$(status_get "$label")"
+    if ! status_ok "$label"; then
+      echo "phase $run: $label is not PASS ($state)"
+      ok=0
+      failures="$failures $label=$state;"
+      continue
+    fi
+    case "$state" in
+      PASS*)
+        if [ -n "$require" ] && ! artifact_ok "$require"; then
+          echo "phase $run: $label is PASS but artifacts missing or empty: $require"
+          ok=0
+          failures="$failures $label=missing-artifact;"
+        fi
+        ;;
+    esac
+  done
+}
+
 for run in $runs; do
   mapfile -t rows < <(awk -F'\t' -v r="$run" \
     '!/^#/ && $1 == r { printf "%s\t%s\n", $2, $3 }' factory/phases.tsv)
+
+  # Resume: a phase that already reached its gate with its artifacts is not
+  # re-run after a requeue.
+  check_phase
+  if [ "$ok" -eq 1 ]; then
+    echo "phase $run: already complete, skipping"
+    continue
+  fi
+
   python3 factory/queue.py set-phase --slug "$slug" --phase "$run" >/dev/null
 
   ok=0
@@ -283,32 +311,19 @@ $(render retry)"
       if grep -q 'provider\.auth' "$log" 2>/dev/null; then
         block "provider-auth"
       fi
+      notify "⚠️ $name ($slug) — $run attempt $attempt: agent exited $code"
       attempt=$((attempt + 1))
       continue
     fi
 
     ok=1
-    for row in "${rows[@]}"; do
-      label="${row%%$'\t'*}"
-      require="${row#*$'\t'}"
-      [ -n "$label" ] || continue
-      state="$(status_get "$label")"
-      if ! status_ok "$label"; then
-        echo "phase $run: $label is not PASS ($state)"
-        ok=0
-        continue
-      fi
-      case "$state" in
-        PASS*)
-          if [ -n "$require" ] && ! artifact_ok "$require"; then
-            echo "phase $run: $label is PASS but artifacts missing or empty: $require"
-            ok=0
-          fi
-          ;;
-      esac
-    done
+    failures=""
+    check_phase
 
-    [ "$ok" -eq 1 ] && break
+    if [ "$ok" -eq 1 ]; then
+      break
+    fi
+    notify "⚠️ $name ($slug) — $run attempt $attempt did not reach PASS.$failures"
     attempt=$((attempt + 1))
   done
 
@@ -318,8 +333,8 @@ $(render retry)"
   notify "⏭ $name ($slug) — $run PASS"
 done
 
-# Independent gate: never trust the agent's own PASS. What counts as proof
-# depends on the site mode.
+# Independent gate: never trust the agent's own PASS. The base build is a
+# content site, so proof is real pages/posts, not a product list.
 gate_fail=""
 if ! grep -Eq '^WP_BASE_URL=.+' "$dir/.env.local" 2>/dev/null; then
   gate_fail="env-local"
@@ -329,22 +344,7 @@ non_empty_list() {
   python3 -c 'import json,sys; d=json.load(sys.stdin); sys.exit(0 if isinstance(d, list) and d else 1)'
 }
 
-if [ -z "$gate_fail" ] && [ "$site_mode" = "store" ]; then
-  catalogue_ok=0
-  for _ in 1 2 3; do
-    if curl -sSfL --max-time 20 "$wp_url/wp-json/wc/store/v1/products?per_page=1" \
-        | non_empty_list 2>/dev/null; then
-      catalogue_ok=1
-      break
-    fi
-    sleep 3
-  done
-  if [ "$catalogue_ok" -ne 1 ]; then
-    gate_fail="empty-catalogue"
-  fi
-fi
-
-if [ -z "$gate_fail" ] && [ "$site_mode" = "content" ]; then
+if [ -z "$gate_fail" ]; then
   content_ok=0
   for endpoint in "wp/v2/pages" "wp/v2/posts"; do
     for _ in 1 2 3; do

@@ -19,6 +19,11 @@ The split matters. **Discovery skills never build UI.** Build skills never
 re-discover the backend. `project-orchestrator` is the only entry point and is
 responsible for the order.
 
+Commerce skills (`wp-catalog-cart`, `wp-checkout-payments`, `wp-bookings`,
+`wp-auth-wholesale`) stay for discovery and for an opt-in commerce build. The
+base template ships no store UI; the WooCommerce code is parked in
+`template/commerce/`.
+
 ## Order
 
 ```

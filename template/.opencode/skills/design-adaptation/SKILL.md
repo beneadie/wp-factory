@@ -28,12 +28,16 @@ of the desired design and adapt. This skill owns that second pass.
   incomplete; define the responsive behaviour.
 - **Keep content real.** Use the client's content and data, not lorem ipsum, so
   spacing and truncation reflect reality.
+- **Use the client's assets.** The logo, icons, OG image and fonts come from
+  `06-brand-assets.md`; never draw or invent a logo, and keep the favicon
+  consistent with the palette.
 
 ## Inputs
 
 - Screenshots or reference URLs: home, a category, a product, a content page, and
   mobile.
-- Brand assets (logo, fonts if licensed, imagery) and brand notes.
+- Brand assets from `docs/site/06-brand-assets.md`: logo, fonts, icons, OG image.
+- Brand notes (what must stay, what may change).
 - The current site and its content source.
 - `docs/craft/design-system.md` and `docs/craft/page-archetypes.md`.
 

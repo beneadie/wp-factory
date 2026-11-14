@@ -7,7 +7,7 @@ The automation. It never renders a page; it moves work.
 | `queue.py` | SQLite job queue. Add, claim, set phase, finish, requeue, remove, list. |
 | `run-job.sh` | One job: preflight → copy template → `npm ci` → phases → gate → record → report. `flock`-guarded. |
 | `phases.tsv` | Which agent runs a job has, which status lines each owns, and the artifacts each must leave. |
-| `prompts/` | One prompt per phase run, plus the retry continuation prompt. |
+| `prompts/` | One prompt per phase run, plus the retry prompt. `commerce.md` and `spikes.md` are parked until a commerce build. |
 | `agent.sh` | A single `opencode run` pass for one phase, kept separate so `systemd-inhibit` can wrap it. |
 | `lib.sh` | Status-file parsing and prompt rendering, sourced by `run-job.sh`. |
 | `telegram.sh` | Runs the bot with `.env` loaded, so the token does not have to be exported by hand. |
@@ -24,16 +24,15 @@ The automation. It never renders a page; it moves work.
 - **Prospect data lives in the queue, secrets live in `.env`.** The WordPress
   origin is per-job (`jobs.wp_url` → `sites/<slug>/.env.local`); the factory
   `.env` holds only ops credentials and the model.
-- **Mode is classified, not assumed.** Preflight sets `SITE_MODE=store` when the
-  Store API answers and `content` otherwise, writes it into `.env.local`, and
-  the gate follows: a non-empty catalogue for stores, real pages or posts for
-  content sites. Agents are told never to scaffold commerce in content mode.
+- **Mode is classified, not assumed.** Preflight records `SITE_MODE`. A Store
+  API means the prospect is a shop, which is parked in `template/commerce/`:
+  the job is blocked as `store-out-of-scope` rather than building the wrong site.
+  Content sites are proved by real pages or posts at the gate.
 - **One job at a time.** `flock` on `.factory.lock`; a second invocation exits 0
   rather than starting a competing agent.
-- **Small sessions, artifact handoffs.** `intake`, `api-map`, `commerce`,
-  `spikes`, `base`, `substrate`, `verify` each get a fresh OpenCode session, 2–3
-  skills at most. Handoff is `docs/site/00-status.md` plus the files in
-  `prompts/`; content sites skip `commerce` and `spikes`.
+- **Small sessions, artifact handoffs.** `intake`, `api-map`, `base`,
+  `substrate`, `verify` each get a fresh OpenCode session, 2–3 skills at most.
+  Handoff is `docs/site/00-status.md` plus the files in `prompts/`.
 - **A phase needs its artifact, not just PASS.** `phases.tsv` lists the files
   each label must leave behind; `lib.sh:artifact_ok` rejects a PASS with a
   missing or stub-sized handoff, so the next session cannot start blind.

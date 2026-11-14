@@ -29,9 +29,12 @@ implements this table over a hand-rolled element.
 | Checkbox / radio / toggle | default, hover, focus-visible, checked, disabled, invalid |
 | Quantity stepper | default, hover, focus-visible, disabled, loading, min/max bounds |
 | Tab / filter chip | default, hover, focus-visible, selected (`aria-pressed`/`aria-selected`), disabled |
+| Variation selector (colour, size, option) | default, hover, focus-visible, selected, available, unavailable combination (disabled), out-of-stock, partial-null fallback, keyboard/`aria-checked` for swatches, error when no combination is valid |
 | Modal / drawer | open/close, enter/exit, focus trap, Escape, click-outside, scroll lock |
 | Toast | adding, added, error, dismiss; persistent `aria-live="polite"` |
-| Image | loading placeholder, decoded reveal, error fallback, no-image |
+| Image slot | placeholder visible (never blank/transparent), decoded reveal, error fallback, no-image, explicit aspect ratio |
+| Navigation pending | route pending skeleton or overlay, reduced-motion static, cleared on route commit |
+| Skeleton | shape matches the incoming layout, `aria-busy`, no layout shift when data lands |
 | Empty list / cart | empty state with copy + next action |
 | Form submit | idle, submitting, success, error |
 

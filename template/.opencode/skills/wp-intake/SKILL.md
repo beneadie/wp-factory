@@ -24,6 +24,7 @@ a gate. This skill does not build UI. It produces evidence and a decision.
 - An index: saved `/wp-json/` response or an existing dump.
 - `$OLD`: the current public site, used for usage evidence (may equal `$WP`).
 - Optional staging credentials for the authenticated pass only.
+- Brand assets from the rendered HTML: icons, manifest, OG image, logo, fonts.
 
 If a dump is provided, confirm it is the REST index: it must have `namespaces`
 and `routes`. If it is only a route list without schemas, live-probe more.
@@ -49,6 +50,10 @@ docs/wp-discovery/
   field-notes.md           # copied from ../_shared/field-notes.md and extended
 ```
 
+Brand assets (icons, manifest, OG image, logo, fonts) are inventoried by
+`wp-content-seo` in `docs/site/06-brand-assets.md`; note them in the profile so
+the build phase does not re-probe.
+
 Read `../_shared/probe-commands.md` for the exact commands.
 
 ## Step 1 — Capture the source
@@ -63,7 +68,7 @@ Read `../_shared/probe-commands.md` for the exact commands.
 
 Do not start with routes. Start with the site's jobs: content, catalog, product
 options, cart, checkout, shipping, payments, accounts, wholesale, bookings,
-forms, SEO, media, navigation, search.
+forms, SEO, media, navigation, search, brand assets (icons, logo, fonts).
 
 ## Step 2 — Fingerprint the surface
 

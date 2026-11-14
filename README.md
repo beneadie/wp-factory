@@ -1,10 +1,10 @@
 # wp-factory
 
-Telegram in, deployed storefront out.
+Telegram in, built content site out.
 
 ```
 wp-factory/
-├─ template/   the base site every prospect is cloned from (skills live here)
+├─ template/   neutral content base every prospect is cloned from (skills live here)
 ├─ factory/    queue, runner, Telegram transport
 ├─ sites/      generated per-prospect repos (gitignored)
 └─ logs/       one jsonl per build (gitignored)
@@ -42,17 +42,17 @@ timer:
 */5 * * * * cd /home/you/wp-factory && ./factory/run-job.sh >> logs/cron.log 2>&1
 ```
 
-Each job runs the site in separate agent sessions — `intake`, `api-map`,
-`commerce`, `spikes`, `base`, `substrate`, `verify` for a store; content sites
-skip `commerce` and `spikes` and mark those phases SKIPPED. Each phase must
-reach PASS (or SKIPPED) *and* leave its handoff artifact, otherwise it retries
-up to `PHASE_ATTEMPTS` times and then blocks.
+Each job runs the site in separate agent sessions — `intake`, `api-map`, `base`,
+`substrate`, `verify`. Each phase must reach PASS (or SKIPPED) *and* leave its
+handoff artifact, otherwise it retries up to `PHASE_ATTEMPTS` times and then
+blocks.
 
 The runner then gates the result independently: phase lines must read PASS or
-SKIPPED, `.env.local` must carry `WP_BASE_URL`, proof must exist for the site's
-mode (`SITE_MODE=store` needs a non-empty catalogue; `content` needs real pages
-or posts), and `.next/BUILD_ID` must exist. Anything less is recorded as
-`blocked` with a reason, not `done`. Retry a blocked site with
+SKIPPED, `.env.local` must carry `WP_BASE_URL`, the origin must expose real pages
+or posts, and `.next/BUILD_ID` must exist. Anything less is recorded as
+`blocked` with a reason, not `done`. A site with a WooCommerce Store API is
+recorded as `blocked / store-out-of-scope`: commerce is parked in
+`template/commerce/`. Retry a blocked site with
 `python3 factory/queue.py requeue --slug <slug>`.
 
 For a dry run that sets the site up without spending tokens:
@@ -71,8 +71,8 @@ opencode                  # same skills, same agent, same sessions
 
 ## Design pass
 
-The template ships with neutral tokens. After the base renders the real
-catalogue, hand over screenshots and run:
+The template ships with neutral tokens. After the base renders the real pages,
+hand over screenshots and run:
 
 ```bash
 cd sites/acme-wool

@@ -148,7 +148,10 @@ Cart line rules:
 
 - [ ] Product cards link to the correct URL pattern.
 - [ ] Simple products add successfully.
-- [ ] Variable products render options and add the selected variation.
+- [ ] Variable products render a selector per attribute, and selecting a valid
+      combination updates price, stock and image. Invalid combinations are
+      unavailable. This holds even when add-to-cart is out of scope for the
+      build.
 - [ ] Booking/gift-card/subscription products route to their own UI, not the
       simple add button.
 - [ ] Cart shows variation, item data, quantity rules, and line totals.
@@ -156,9 +159,25 @@ Cart line rules:
 - [ ] Coupons work and errors are shown.
 - [ ] Empty-cart and stock-error states are handled.
 
+## 7. Rendering handoff (even without a cart)
+
+Discovery ends here; `site-base` builds the product page. Give it what it needs:
+
+- the attribute order and labels come from the parent's `variations[]`;
+- the set of valid combinations comes from the same rows, so a missing
+  combination must render as unavailable;
+- partial-null rows fall back to the variation name/SKU/`add_to_cart.url`/parent
+  terms, and that fallback is for **display** as well as cart payloads;
+- selecting an option is still meaningful without a cart: it changes the shown
+  price, stock, SKU and image.
+
+If the build ships no cart, the control is an availability preview, not a dead
+buy button. Do not drop the selector because the write path is deferred.
+
 ## Anti-patterns
 
 - Sending only `{id, quantity}` for every product type.
+- Printing variation attributes as static text because the cart is deferred.
 - Assuming `variations` on the parent is enough to render the selector.
 - Assuming `has_options: false` means simple.
 - Treating a 400 booking error as a UI bug instead of a missing integration.

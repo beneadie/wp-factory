@@ -27,10 +27,20 @@ import queue as job_queue
 API = "https://api.telegram.org/bot{token}/{method}"
 HELP = (
     "Commands:\n"
-    "/build <wp_url> <name> — queue a site\n"
+    "/build <url> [name] — queue a site (name is optional)\n"
     "/jobs — recent jobs\n"
     "/status <slug> — one job"
 )
+
+
+def name_from_url(value: str) -> str:
+    """A readable fallback client name from a domain."""
+    host = re.sub(r"^[a-z]+://", "", value.strip(), flags=re.I)
+    host = host.split("/")[0].split(":")[0].lower()
+    if host.startswith("www."):
+        host = host[4:]
+    base = host.split(".")[0] or host
+    return base.replace("-", " ").replace("_", " ").title() or "New Site"
 
 
 def api(token: str, method: str, **payload) -> dict:
@@ -51,11 +61,20 @@ def handle(token: str, chat_id: int, text: str) -> None:
 
     if command == "/start" or command == "/help":
         reply = HELP
-    elif command == "/build" and len(parts) >= 3:
-        wp_url = parts[1].rstrip("/")
-        name = " ".join(parts[2:])
-        job = job_queue.enqueue(slugify(name), name, wp_url)
-        reply = f"Queued {job['name']} ({job['slug']}) for {job['wp_url']}."
+    elif command == "/build":
+        if len(parts) < 2:
+            reply = (
+                "Usage: /build <url> [name]\n"
+                "Example: /build kerrywoollenmills.ie Kerry Woollen Mills"
+            )
+        else:
+            wp_url = parts[1]
+            name = " ".join(parts[2:]).strip() or name_from_url(wp_url)
+            try:
+                job = job_queue.enqueue(slugify(name), name, wp_url)
+                reply = f"Queued {job['name']} ({job['slug']}) for {job['wp_url']}."
+            except SystemExit as error:
+                reply = f"Could not queue that: {error}"
     elif command == "/jobs":
         rows = job_queue.list_jobs()[:10]
         reply = "\n".join(
@@ -87,7 +106,15 @@ def poll_once(token: str) -> int:
     for update in updates:
         job_queue.set_meta("telegram_offset", str(update["update_id"] + 1))
         message = update.get("message")
-        if not message or "text" not in message:
+        if not message:
+            continue
+        if "text" not in message:
+            if any(key in message for key in ("document", "photo", "video", "audio")):
+                api(
+                    token, "sendMessage", chat_id=message["chat"]["id"],
+                    text="I only take text commands. Send /build <url> [name]; "
+                         "CSV import is not built yet.",
+                )
             continue
         handle(token, message["chat"]["id"], message["text"])
     return len(updates)

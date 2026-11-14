@@ -1,6 +1,6 @@
 ---
 name: site-base
-description: Use after discovery to wire the template to this site's real routes and data — products and categories for a store, pages, posts and menus for a content site. Owns routing, data sources, src/config/site.ts and URL parity. Does not own motion, loading states, images or visual design.
+description: Use after discovery to wire the template to this site's real pages, routes and content. Owns routing, data sources, src/config/site.ts and URL parity for a content site. Does not own motion, loading states, images, commerce or visual design.
 ---
 
 # Site Base
@@ -9,58 +9,76 @@ Turn the generic template into this site's real pages. Data correct, routes
 correct, nothing invented. The felt experience and the skin are separate
 sessions; if you find yourself adding easing curves or a palette, stop.
 
+This template is **content-first**. Commerce is parked in `template/commerce/`
+and is not part of a base build. Do not add products, cart, checkout or account
+flows.
+
 ## Inputs
 
-- `SITE_MODE` in `.env.local`: `store` or `content`.
-- `docs/wp-discovery/*` — the proven routes, fields and capabilities.
-- `src/lib/wp/*` — the typed WordPress/Store API client.
+- `docs/wp-discovery/*` — the proven routes, fields and content model.
+- `docs/site/06-brand-assets.md` — icons, manifest, OG image, logo, fonts.
+- `src/lib/wp/*` — the typed WordPress client (`pages.ts`, `fetcher.ts`).
 - `docs/site/00-status.md` — what earlier phases established.
 
 ## Non-negotiables
 
 - **Server-first.** Fetch in server components; `"use client"` only for the
   smallest interactive leaf.
-- **One typed client.** Add a function to `src/lib/wp/store.ts` rather than
+- **One typed client.** Add a function to `src/lib/wp/pages.ts` rather than
   fetching ad hoc in a page.
-- **URL parity.** Preserve the WordPress permalinks for the routes you build.
-- **No invented fields or data.** If it is not in `docs/wp-discovery/`, probe for
-  it or leave it out. Never fill a page with fixtures to look finished.
-- **Config in one place.** Names, nav and domains in `src/config/site.ts`;
-  tokens stay in `src/app/globals.css`.
+- **URL parity.** Preserve WordPress permalinks, including nesting and the
+  trailing-slash style. `pagePath()` and the catch-all route are the pattern.
+- **Real 404s.** The catch-all page route must call `notFound()` when the slug
+  does not exist or the permalink does not match; never render an empty shell.
+- **No invented fields or content.** If it is not in `docs/wp-discovery/`, probe
+  for it or leave it out. Never fill a page with fixtures to look finished.
+- **Config in one place.** Name, description, URL and nav in
+  `src/config/site.ts`; tokens stay in `src/app/globals.css`.
 - **Write as you go.** `docs/site/base.md` is the handoff: route map, data source
   per route, revalidation choice, what is stubbed.
 
-## Store mode
+## Routes
 
 | Route | Source |
 |---|---|
-| `/` | `getProducts` (featured/limited) |
-| `/product-category/[...slug]` | `getCategoryBySlug` + `getProducts({ category })` |
-| `/shop/[slug]` | `getProductBySlug` |
-| `/about/`, `/contact/` | `getPageBySlug` |
+| `/` | `getPages()` — top-level pages as the index |
+| `/{page}/` and nested paths | `getPageBySlug` + `pagePath` parity check |
+| optional posts | `/wp/v2/posts` only if discovery shows posts are used |
+| unknown path | `not-found.tsx` |
 
-Keep category/product URL shapes identical to the current public site. Use ISR
-for public catalogue data (`revalidate = 300` is the template default).
+Navigation comes from `site.primaryNav` when set, otherwise the top-level page
+tree. Do not guess menu labels; menus are often 401 anonymously, so derive from
+pages or the captured markup in `docs/site/`.
 
-## Content mode
+## Brand assets
 
-There is no Store API. Build what exists:
+Discovery captures the origin's icons, manifest, OG image, logo and fonts into
+`docs/site/06-brand-assets.md`. Emit what exists; never invent a brand:
 
-- a catch-all page route that resolves top-level and nested permalinks through
-  `getPageBySlug`, with `notFound()` for misses;
-- post routes only if the discovery docs show posts are used;
-- navigation from the site's menus or page hierarchy, not from a guessed list;
-- the same `getPageBySlug` client, extended for the fields the site actually
-  returns.
+- `src/app/icon.png` (192 or 512) and `src/app/apple-icon.png` (180);
+- `public/favicon.ico` when the origin has one;
+- `src/app/opengraph-image.png` (1200×630) or `metadata.openGraph.images`;
+- `src/app/manifest.ts` with name, theme colour and icon;
+- brand fonts in `globals.css` tokens when the origin ships them.
 
-Do not add a product grid, cart, checkout or account flow. If the template's
-home page still calls `getProducts`, replace that with real content rather than
-leaving an empty shop.
+If the origin has no favicon or OG image, record the gap instead of generating a
+placeholder brand.
+
+## Commerce (opt-in, not in this pass)
+
+A shop prospect is out of scope for the base. The store client, product routes
+and product components live in `template/commerce/` with a README explaining how
+to reinstate them. Do not copy them into `src/` unless the operator asks for a
+commerce build.
 
 ## Acceptance
 
-- Every built route renders this site's real data (or a real page), not fixtures.
+- Every built route renders this site's real content (or a real page), not
+  fixtures.
+- Unknown paths return a real 404.
+- Icons, apple-touch-icon and OG image are emitted when the origin has them, or
+  recorded as missing.
 - `npm run typecheck`, `npm run lint` and `npm run build` pass once.
 - `docs/site/base.md` lists every route, its data source and anything stubbed.
 - No brand, colour or origin hardcoded in a component.
-- Commerce exists only if `SITE_MODE=store`.
+- No commerce UI exists unless this was explicitly a commerce build.

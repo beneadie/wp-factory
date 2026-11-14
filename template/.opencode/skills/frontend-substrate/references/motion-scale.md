@@ -58,6 +58,17 @@ Rules:
   `prefers-reduced-motion: reduce` block.
 - Reduced motion removes motion, never content. The final state must be visible.
 
+## Loading placeholders and skeletons
+
+- A placeholder may loop (ambient timing) but must be static under reduced
+  motion; keep it subtle, it is not the hero.
+- `minVisibleMs` is 600–900ms for skeletons and image placeholders. Below that
+  the placeholder flashes on cache hits, which reads worse than no placeholder.
+- Do not animate layout to reveal a skeleton; reserve the slot with an explicit
+  aspect ratio so nothing shifts when the data lands.
+- A navigation pending state appears after ~120ms of waiting and may stay until
+  the route commits; it should not appear at all for instant navigations.
+
 ## Anti-patterns
 
 - A per-component easing curve.
