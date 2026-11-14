@@ -22,6 +22,7 @@ responsible for the order.
 ## Order
 
 ```
+project-bootstrap             <- domain in, site directory out (once per site)
 project-orchestrator          <- start here for any new site
   wp-intake                   <- capture index, capability matrix, gate
     wp-unknowns               <- residual routes, journeys, outside-REST
@@ -31,6 +32,7 @@ project-orchestrator          <- start here for any new site
     wp-auth-wholesale          |
     wp-content-seo            /
   wp-spikes                   <- only skill allowed to mutate; prove write paths
+  site-base                   <- wire real routes and data (no motion, no skin)
   frontend-substrate          <- build the smooth/reactive engineering (generic)
   design-adaptation           <- screenshot/reference -> skin (per client)
   verification                <- machine-checkable quality gate
@@ -41,6 +43,7 @@ project-orchestrator          <- start here for any new site
 
 | Skill | Use when | Writes |
 |---|---|---|
+| `project-bootstrap` | given a domain, before anything else | `.env.local`, `docs/site/`, `docs/wp-discovery/site-profile.md` |
 | `project-orchestrator` | starting a new site or a new phase | `docs/site/00-status.md` |
 | `wp-intake` | given a wp-json index or a new site | `docs/wp-discovery/*` |
 | `wp-unknowns` | after intake; residual routes/journeys | `docs/wp-discovery/unknowns.md` |
@@ -51,6 +54,7 @@ project-orchestrator          <- start here for any new site
 | `wp-content-seo` | pages, Divi, menus, media, SEO, redirects, forms | `docs/wp-discovery/content-seo.md` |
 | `wp-spikes` | an integration is unproven and needs an end-to-end test | `docs/wp-discovery/spike-results.md` |
 | `frontend-substrate` | any UI/interaction/animation/loading work | `docs/craft/*`, components |
+| `site-base` | after discovery; wire routes, data and URL parity | `docs/site/base.md`, routes, `src/config/site.ts` |
 | `design-adaptation` | "match this screenshot", new brand, restyle | `docs/site/<client>/design-tokens.md` |
 | `verification` | before considering any UI done | test output |
 | `cutover` | moving to production / new domain | `docs/cutover.md` |

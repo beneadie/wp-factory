@@ -10,6 +10,10 @@ an agent from jumping to UI before the money, identity, booking and legal paths
 are proven, and from calling something "done" before the substrate and the skin
 are actually verified.
 
+On a directory that has not been bootstrapped yet (no `.env.local`, no
+`docs/site/site-profile` facts), run `project-bootstrap` first. It is the only
+thing that turns a bare domain into a site directory this skill can route.
+
 This skill does not discover and does not build. It routes.
 
 ## The one rule
@@ -26,7 +30,7 @@ write path behind it, the build is blocked.
 | 1. Unknowns | `wp-unknowns` | Every residual route has a verdict; every expected journey is mapped/manual/third-party/out-of-scope/missing; `admin-ajax`/`wc-ajax`/iframes scanned. |
 | 2. Domain audit | `wp-catalog-cart`, `wp-checkout-payments`, `wp-bookings`, `wp-auth-wholesale`, `wp-content-seo` | One capability, one owner. No overlap unresolved. |
 | 3. Proof | `wp-spikes` | Every money/inventory/identity/booking/legal capability is PASS or has a written accepted risk. |
-| 4. Build | `frontend-substrate` then `design-adaptation` | Data correct, substrate contracts in place, skin matches the reference. |
+| 4. Build | `site-base` then `frontend-substrate`, then `design-adaptation` | Data correct, substrate contracts in place, skin matches the reference. |
 | 5. Verify | `verification` | `check:ui` passes; parity, a11y, reduced-motion, states checked. |
 | 6. Ship | `cutover` | Redirects, callbacks, DNS, SEO, rollback verified. |
 
@@ -58,6 +62,7 @@ docs/craft/            # generic substrate docs, usually shipped once per templa
   page-archetypes.md
   interaction-states.md
 docs/site/<client>/
+  base.md              # route map, data source per route, what is stubbed
   design-tokens.md     # per-client skin
   design-brief.md      # screenshot/reference intake
 docs/checkout.md       # integration notes for this backend
@@ -76,17 +81,26 @@ and the blocking item:
 ```markdown
 # Build status
 
-- Phase 0 Intake: PASS — register complete
-- Phase 1 Unknowns: IN PROGRESS — 12 residual routes unclassified
-- Phase 2 Domain: BLOCKED — wholesale owner undecided
-- Phase 3 Spikes: PENDING — Realex redirect, price parity
-- Phase 4 Build: NOT STARTED
-- Phase 5 Verify: NOT STARTED
-- Phase 6 Ship: NOT STARTED
+Site: Acme Wool
+WordPress origin: https://acme.ie
+Phase 0 Intake: PASS — register complete
+Phase 1 Unknowns: IN PROGRESS — 12 residual routes unclassified
+Phase 2a Content: PASS
+Phase 2b Commerce: BLOCKED — wholesale owner undecided
+Phase 3 Spikes: PENDING — Realex redirect, price parity
+Phase 4a Base: NOT STARTED
+Phase 4b Substrate: NOT STARTED
+Phase 5 Verify: NOT STARTED
+Phase 6 Ship: NOT STARTED
 ```
 
+One line per phase, no bullet, status word first. That is a machine contract:
+the runner greps these lines to decide whether a phase reached its gate, so do
+not reword the label or bury the status in a sentence.
+
 A new agent reads this file first, then loads only the skill for the current
-phase.
+phase. A phase is finished only when its line reads `PASS` or `SKIPPED`; use
+`BLOCKED — <reason>` when it cannot finish, and stop.
 
 ## Routing rules
 

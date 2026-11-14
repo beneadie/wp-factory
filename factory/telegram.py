@@ -65,7 +65,7 @@ def handle(token: str, chat_id: int, text: str) -> None:
         job = job_queue.get_job(parts[1])
         reply = (
             json.dumps(
-                {k: job[k] for k in ("slug", "status", "exit_code", "started_at", "finished_at")},
+                {k: job[k] for k in ("slug", "status", "phase", "reason", "exit_code", "started_at", "finished_at")},
                 indent=2,
             )
             if job

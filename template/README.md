@@ -15,7 +15,9 @@ npm run dev
 
 To have an agent build it out, open OpenCode in the new directory. The
 `site-builder` agent is configured in `opencode.json`, and the full skill set is
-installed at `.opencode/skills/`.
+installed at `.opencode/skills/`. Given a domain, `project-bootstrap` normalizes
+it, proves it is WordPress + WooCommerce, and writes `.env.local` before
+`project-orchestrator` starts Phase 0.
 
 ## What is in the box
 
@@ -27,7 +29,7 @@ installed at `.opencode/skills/`.
 | `src/app/shop/[slug]` | Product detail, URL parity |
 | `src/app/globals.css` | Design tokens as CSS variables (the design pass swaps values) |
 | `docs/site/00-status.md` | Build state and what is stubbed |
-| `.opencode/skills/` | The 13 build skills |
+| `.opencode/skills/` | The build skills |
 
 ## Deliberately not included yet
 

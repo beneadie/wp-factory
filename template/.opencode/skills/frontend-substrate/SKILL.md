@@ -1,6 +1,6 @@
 ---
 name: frontend-substrate
-description: Use when building or changing frontend UI on the headless storefront - pages, sections, components, interactions, animations, loading states, images, navigation, cart feedback, or forms. Owns the brand-agnostic engineering that makes the site feel fast, alive and reactive. Do not use for backend discovery.
+description: Use after site-base to build or change the felt experience of the headless frontend - loading and error states, motion, images, navigation progress, cart feedback, focus and accessibility. Owns the brand-agnostic engineering that makes the site feel fast, alive and reactive. Does not own routes, data sources or visual design.
 ---
 
 # Frontend Substrate
@@ -13,6 +13,13 @@ and accessibility, and identity-safe caching.
 It is **brand-agnostic**. Colours, type, spacing rhythm and section styling come
 from `design-adaptation` and the per-client token file. If you are choosing a
 palette or matching a screenshot, you are in the wrong skill.
+
+## Scope
+
+This skill runs **after `site-base`**. Routes, data sources and page composition
+belong to `site-base`: do not add a route or a fetch here. If a page does not
+render real data yet, the build is blocked in `site-base`, not something to work
+around with a skeleton around an empty list.
 
 ## The two-layer rule
 

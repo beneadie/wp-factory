@@ -1,0 +1,12 @@
+# One agent run per distinct `run`. A run owns one or more status lines in
+# docs/site/00-status.md; the runner gates on every label it owns and, when a
+# label is PASS, on the artifacts listed for it (comma-separated).
+# Format: run<TAB>status label<TAB>required artifacts
+intake	Phase 0 Intake	docs/wp-discovery/site-profile.md
+api-map	Phase 1 Unknowns	docs/wp-discovery/unknowns.md
+api-map	Phase 2a Content	docs/wp-discovery/content-seo.md
+commerce	Phase 2b Commerce	docs/wp-discovery/capability-register.md,docs/wp-discovery/commerce.md
+spikes	Phase 3 Spikes	docs/wp-discovery/spike-results.md
+base	Phase 4a Base	docs/site/base.md
+substrate	Phase 4b Substrate	docs/craft/interaction-states.md
+verify	Phase 5 Verify	

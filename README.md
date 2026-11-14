@@ -17,11 +17,9 @@ cp .env.example .env        # Telegram token, chat id
 python3 factory/queue.py list
 ```
 
-Install Node deps in the template once, so copies do not have to:
-
-```bash
-cd template && npm install && cd ..
-```
+Install Node deps in each generated site, not in the template. The runner copies
+the template without `node_modules` and runs `npm ci` in the copy, so the first
+build of a site is slower and later ones reuse the npm cache.
 
 ## Run a build
 
@@ -42,6 +40,25 @@ timer:
 
 ```cron
 */5 * * * * cd /home/you/wp-factory && ./factory/run-job.sh >> logs/cron.log 2>&1
+```
+
+Each job runs the site in separate agent sessions — `intake`, `api-map`,
+`commerce`, `spikes`, `base`, `substrate`, `verify` for a store; content sites
+skip `commerce` and `spikes` and mark those phases SKIPPED. Each phase must
+reach PASS (or SKIPPED) *and* leave its handoff artifact, otherwise it retries
+up to `PHASE_ATTEMPTS` times and then blocks.
+
+The runner then gates the result independently: phase lines must read PASS or
+SKIPPED, `.env.local` must carry `WP_BASE_URL`, proof must exist for the site's
+mode (`SITE_MODE=store` needs a non-empty catalogue; `content` needs real pages
+or posts), and `.next/BUILD_ID` must exist. Anything less is recorded as
+`blocked` with a reason, not `done`. Retry a blocked site with
+`python3 factory/queue.py requeue --slug <slug>`.
+
+For a dry run that sets the site up without spending tokens:
+
+```bash
+DRY_RUN=1 bash factory/run-job.sh
 ```
 
 ## Evaluate a build

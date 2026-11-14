@@ -22,18 +22,30 @@ def read_status(slug: str) -> str:
 
 
 def tail(path: str, limit: int = 12) -> str:
-    if not path or not Path(path).exists():
+    if not path:
         return ""
-    lines = Path(path).read_text(errors="replace").splitlines()
+    target = Path(path)
+    if target.is_dir():
+        logs = sorted(target.glob("*.jsonl"), key=lambda item: item.stat().st_mtime)
+        if not logs:
+            return ""
+        target = logs[-1]
+    if not target.exists():
+        return ""
+    lines = target.read_text(errors="replace").splitlines()
     return "\n".join(lines[-limit:])
 
 
 def build_message(job: dict) -> str:
-    icon = {"done": "✅", "failed": "❌"}.get(job["status"], "•")
+    icon = {"done": "✅", "failed": "❌", "blocked": "⛔"}.get(job["status"], "•")
     parts = [
         f"{icon} {job['name']} ({job['slug']}) — {job['status']}",
         f"WP: {job['wp_url']}",
     ]
+    if job.get("phase") and job["phase"] != "complete":
+        parts.append(f"phase: {job['phase']}")
+    if job.get("reason"):
+        parts.append(f"reason: {job['reason']}")
     if job.get("exit_code") not in (None, 0):
         parts.append(f"exit code: {job['exit_code']}")
     status = read_status(job["slug"])

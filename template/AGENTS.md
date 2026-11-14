@@ -8,8 +8,9 @@ A Next.js (App Router, TypeScript) storefront that renders an existing
 WordPress/WooCommerce backend. WordPress is the source of truth for products,
 orders, customers, content and SEO. This repo is the public frontend plus a BFF.
 
-Read `.opencode/skills/README.md` for the skill set, then load
-`project-orchestrator` and follow its phase order.
+Read `.opencode/skills/README.md` for the skill set. If this directory has no
+`.env.local` yet, load `project-bootstrap` first — it turns the WordPress origin
+into site config. Then load `project-orchestrator` and follow its phase order.
 
 ## Commands
 
@@ -37,6 +38,11 @@ Tests are the slowest part of a loop and usually repeat. Run them deliberately:
   `SITE_URL`. `.env.local` is gitignored.
 - **WordPress is the source of truth.** Types in `src/lib/wp/types.ts` reflect
   real API responses. Do not invent fields.
+- **Never invent commerce.** `SITE_MODE` in `.env.local` says what the backend
+  actually is. If it is `content`, there is no WooCommerce Store API: do not
+  scaffold products, cart, checkout or account flows, and never invent a
+  placeholder catalogue to make a page look finished. Build the pages, menus and
+  content the backend exposes.
 - **Do not mutate WordPress from build/render code.** Only BFF route handlers
   may POST.
 - **Keep URL parity.** Preserve `/shop/...` and `/product-category/...`.

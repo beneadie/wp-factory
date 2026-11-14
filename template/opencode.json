@@ -1,11 +1,17 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "default_agent": "site-builder",
+  "compaction": {
+    "auto": true,
+    "keep": { "tokens": 15000 },
+    "buffer": "15%"
+  },
   "agents": {
     "site-builder": {
       "description": "Builds a headless WordPress storefront from this template against a live WordPress origin.",
       "mode": "primary",
-      "system": "You are building a storefront from this template for one WordPress site. Start by loading the project-orchestrator skill, then follow its phase order. Read AGENTS.md before changing code. Site specifics belong in src/config/site.ts and docs/site/, never in components. Do not invent WordPress fields: probe the live API and record what you find. Stop when the template renders the site's real catalogue and content; visual design is a later pass.",
+      "steps": 60,
+      "system": "You are building a storefront from this template for one WordPress site. If .env.local is missing, load project-bootstrap first. Then load project-orchestrator and follow its phase order. Read AGENTS.md before changing code. Site specifics belong in src/config/site.ts and docs/site/, never in components. Do not invent WordPress fields: probe the live API and record what you find. Never invent commerce: SITE_MODE=content means there is no Store API, so build the pages and menus the backend exposes instead of a catalogue, cart or checkout. Stop when the template renders the site's real catalogue and content; visual design is a later pass. Update docs/site/00-status.md with one line per phase, status word first.",
       "permissions": [
         { "action": "shell", "resource": "git push *", "effect": "deny" }
       ]
