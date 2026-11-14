@@ -1,15 +1,16 @@
 # Site template
 
 The neutral base every generated site starts from: Next.js App Router +
-TypeScript, rendering an existing WordPress site's pages and content. It is
-deliberately unstyled and commerce-free; the design pass comes later.
+TypeScript, rendering an existing WordPress site. It is deliberately unstyled and
+carries no store UI; content and shop sites both start here, and the build
+creates what the origin actually has.
 
 ## Use it
 
 ```bash
-cp -a template/. ../sites/acme/
-cd ../sites/acme
-cp .env.example .env.local     # set WP_BASE_URL, SITE_NAME, SITE_URL
+mkdir -p sites/acme && cp -a template/. sites/acme/
+cd sites/acme
+cp .env.example .env.local     # set WP_BASE_URL, SITE_MODE, SITE_NAME, SITE_URL
 npm install
 npm run dev
 ```
@@ -33,12 +34,11 @@ it, proves it is WordPress, and writes `.env.local` before
 | `src/components/navigation-pending.tsx` | Page-level pending skeleton for client navigation |
 | `docs/site/00-status.md` | Build state and what is stubbed |
 | `.opencode/skills/` | The build skills |
-| `commerce/` | Parked WooCommerce code, opt-in only (see its README) |
 
 ## Deliberately not included
 
-- Commerce: no products, cart, checkout, accounts or wholesale. `commerce/`
-  holds the old implementation if a shop is ever in scope.
+- Store UI: no product page, cart, checkout or account. A shop build creates the
+  ones its origin supports; a content site creates none.
 - A brand: colours and fonts are neutral so the design pass is a token swap.
 - The image CDN pipeline — `SiteImage` is the contract, not the CDN.
 

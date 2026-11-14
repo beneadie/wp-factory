@@ -1,26 +1,29 @@
-# Spikes prompt — PARKED
-
-Not in `factory/phases.tsv`. Enable it only for an opt-in commerce build.
-
-Prove or skip write paths for {{name}} ({{slug}}) from {{wp_url}}.
+Prove the write paths for {{name}} ({{slug}}) from {{wp_url}}.
 Niche: {{niche}}. Site mode: {{site_mode}}.
 
-Read `docs/site/00-status.md` and `docs/wp-discovery/capability-register.md`
-first. This phase only runs for store sites.
+Load `agent-conduct` first. Read `docs/site/00-status.md`,
+`docs/wp-discovery/capability-register.md` and `docs/wp-discovery/commerce.md`.
 
-Decide whether an in-scope money, identity or booking write path actually needs
-proof for this build. If nothing needs it — no cart, checkout, account or
-booking flow in scope for the base build — do not run any write probe, do not
-mutate WordPress, and set:
+This run applies to store sites. Decide which in-scope capabilities need a write
+probe for the build that follows: add-to-cart, variation payload, shipping rates,
+checkout, payment redirect, account, booking.
 
-Phase 3 Spikes: SKIPPED — no write paths in scope
+If none of the capabilities the build will ship needs a write path, mutate
+nothing and set:
 
-Only if a proof is genuinely required, load `wp-spikes` and follow it. It is the
-only skill allowed to mutate WordPress, and it must be explicit, reversible,
-recorded, and limited to what the build needs.
+Phase 3 Spikes: SKIPPED — no write path in scope
 
-Write `docs/wp-discovery/spike-results.md` when you do run a spike, then set:
+Otherwise load `wp-spikes` and follow it. It is the only skill allowed to mutate
+WordPress. Every probe must be explicit, reversible, recorded, and limited to
+what the build needs.
+
+Never place a real order without the operator's approval or a staging origin.
+Where that is unavailable, prove the contract with an invalid field and record
+the error shape, then mark the successful POST as manual QA.
+
+Write `docs/wp-discovery/spike-results.md`, then set:
 
 Phase 3 Spikes: PASS
 
-Never invent a write path, and never mutate a live site without approval.
+If a required write path cannot be proven, set
+`Phase 3 Spikes: BLOCKED — <reason>` and stop. Never invent a write path.

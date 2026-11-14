@@ -1,18 +1,26 @@
 Build the base site for {{name}} ({{slug}}) from {{wp_url}}.
-Niche: {{niche}}.
+Niche: {{niche}}. Site mode: {{site_mode}}.
 
-This phase wires routes and data. It is not the visual or motion pass. Read
-`docs/site/00-status.md`, `docs/wp-discovery/*` and `docs/site/06-brand-assets.md`
-first, then load `site-base` and follow it.
+This phase wires routes and data. It is not the visual or motion pass. Load
+`agent-conduct` first. Read `docs/site/00-status.md`, `docs/wp-discovery/*` and
+`docs/site/06-brand-assets.md`, then load `site-base` and follow the branch for
+`SITE_MODE`.
 
-This is a content site: render the pages, posts and menus the backend actually
-exposes. Add the routes needed for permalink parity, drive navigation from the
-WordPress page hierarchy or `site.primaryNav`, and use `/wp/v2/pages` and
-`/wp/v2/posts`. Do not scaffold products, cart, checkout or account flows, and
-never invent a placeholder catalogue. Commerce lives in `template/commerce/` and
-is opt-in for a later pass.
+Content site:
+render the pages, posts and menus the backend actually exposes. Add the routes
+needed for permalink parity, drive navigation from the WordPress page hierarchy
+or `site.primaryNav`, and use `/wp/v2/pages` and `/wp/v2/posts`. Do not scaffold
+products, cart, checkout or account flows, and never invent a placeholder
+catalogue.
 
-Emit the brand assets captured in `docs/site/06-brand-assets.md` (icon,
+Store:
+build the catalogue on the routes the origin actually uses — product permalinks,
+category and attribute archives, search, and a product page with a working
+variation selector per `wp-catalog-cart`. Sold-out products stay listed with a
+badge. Do not build cart, checkout or payment here; `Phase 4c Commerce` owns
+them.
+
+Both: emit the brand assets captured in `docs/site/06-brand-assets.md` (icon,
 apple-touch-icon, favicon, OG image, manifest) or leave them absent when
 discovery recorded that the origin has none.
 

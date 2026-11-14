@@ -1,6 +1,6 @@
 ---
 name: design-adaptation
-description: Use when applying a design to the headless storefront from screenshots or references - a new client skin, a restyle, "match this screenshot", or adapting the template to a different brand. Extracts tokens and restyles the skin without changing the interaction substrate.
+description: Use when applying a design to the headless site from screenshots or references - a new client skin, a restyle, "match this screenshot", or adapting the template to a different brand. Extracts tokens and restyles the skin without changing the interaction substrate.
 ---
 
 # Design Adaptation
@@ -30,7 +30,11 @@ of the desired design and adapt. This skill owns that second pass.
   spacing and truncation reflect reality.
 - **Use the client's assets.** The logo, icons, OG image and fonts come from
   `06-brand-assets.md`; never draw or invent a logo, and keep the favicon
-  consistent with the palette.
+  consistent with the palette. Note which assets are licensed before embedding
+  them.
+- **Breadcrumbs follow the original, not habit.** Render them where the original
+  does, never with a leading "Home" crumb when the header already links home, and
+  hide them when there is only one crumb.
 
 ## Inputs
 

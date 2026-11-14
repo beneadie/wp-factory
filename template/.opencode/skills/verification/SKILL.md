@@ -40,8 +40,8 @@ If `check:ui` does not exist yet, add it before shipping (see
 
 ## Machine checks (preferred)
 
-- **Accessibility**: axe on home, page and index. Commerce routes (PDP, cart,
-  checkout, account) only in a commerce build. Fail on serious/critical.
+- **Accessibility**: axe on home, page and index. In a store build also PDP,
+  cart, checkout and account. Fail on serious/critical.
 - **Reduced motion**: emulate `prefers-reduced-motion: reduce`; assert content is
   visible (no `opacity: 0`, no stuck transforms).
 - **Interaction states**: for the primary button, nav item, card, input and
@@ -50,18 +50,28 @@ If `check:ui` does not exist yet, add it before shipping (see
   (catches stale-instance reveal bugs).
 - **Parity**: for a sample covering page types (home, a nested page, an index,
   a form or contact page), compare title, content and metadata between the
-  original and the new site.
-- **Options** (commerce builds only): for variable products, assert a control
-  exists per attribute, a valid combination updates price/stock/image, and
-  invalid combinations are unavailable. This must hold even when no cart ships.
+  original and the new site. In a store build also cover product types (simple,
+  variable, on-sale, out-of-stock, variation sharing the parent slug) on name,
+  price, gallery count/primary, breadcrumb and related products.
+- **Catalogue parity** (store only): total product count matches the API, and a
+  sample matches on price, stock, image count and permalink.
+- **Options** (store only): for variable products, assert a control exists per
+  attribute, a valid combination updates price/stock/image, and invalid
+  combinations are unavailable. This must hold even when no cart ships.
+- **Cart** (store only): add, update, remove, coupon and shipping-rate selection
+  round-trip, and totals match the API after every mutation.
+- **Checkout** (store only): address → rates → final total → order creation;
+  a moved total returns 409 and is handled; the payment redirect target host is
+  the origin or the gateway, never arbitrary.
 - **Brand assets**: the built HTML contains `<link rel="icon">`,
   `<link rel="apple-touch-icon">` and an `og:image`, and each URL resolves 200.
 - **Perceived performance**: `npm run check:perf` writes
   `docs/verification/perf.json`. Navigation paints within 200ms and is never
   blank for more than 500ms; every image slot shows a placeholder; CLS < 0.1;
   LCP < 2.5s on Slow 3G where the browser measurement is available.
-- **Identity** (commerce builds only): cart/account/wholesale responses have no
-  shared cache; a guest request never sees a signed-in response.
+- **Identity** (store only): cart/account/wholesale responses have no shared
+  cache; a guest request never sees a signed-in response, and the cart is
+  cleared on auth transitions.
 
 ## Manual checks (the part a machine misses)
 
@@ -92,7 +102,11 @@ For backend-driven features, the domain skill's acceptance list still applies:
 - [ ] `npm run build` passes.
 - [ ] `check:ui` passes (or the manual equivalents are recorded).
 - [ ] `npm run check:perf` passes and `docs/verification/perf.json` exists.
-- [ ] Variable products are configurable, independent of cart availability.
+- [ ] Store only: catalogue count and sample match the API; every variable
+      product is configurable.
+- [ ] Store only: cart, shipping and checkout round-trip against the API, and the
+      payment redirect points at the origin or the gateway.
+- [ ] Store only: no guest can see another guest's cart or account.
 - [ ] Icons, apple-touch-icon and OG image are present and resolve.
 - [ ] Navigation paints within 200ms; no blank content over 500ms.
 - [ ] Every image slot shows a visible placeholder and the LCP image is never hidden.

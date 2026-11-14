@@ -118,6 +118,11 @@ Pass:
 
 Goal: prove checkout creates one order and returns cleanly.
 
+**This spike creates a real order on the origin.** Before running it, confirm the
+origin has a staging site, a test gateway, or the operator's explicit go-ahead.
+Without one, prove the contract with an intentionally invalid field and record
+the 400 error shape; leave the successful POST to a human.
+
 Steps:
 
 1. Build a cart with a test product.
@@ -133,6 +138,7 @@ Steps:
 Pass:
 
 - Redirect URL is correct and reachable.
+- Its host is the origin or the gateway, never arbitrary.
 - Payment completes.
 - WordPress marks the order paid once.
 - Return page verifies the order.

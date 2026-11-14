@@ -46,6 +46,23 @@ Every async transition is visible, and the content area never goes blank:
   every link. Audit before adding a pending overlay.
 - Skeletons mirror the incoming layout so data landing causes no layout shift.
 
+## Images (contract)
+
+- `next/image` with explicit `sizes`; `priority` on exactly one LCP image per
+  view. Everything else lazy.
+- Render a placeholder until the image decodes, then cross-fade. Keep
+  `minVisibleMs` 600–900ms so it does not flash on a fast cache hit.
+- Retry a failed load once, then fall back to the origin URL unoptimised. A CDN
+  is an optimisation, not a dependency.
+- **Remote media must be allowlisted** by the image CDN (for example
+  `remote_images` in the host config). Symptom when it is not: local assets
+  render and every WordPress media URL 404s.
+- **Cold transforms can return `202` with an empty body.** Browsers treat that
+  as a broken image and do not retry. The retry above covers it; do not remove
+  it, and keep the first product row eager so its transform starts early.
+- Never hard-delay images to a fixed reveal time. The placeholder stays until
+  decode; a fixed delay exposes blank frames whenever the origin is slow.
+
 ## Non-negotiables
 
 - **Server-first.** Fetch and render data in server components. Add `"use client"`
@@ -62,6 +79,9 @@ Every async transition is visible, and the content area never goes blank:
   Do not hand-roll a button and hope the agent remembers the states.
 - **Every async action is visible.** Loading, success and error are all
   represented; no dead clicks, no silent failures.
+- **Responses never arrive out of order.** Tag each optimistic request and
+  ignore a stale completion, so a slow first click cannot overwrite a fast
+  second one.
 - **Animate transform and opacity.** Not layout. Respect the frame budget.
 - **Identity is never cached across users.** Cart, account and role-priced
   responses are `no-store` and read through the BFF.

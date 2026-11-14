@@ -165,6 +165,19 @@ on the WordPress origin. Plan one of:
 Do not rebuild the gateway's hosted UI. Hand off to it and verify the order on
 return. Do not construct the order-pay URL yourself.
 
+### Optional server-side helper
+
+Some origins expose an authenticated endpoint that returns the gateway's signed
+form (or a redirect URL) for an unpaid order, plus checkout config and an order
+summary. It is a convenience, never a requirement:
+
+- Detect it during discovery; record its endpoints and required order key.
+- Treat it as optional at build time: when it is absent, unreachable, or the
+  gateway is unsupported, fall back to `payment_result.redirect_url`.
+- Never let the fallback fail. A lost payment is worse than a plain redirect.
+- Record which path was taken in `docs/checkout.md`, including the degradation
+  conditions.
+
 ## 6. Order verification
 
 Never confirm an order from query-string `order`/`key` alone.

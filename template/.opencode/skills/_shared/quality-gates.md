@@ -64,14 +64,18 @@ without spending model tokens.
 
 | Spec | Asserts |
 |---|---|
-| `tests/a11y` | axe on home, page and index (PDP/cart/account only in a commerce build); no serious/critical |
+| `tests/a11y` | axe on home, page and index; store builds also PDP, cart, checkout, account; no serious/critical |
 | `tests/motion` | under `prefers-reduced-motion: reduce`, content is visible and not stuck transformed |
-| `tests/states` | primary button, nav item, card, input render hover, focus-visible, active, disabled |
-| `tests/parity` | sample of page types matches the original on title, content and metadata |
+| `tests/states` | primary button, nav item, card, input, quantity control render hover, focus-visible, active, disabled |
+| `tests/parity` | page types match the original on title, content and metadata; store builds also compare product types on name, price, gallery and breadcrumb |
 | `tests/nav` | client navigation: paginate/filter then new items are visible |
+| `tests/catalogue` | store builds: product count and a sample match the API on price, stock, image count and permalink |
+| `tests/options` | store builds: selectors render per attribute, valid combinations update price/stock, invalid ones are unavailable |
+| `tests/cart` | store builds: add, update, remove, coupon and shipping-rate round-trip; totals match the API |
+| `tests/checkout` | store builds: address → rates → total → order; 409 handled; payment redirect host validated |
+| `tests/identity` | store builds: guest never receives a signed-in or another guest's cart; no shared cache |
 | `check:perf` | pending paint ≤200ms; no blank content >500ms; CLS <0.1; LCP <2.5s on Slow 3G; every image slot shows a placeholder |
 | `check:brand` | `<link rel=icon>` and `og:image` exist in the built HTML and resolve 200 |
-| `tests/options` | commerce builds only: variable products render selectors and valid combinations update price/stock |
 
 ## Perceived performance, brand assets, selections
 
@@ -92,9 +96,10 @@ measurement or they will regress silently.
   Emit them via `src/app/icon.png`, `apple-icon.png`, `opengraph-image` and
   `manifest.ts`.
 - **Selections:** variable products render a control per variation attribute
-  from the parent's `variations[]`, with invalid combinations unavailable. This
-  applies even when purchasing is out of scope; selection still updates the
-  displayed price, stock and image.
+  from the parent's `attributes[].terms`, with invalid combinations unavailable.
+  If terms are missing, fall back to the variation rows and record the degraded
+  path. This applies even when purchasing is out of scope; selection still
+  updates the displayed price, stock and image.
 
 `npm run check:perf` writes `docs/verification/perf.json`; it is a required
 artifact for the verify phase.

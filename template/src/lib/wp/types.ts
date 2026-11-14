@@ -1,3 +1,5 @@
+// Types mirror real WordPress API responses. Do not invent fields.
+
 export interface WpRendered {
   rendered: string;
 }

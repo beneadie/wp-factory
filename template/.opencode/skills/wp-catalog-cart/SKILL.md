@@ -163,16 +163,35 @@ Cart line rules:
 
 Discovery ends here; `site-base` builds the product page. Give it what it needs:
 
-- the attribute order and labels come from the parent's `variations[]`;
-- the set of valid combinations comes from the same rows, so a missing
+- the attribute order and labels come from the parent's `attributes[].terms`
+  (name plus slug), with `has_variations` telling you which are selectable;
+- if terms are missing, fall back to the variation rows' names, then SKU and
+  `add_to_cart.url`, and record the degraded path;
+- the set of valid combinations comes from the same variation rows, so a missing
   combination must render as unavailable;
-- partial-null rows fall back to the variation name/SKU/`add_to_cart.url`/parent
-  terms, and that fallback is for **display** as well as cart payloads;
+- partial-null rows fall back the same way, for **display** as well as cart
+  payloads;
 - selecting an option is still meaningful without a cart: it changes the shown
   price, stock, SKU and image.
 
 If the build ships no cart, the control is an availability preview, not a dead
 buy button. Do not drop the selector because the write path is deferred.
+
+## 8. Stock truth
+
+WooCommerce is the stock source. Record what each surface must read:
+
+- `is_in_stock`, `is_on_backorder`, `is_purchasable`, `stock_availability.text`
+  and `low_stock_remaining`.
+- Sold-out products stay in listings with a badge; hiding them hides the
+  catalogue.
+- Variable products mark availability per variation from the fetched variation
+  rows, and open on the first in-stock one.
+- A variable parent's `is_on_backorder` is unreliable; it can report backorder
+  while most variations are in stock. Use the selected variation's value.
+- Backorderable products show `stock_availability.text` rather than "In stock".
+- A cached page may be stale; the cart endpoint still enforces stock. Surface
+  the returned `message` instead of a dead click.
 
 ## Anti-patterns
 
@@ -182,4 +201,4 @@ buy button. Do not drop the selector because the write path is deferred.
 - Assuming `has_options: false` means simple.
 - Treating a 400 booking error as a UI bug instead of a missing integration.
 - Caching the cart in a client store as the source of truth.
-- Hardcoding `realex_redirect`, product IDs, or attribute slugs.
+- Hardcoding a gateway ID, product ID or attribute slug.

@@ -151,12 +151,13 @@ case "$wp_code" in
   *) block "not-wordpress" ;;
 esac
 
-# This factory builds content sites. A Store API means the prospect is a shop,
-# which is parked in `template/commerce/` and unsupported by the base.
+# Classify the site; never reject a shop. A Store API means it is a shop build:
+# the base is still neutral and the agent creates the catalogue per the origin's
+# IA. `SITE_MODE` selects which phase runs apply (see factory/phases.tsv).
 site_mode="content"
 store_code="$(probe "$wp_url/wp-json/wc/store/v1/products?per_page=1")"
 case "$store_code" in
-  2*) block "store-out-of-scope" ;;
+  2*) site_mode="store" ;;
   401|403) block "store-private" ;;
   000)
     if online; then
@@ -219,22 +220,18 @@ fi
 # shellcheck source=factory/lib.sh
 . "$ROOT/factory/lib.sh"
 
-# Phase runs, in file order. Content sites skip the commerce and spike runs;
-# the api-map prompt marks those phases SKIPPED instead.
+# Phase runs, in file order. The `when` column (all|store|content) decides
+# applicability: a content site skips 2b/3/4c and the api-map prompt marks them
+# SKIPPED. Capability is never removed, only gated.
 if [ -n "${PHASES:-}" ]; then
   runs="$PHASES"
 else
-  runs=""
-  for candidate in $(awk -F'\t' '!/^#/ && NF >= 2 { if (!seen[$1]++) print $1 }' factory/phases.tsv); do
-    case "$candidate" in
-      commerce|spikes)
-        if [ "$site_mode" != "store" ]; then
-          continue
-        fi
-        ;;
-    esac
-    runs="$runs $candidate"
-  done
+  runs="$(awk -F'\t' -v mode="$site_mode" '
+    !/^#/ && NF >= 2 {
+      when = (NF >= 4 && $4 != "") ? $4 : "all"
+      if (when != "all" && when != mode) next
+      if (!seen[$1]++) printf "%s ", $1
+    }' factory/phases.tsv)"
 fi
 
 if [ "${DRY_RUN:-0}" = "1" ]; then
@@ -333,8 +330,8 @@ $(render retry)"
   notify "⏭ $name ($slug) — $run PASS"
 done
 
-# Independent gate: never trust the agent's own PASS. The base build is a
-# content site, so proof is real pages/posts, not a product list.
+# Independent gate: never trust the agent's own PASS. What counts as proof
+# depends on the site mode, not on the template.
 gate_fail=""
 if ! grep -Eq '^WP_BASE_URL=.+' "$dir/.env.local" 2>/dev/null; then
   gate_fail="env-local"
@@ -345,19 +342,28 @@ non_empty_list() {
 }
 
 if [ -z "$gate_fail" ]; then
-  content_ok=0
-  for endpoint in "wp/v2/pages" "wp/v2/posts"; do
+  if [ "$site_mode" = "store" ]; then
+    proof_endpoints="wc/store/v1/products"
+    missing="empty-catalogue"
+  else
+    proof_endpoints="wp/v2/pages wp/v2/posts"
+    missing="no-content"
+  fi
+
+  proof_ok=0
+  for endpoint in $proof_endpoints; do
     for _ in 1 2 3; do
       if curl -sSfL --max-time 20 "$wp_url/wp-json/$endpoint?per_page=1" \
           | non_empty_list 2>/dev/null; then
-        content_ok=1
+        proof_ok=1
         break 2
       fi
       sleep 3
     done
   done
-  if [ "$content_ok" -ne 1 ]; then
-    gate_fail="no-content"
+
+  if [ "$proof_ok" -ne 1 ]; then
+    gate_fail="$missing"
   fi
 fi
 

@@ -25,6 +25,7 @@ implements this table over a hand-rolled element.
 | Button (primary/accent/outline/ghost) | default, hover, focus-visible, active, disabled, loading, success/error where it performs an action |
 | Link / nav item | default, hover, focus-visible, active/current |
 | Card / tile | default, hover (image/label), focus-visible when the whole card is a link |
+| Image / media | loading placeholder, decoded reveal, error fallback, no-image |
 | Input / select / textarea | default, hover, focus, filled, disabled, invalid (+ message), valid where useful |
 | Checkbox / radio / toggle | default, hover, focus-visible, checked, disabled, invalid |
 | Quantity stepper | default, hover, focus-visible, disabled, loading, min/max bounds |

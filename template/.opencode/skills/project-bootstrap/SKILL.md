@@ -58,12 +58,12 @@ you just observed:
 
 ```
 WP_BASE_URL=https://acme.ie
-SITE_MODE=store            # or content when there is no Store API
+SITE_MODE=content          # `store` only when the Store API answered
 SITE_NAME=Acme Wool
-SITE_DESCRIPTION=<site description, or "A storefront for Acme Wool.">
+SITE_DESCRIPTION=<observed site description, or "The website for Acme Wool.">
 SITE_URL=http://localhost:3000
 SITE_LOCALE=<observed locale, e.g. en_IE>
-SITE_CURRENCY=<observed currency, e.g. EUR>
+SITE_CURRENCY=<observed currency; store only>
 ```
 
 `SITE_MODE` is a fact, not a preference: `store` only when the WooCommerce Store

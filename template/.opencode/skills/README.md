@@ -19,25 +19,30 @@ The split matters. **Discovery skills never build UI.** Build skills never
 re-discover the backend. `project-orchestrator` is the only entry point and is
 responsible for the order.
 
-Commerce skills (`wp-catalog-cart`, `wp-checkout-payments`, `wp-bookings`,
-`wp-auth-wholesale`) stay for discovery and for an opt-in commerce build. The
-base template ships no store UI; the WooCommerce code is parked in
-`template/commerce/`.
+`agent-conduct` loads before everything else on every build.
+
+Shop skills are optional. `wp-catalog-cart`, `wp-checkout-payments`,
+`wp-bookings` and `wp-auth-wholesale` run only when the site has those
+capabilities; `store-checkout` only when `SITE_MODE=store`. A content site skips
+them and records `SKIPPED — no Store API`. The base template ships no store UI:
+each shop build creates its own, against its own origin.
 
 ## Order
 
 ```
 project-bootstrap             <- domain in, site directory out (once per site)
+agent-conduct                 <- rules for changing shared files; always first
 project-orchestrator          <- start here for any new site
   wp-intake                   <- capture index, capability matrix, gate
     wp-unknowns               <- residual routes, journeys, outside-REST
     wp-catalog-cart           \
     wp-checkout-payments       |  domain audits (parallel, GET-only)
-    wp-bookings                |
+    wp-bookings                |  load only the capabilities the site has
     wp-auth-wholesale          |
     wp-content-seo            /
   wp-spikes                   <- only skill allowed to mutate; prove write paths
   site-base                   <- wire real routes and data (no motion, no skin)
+  store-checkout              <- store only: cart, checkout, payment handoff
   frontend-substrate          <- build the smooth/reactive engineering (generic)
   design-adaptation           <- screenshot/reference -> skin (per client)
   verification                <- machine-checkable quality gate
@@ -48,6 +53,7 @@ project-orchestrator          <- start here for any new site
 
 | Skill | Use when | Writes |
 |---|---|---|
+| `agent-conduct` | first, on every build; before changing a shared file | nothing (rules only) |
 | `project-bootstrap` | given a domain, before anything else | `.env.local`, `docs/site/`, `docs/wp-discovery/site-profile.md` |
 | `project-orchestrator` | starting a new site or a new phase | `docs/site/00-status.md` |
 | `wp-intake` | given a wp-json index or a new site | `docs/wp-discovery/*` |
@@ -60,6 +66,7 @@ project-orchestrator          <- start here for any new site
 | `wp-spikes` | an integration is unproven and needs an end-to-end test | `docs/wp-discovery/spike-results.md` |
 | `frontend-substrate` | any UI/interaction/animation/loading work | `docs/craft/*`, components |
 | `site-base` | after discovery; wire routes, data and URL parity | `docs/site/base.md`, routes, `src/config/site.ts` |
+| `store-checkout` | store only, after the catalogue exists | `docs/site/commerce-build.md`, `docs/checkout.md` |
 | `design-adaptation` | "match this screenshot", new brand, restyle | `docs/site/<client>/design-tokens.md` |
 | `verification` | before considering any UI done | test output |
 | `cutover` | moving to production / new domain | `docs/cutover.md` |
@@ -84,4 +91,6 @@ project-orchestrator          <- start here for any new site
 - No skill except `wp-spikes` may mutate the WordPress backend.
 - No skill may invent a capability the backend does not expose.
 - If a lesson generalises, promote it into the relevant skill or `_shared/`.
-- Delete unused procedures. A skill that is never needed is token debt.
+- **Never delete a procedure because one site did not need it.** Gate it by mode
+  or by "when present". Removing capability is a decision the operator makes,
+  not a cleanup step.

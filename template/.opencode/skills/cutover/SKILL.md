@@ -1,20 +1,21 @@
 ---
 name: cutover
-description: Use when moving the headless storefront to production or a new domain - DNS, apex vs WordPress subdomain, reverse proxy for wp-json/wp-content/wp-admin/payment callbacks, redirect map, sitemap/robots, SEO sign-off and rollback. Do not use during initial build.
+description: Use when moving the headless site to production or a new domain - DNS, apex vs WordPress subdomain, reverse proxy for wp-json/wp-content/wp-admin (and payment callbacks on a store), redirect map, sitemap/robots, SEO sign-off and rollback. Do not use during initial build.
 ---
 
 # Cutover
 
-Shipping a headless storefront is a routing problem, not a deploy button. The
+Shipping a headless site is a routing problem, not a deploy button. The
 new site lives on Netlify, but WordPress must keep serving the routes only it
-can: the REST API, media, admin, order-pay, and payment callbacks. Plan the
-domain and proxy before the DNS change.
+can: the REST API, media, admin, and — on a store — order-pay and payment
+callbacks. Plan the domain and proxy before the DNS change.
 
 ## Non-negotiables
 
-- Payment callbacks and order-pay URLs stay reachable on the WordPress origin.
-- `/wp-json`, `/wp-content`, `/wp-admin`, `/checkout/order-pay` and
-  `?wc-api=...` reach WordPress (subdomain or reverse proxy).
+- Payment callbacks and order-pay URLs stay reachable on the WordPress origin
+  (store only).
+- `/wp-json`, `/wp-content` and `/wp-admin` reach WordPress (subdomain or reverse
+  proxy); on a store also `/checkout/order-pay` and `?wc-api=...`.
 - Every old URL has a redirect or a replacement. No silent 404s on money or
   content pages.
 - Do not flip DNS until a preview deploy has passed the full verification gate.
@@ -33,9 +34,9 @@ domain and proxy before the DNS change.
 
 Pick one and write it down:
 
-- **Subdomain** — WordPress on `wp.example.com`, storefront on `example.com`.
-  Cleanest. Update gateway callback and `MERCHANT_RESPONSE_URL`.
-- **Reverse proxy** — storefront on the apex, proxy the WordPress routes to the
+- **Subdomain** — WordPress on `wp.example.com`, site on `example.com`.
+  Cleanest. On a store, update the gateway callback and `MERCHANT_RESPONSE_URL`.
+- **Reverse proxy** — site on the apex, proxy the WordPress routes to the
   origin. More moving parts; needed if the callback must stay on the apex.
 
 Record the exact paths proxied and where they terminate.

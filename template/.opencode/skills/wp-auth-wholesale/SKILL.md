@@ -74,6 +74,9 @@ Preferred pattern:
 4. BFF attaches the credential on every authenticated request.
 5. On expiry, refresh or force re-login with a clear message.
 6. Logout clears the cookie and server-side session.
+7. **Login and logout also clear the cart session.** Otherwise the next guest on
+   that browser inherits the previous customer's cart, and wholesale prices can
+   leak into a guest order.
 
 Record:
 

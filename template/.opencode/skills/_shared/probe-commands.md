@@ -244,7 +244,9 @@ The route index does not show `admin-ajax` actions, iframes, or plugin script
 handles. Scan the pages you are replacing.
 
 ```bash
-for path in / /shop/ /cart/ /checkout/ /book-mill-tour/ /my-account/; do
+# Take the paths from the route ledger, plus one of each shape the site has:
+# a product, a category, a booking or calendar page, an account page.
+for path in / <product-path> <category-path> <booking-or-calendar-path> /cart/ /checkout/ /my-account/; do
   name=$(printf "%s" "$path" | tr '/?' '__')
   curl -sS "$OLD$path" -o "/tmp/wp-probe/old-$name.html" || true
 done

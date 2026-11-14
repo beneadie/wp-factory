@@ -67,6 +67,12 @@ Rules:
 - A page with Divi builder content cannot be rendered faithfully in Next from
   the REST HTML alone.
 - Count affected pages and products. The exact count changes the migration plan.
+- **Pasted editor content is not layout.** Text pasted from a chat UI or another
+  tool often carries wrapper classes, inline centring, fixed image dimensions and
+  a duplicated hero image. Record the pattern and tell the build to flatten the
+  wrappers, drop the duplicate and keep real images in a gallery.
+- **Page heroes** are usually the featured image, not the first inline image.
+  Record whether the page exposes one, and the fallback when it does not.
 - Migrate to structured blocks/ACF or rebuild the page. Do not scrape Divi
   markup and call it done.
 - Keep the old page live until its replacement is approved.
