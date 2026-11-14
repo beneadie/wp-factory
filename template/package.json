@@ -8,7 +8,10 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "check:perf": "node scripts/check-perf.mjs"
+    "check": "bash scripts/check.sh",
+    "check:fast": "bash scripts/check.sh --fast",
+    "check:perf": "node scripts/check-perf.mjs",
+    "probe": "bash scripts/wp-probe.sh"
   },
   "dependencies": {
     "motion": "^14.1.1",

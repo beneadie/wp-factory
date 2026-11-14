@@ -17,13 +17,19 @@ the work.
 
 ## The one command
 
-Provide a single entry point and run it before any UI change is "done":
+Provide a single entry point and run it after a batch of changes, not after each
+file:
 
 ```bash
-npm run check:ui
+npm run check        # typecheck + lint + build
+npm run check:fast   # typecheck + lint, for iteration
+bash scripts/check.sh --perf   # build once, one server, check:perf
 ```
 
-It should compose:
+If it fails, fix the cause and run it again. The constraint is one build per
+batch, not one check per phase.
+
+Underneath, it should compose:
 
 ```jsonc
 {
@@ -31,12 +37,9 @@ It should compose:
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "build": "next build",
-    "check:ui": "npm run typecheck && npm run lint && npm run test:a11y && npm run test:motion && npm run test:states",
-    "check:perf": "node scripts/check-perf.mjs",
-    "test:a11y": "playwright test tests/a11y",
-    "test:motion": "playwright test tests/motion",
-    "test:states": "playwright test tests/states",
-    "test:parity": "playwright test tests/parity"
+    "check": "bash scripts/check.sh",
+    "check:fast": "bash scripts/check.sh --fast",
+    "check:perf": "node scripts/check-perf.mjs"
   }
 }
 ```
@@ -120,7 +123,7 @@ call site.
 
 ## Tiny definition of done (UI)
 
-1. `check:ui` passes.
+1. `npm run check` passes.
 2. The changed element satisfies the state matrix.
 3. Reduced motion and keyboard paths work.
 4. Parity sample checked against the original (if data changed).

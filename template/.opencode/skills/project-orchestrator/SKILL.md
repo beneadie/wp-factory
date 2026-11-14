@@ -39,7 +39,7 @@ Phases 2b, 3 and 4c and marks them `SKIPPED — no Store API`. A store runs them
 | 4a. Base | `site-base` | Routes and data correct in the site's mode; catalogue selectors work in store mode. |
 | 4c. Commerce build (store only) | `store-checkout` | Cart, shipping, checkout and payment handoff round-trip against the proven API. |
 | 4b. Substrate | `frontend-substrate` | Pending paint, placeholders, states and reduced motion in place on every page type. |
-| 5. Verify | `verification` | `check:ui` and `check:perf` pass; parity, a11y, reduced-motion, states, options and brand assets checked; `docs/verification/perf.json` exists. |
+| 5. Verify | `verification` | `npm run check` and `check:perf` pass; parity, a11y, reduced-motion, states, options and brand assets checked; `docs/verification/perf.json` exists. |
 | 6. Ship | `cutover` | Redirects, callbacks, DNS, SEO, rollback verified. |
 
 Phases 1 and 2 can run in parallel. Everything else is ordered.
@@ -147,7 +147,7 @@ phase. A phase is finished only when its line reads `PASS` or `SKIPPED`; use
 - [ ] Icons, apple-touch-icon and OG image are present (or recorded missing).
 - [ ] `check:perf` passes and `docs/verification/perf.json` exists.
 - [ ] Skin matches the reference on desktop and mobile.
-- [ ] `check:ui` passes.
+- [ ] `npm run check` passes.
 - [ ] Redirect map and SEO parity verified.
 - [ ] Payment callback and order-pay reachable at cutover.
 - [ ] Rollback plan written.

@@ -13,8 +13,21 @@ from pathlib import Path
 import queue as job_queue
 
 
+ROOT_DIR = Path(__file__).resolve().parent.parent
+
+
+def site_dir(slug: str) -> Path:
+    """Where this job's site lives. New jobs go to SITES_ROOT (ext4 by default);
+    jobs created before that setting keep their old path."""
+    legacy = ROOT_DIR / "sites" / slug
+    if legacy.exists():
+        return legacy
+    configured = os.environ.get("SITES_ROOT") or str(Path.home() / "wp-factory-sites")
+    return Path(configured).expanduser() / slug
+
+
 def read_status(slug: str) -> str:
-    path = Path(__file__).resolve().parent.parent / "sites" / slug / "docs" / "site" / "00-status.md"
+    path = site_dir(slug) / "docs" / "site" / "00-status.md"
     if not path.exists():
         return ""
     lines = [line.rstrip() for line in path.read_text().splitlines() if line.strip()]
@@ -55,7 +68,7 @@ def build_message(job: dict) -> str:
         log_tail = tail(job.get("log_path") or "")
         if log_tail:
             parts += ["", log_tail]
-    parts += ["", f"Open: cd sites/{job['slug']} && opencode"]
+    parts += ["", f"Open: cd {site_dir(job['slug'])} && opencode"]
     return "\n".join(parts)
 
 

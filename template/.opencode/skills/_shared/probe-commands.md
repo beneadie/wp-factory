@@ -4,6 +4,19 @@ Read-only probes for a headless WordPress/WooCommerce discovery pass. Replace
 placeholders before running. Never paste tokens, cookies, customer data, or
 secrets into a commit or a document.
 
+## Batch first
+
+One call beats thirty:
+
+```bash
+bash scripts/wp-probe.sh "$WP" /tmp/wp-probe all
+# or: content | catalog | cart | checkout
+```
+
+It saves the body, headers and status code per endpoint and prints a table. Read
+those files. Use the individual probes below only for a follow-up question the
+batch did not answer.
+
 ```bash
 WP="https://example.com"          # WordPress origin, no trailing slash
 OLD="https://example.com"         # current public site (may equal WP)

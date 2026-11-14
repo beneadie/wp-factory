@@ -45,8 +45,8 @@ it, proves it is WordPress, and writes `.env.local` before
 ## Checks
 
 ```bash
-npm run typecheck
-npm run lint
-npm run build
-npm run check:perf     # placeholders, pending state, brand assets
+npm run check          # typecheck + lint + build, one pass
+npm run check:fast     # typecheck + lint
+bash scripts/check.sh --perf   # adds one server + the perf/brand gate
+npm run probe -- https://origin.example /tmp/wp-probe all   # batched probes
 ```

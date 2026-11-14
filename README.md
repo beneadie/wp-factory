@@ -43,8 +43,8 @@ timer:
 ```
 
 Each job classifies the origin first: a Store API means `store`, otherwise
-`content`. Then it runs the site in separate agent sessions — `intake`,
-`api-map`, `base`, `substrate`, `verify`, plus `commerce`, `spikes` and
+`content`. Then it runs the site in separate agent sessions — `intake`
+(discovery 0/1/2a), `base`, `substrate`, `verify`, plus `commerce`, `spikes` and
 `commerce-build` for a store. Each phase must reach PASS (or SKIPPED) *and* leave
 its handoff artifact, otherwise it retries up to `PHASE_ATTEMPTS` times and then
 blocks.

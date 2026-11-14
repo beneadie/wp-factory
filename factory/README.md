@@ -7,7 +7,7 @@ The automation. It never renders a page; it moves work.
 | `queue.py` | SQLite job queue. Add, claim, set phase, finish, requeue, remove, list. |
 | `run-job.sh` | One job: preflight → copy template → `npm ci` → phases → gate → record → report. `flock`-guarded. |
 | `phases.tsv` | Which agent runs a job has, which status lines each owns, the artifacts each must leave, and the `when` mode that gates each run. |
-| `prompts/` | One prompt per phase run, plus the retry prompt. Store-only prompts are listed in `phases.tsv` with `when=store`. |
+| `prompts/` | One prompt per phase run, plus the retry prompt. Store-only prompts are listed in `phases.tsv` with `when=store`. Discovery is one run (`intake`, phases 0/1/2a). |
 | `agent.sh` | A single `opencode run` pass for one phase, kept separate so `systemd-inhibit` can wrap it. |
 | `lib.sh` | Status-file parsing and prompt rendering, sourced by `run-job.sh`. |
 | `telegram.sh` | Runs the bot with `.env` loaded, so the token does not have to be exported by hand. |
@@ -30,10 +30,18 @@ The automation. It never renders a page; it moves work.
   for a store, real pages or posts for content.
 - **One job at a time.** `flock` on `.factory.lock`; a second invocation exits 0
   rather than starting a competing agent.
-- **Small sessions, artifact handoffs.** `intake`, `api-map`, `base`, `substrate`,
-  `verify` each get a fresh OpenCode session, and `commerce`, `spikes` and
-  `commerce-build` run only for a store. Handoff is `docs/site/00-status.md` plus
+- **Small sessions, artifact handoffs.** `intake` covers discovery (0/1/2a) in one
+  session so the same facts are read once; `base`, `commerce-build`, `substrate`
+  and `verify` each get a fresh session. Handoff is `docs/site/00-status.md` plus
   the files in `prompts/`.
+- **Sites live on fast storage.** `SITES_ROOT` defaults to
+  `~/wp-factory-sites` (ext4), not the repo, because `node_modules` and `.next`
+  on a Windows mount dominate build time. Jobs created under `sites/` keep that
+  path.
+- **One check per batch.** Every site ships `scripts/check.sh` (typecheck + lint
+  + build in one pass, `--perf` adds one server and the perf gate) and
+  `scripts/wp-probe.sh` (batched read-only probes). The prompts call these once
+  instead of running three commands, or thirty curls, in a row.
 - **A phase needs its artifact, not just PASS.** `phases.tsv` lists the files
   each label must leave behind; `lib.sh:artifact_ok` rejects a PASS with a
   missing or stub-sized handoff, so the next session cannot start blind.

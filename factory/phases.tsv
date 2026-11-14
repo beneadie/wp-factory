@@ -6,9 +6,11 @@
 # `when` is all | store | content. It decides which runs apply to this site, not
 # whether the capability exists. A content site skips 2b/3/4c and marks them
 # SKIPPED; a store runs them.
+#
+# Discovery is one run (0/1/2a) so the same facts are read once.
 intake	Phase 0 Intake	docs/wp-discovery/site-profile.md	all
-api-map	Phase 1 Unknowns	docs/wp-discovery/unknowns.md	all
-api-map	Phase 2a Content	docs/wp-discovery/content-seo.md,docs/site/06-brand-assets.md	all
+intake	Phase 1 Unknowns	docs/wp-discovery/unknowns.md	all
+intake	Phase 2a Content	docs/wp-discovery/content-seo.md,docs/site/06-brand-assets.md	all
 commerce	Phase 2b Commerce	docs/wp-discovery/capability-register.md,docs/wp-discovery/commerce.md	store
 spikes	Phase 3 Spikes	docs/wp-discovery/spike-results.md	store
 base	Phase 4a Base	docs/site/base.md	all

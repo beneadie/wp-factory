@@ -205,7 +205,7 @@ scroll-linked). No `transition-all`. No duration invented inline.
 - [ ] Reduced-motion hides motion but never content.
 - [ ] Identity-dependent data is not cached across users.
 - [ ] No new easing curve, no `transition-all`, no dead primitive.
-- [ ] `check:ui` passes.
+- [ ] `npm run check` passes.
 
 ## Anti-patterns
 

@@ -6,6 +6,8 @@ This phase wires routes and data. It is not the visual or motion pass. Load
 `docs/site/06-brand-assets.md`, then load `site-base` and follow the branch for
 `SITE_MODE`.
 
+## Work
+
 Content site:
 render the pages, posts and menus the backend actually exposes. Add the routes
 needed for permalink parity, drive navigation from the WordPress page hierarchy
@@ -25,14 +27,25 @@ apple-touch-icon, favicon, OG image, manifest) or leave them absent when
 discovery recorded that the origin has none.
 
 Put every client value in `src/config/site.ts`. Record the route map, the data
-source for each route, and anything stubbed in `docs/site/base.md` — the next
-session reads that file instead of your reasoning.
+source for each route, and anything stubbed in `docs/site/base.md`.
 
-Before declaring the phase done run, once each:
+## How to work
 
-    npm run typecheck
-    npm run lint
-    npm run build
+- Plan the files first, then write them. Batch related writes in one turn.
+- Do not re-read a file you just wrote, and do not re-read unchanged discovery
+  docs; they are already in this conversation.
+- Aim for at most 60 tool calls. If you are exploring instead of building, stop
+  and use what discovery already proved.
+
+## Check
+
+Run the batched check once after your last edit:
+
+    bash scripts/check.sh
+
+It runs typecheck, lint and build in one pass. If it fails, fix the cause and run
+it again. Do not run the three commands separately, and do not build more than
+twice.
 
 Then set this exact line in `docs/site/00-status.md`:
 

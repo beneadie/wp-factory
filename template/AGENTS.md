@@ -21,21 +21,22 @@ follow its phase order.
 
 ```bash
 npm run dev        # local dev
-npm run build      # production build
-npm run lint       # eslint
-npm run typecheck  # tsc --noEmit
+npm run check      # typecheck + lint + build, one pass
+npm run check:fast # typecheck + lint only
+bash scripts/check.sh --perf   # the above plus one server + check:perf
+npm run probe -- https://origin.example /tmp/wp-probe all
 ```
 
 ## Test policy
 
 Tests are the slowest part of a loop and usually repeat. Run them deliberately:
 
-- `npm run typecheck` after a batch of edits. `tsc --incremental` is on; keep
-  `tsconfig.tsbuildinfo`.
-- `npm run lint` on touched files while iterating (`npx eslint src/path`).
-- `npm run build` **once**, before you declare the work finished. Not after
-  every edit. Not twice in a row.
+- Batch edits, then run **one** check: `npm run check`. A check per file wastes
+  minutes per phase.
+- `npm run check:fast` while iterating; the full build once before you claim the
+  phase is done.
 - Do not `rm -rf .next`. The cache makes the next build much faster.
+- Probe the backend in batches (`npm run probe`), not one `curl` per endpoint.
 
 ## Ground rules
 
@@ -88,7 +89,7 @@ docs/
 - Icons, apple-touch-icon and an OG image are emitted, or recorded as missing.
 - Navigation paints within 200ms; image slots are never blank; the LCP image is
   never hidden.
-- `npm run typecheck`, `npm run lint` and `npm run build` pass.
+- `npm run check` passes (typecheck, lint and build in one pass).
 - `npm run check:perf` passes and `docs/verification/perf.json` exists.
 - `docs/site/00-status.md` states what works and what is still stubbed.
 - No secret, token or credential is in the working tree.

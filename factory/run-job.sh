@@ -25,7 +25,17 @@ if [ -f "$ROOT/.env" ]; then
   set +a
 fi
 
-mkdir -p logs sites
+mkdir -p logs
+
+# Generated sites live outside the repo by default. The repo sits on a Windows
+# mount; node_modules and .next are an order of magnitude slower there. Existing
+# jobs keep the path they were created with.
+SITES_ROOT="${SITES_ROOT:-$HOME/wp-factory-sites}"
+mkdir -p "$SITES_ROOT"
+
+# A shared npm cache on the same fast filesystem keeps `npm ci` from rebuilding
+# every package for every site.
+export npm_config_cache="${NPM_CONFIG_CACHE:-$HOME/.npm}"
 
 # Keep the cron log from growing without bound. The running shell holds an open
 # fd, so this only rotates between runs.
@@ -59,7 +69,13 @@ slug="$(read_field slug)"
 name="$(read_field name)"
 wp_url="$(read_field wp_url)"
 niche="$(read_field niche)"
-dir="$ROOT/sites/$slug"
+dir=""
+if [ -d "$ROOT/sites/$slug" ]; then
+  # Legacy location, from before SITES_ROOT existed.
+  dir="$ROOT/sites/$slug"
+else
+  dir="$SITES_ROOT/$slug"
+fi
 logdir="$ROOT/logs/$slug"
 
 PHASE_ATTEMPTS="${PHASE_ATTEMPTS:-3}"

@@ -134,9 +134,26 @@ if (html) {
   const icon = html.match(/<link[^>]+rel=["'](?:shortcut )?icon["'][^>]*>/i)?.[0] ?? "";
   const apple = html.match(/<link[^>]+rel=["']apple-touch-icon["'][^>]*>/i)?.[0] ?? "";
   const og = html.match(/<meta[^>]+property=["']og:image["'][^>]*>/i)?.[0] ?? "";
-  record("html/icon", Boolean(icon), icon || "no <link rel=icon>");
-  record("html/apple-touch", Boolean(apple), apple || "no apple-touch-icon");
-  record("html/og-image", Boolean(og), og || "no og:image");
+  // A tag that cannot exist is not a failure: if discovery recorded the origin
+  // has no such asset, there is nothing to emit.
+  record(
+    "html/icon",
+    brandMissing || Boolean(icon),
+    brandMissing ? "recorded missing" : icon || "no <link rel=icon>",
+    !brandMissing,
+  );
+  record(
+    "html/apple-touch",
+    brandMissing || Boolean(apple),
+    brandMissing ? "recorded missing" : apple || "no apple-touch-icon",
+    !brandMissing,
+  );
+  record(
+    "html/og-image",
+    brandMissing || Boolean(og),
+    brandMissing ? "recorded missing" : og || "no og:image",
+    !brandMissing,
+  );
 } else {
   record(
     "html/checks",

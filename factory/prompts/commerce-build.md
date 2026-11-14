@@ -18,11 +18,14 @@ redirect URL when it is not.
 Record routes, BFF endpoints, cookie names and deferred capabilities in
 `docs/site/commerce-build.md`; update `docs/checkout.md` if it exists.
 
-Before declaring the phase done run, once each:
+Plan the files first and batch related writes in one turn; do not re-read what
+you just wrote. Aim for at most 70 tool calls.
 
-    npm run typecheck
-    npm run lint
-    npm run build
+Before declaring the phase done run the batched check once:
+
+    bash scripts/check.sh
+
+If it fails, fix the cause and run it again.
 
 Then set this exact line in `docs/site/00-status.md`:
 

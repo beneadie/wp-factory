@@ -20,14 +20,15 @@ Mode-specific checks:
   shipping round-trip against the API, and the payment redirect points at the
   origin or the gateway. No card field may exist in `src/`.
 
-Then run the gates, not just typecheck/lint/build:
+Then run the gate, not just typecheck/lint/build:
 
-    npm run check:perf
+    bash scripts/check.sh --perf
 
-It writes `docs/verification/perf.json`, which this phase must leave behind.
-Confirm: navigation paints within 200ms and is never blank over 500ms, every
-image slot shows a placeholder, and the icon/apple-touch/OG tags resolve (or
-discovery recorded them missing).
+It builds once, starts one server, runs `check:perf` and writes
+`docs/verification/perf.json`, which this phase must leave behind. Confirm:
+navigation paints within 200ms and is never blank over 500ms, every image slot
+shows a placeholder, and the icon/apple-touch/OG tags resolve (or discovery
+recorded them missing).
 
 Set this exact line in `docs/site/00-status.md` when the phase's exit gate is met:
 

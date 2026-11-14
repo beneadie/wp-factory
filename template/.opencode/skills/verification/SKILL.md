@@ -28,15 +28,14 @@ skill runs those gates and does the few things a machine cannot.
 Prefer one entry point so the agent does not have to remember many steps:
 
 ```bash
-npm run typecheck
-npm run lint
-npm run build
-npm run check:ui      # a11y + reduced-motion + interaction-state + parity smoke
-npm run check:perf    # navigation, placeholders, brand assets, CLS/LCP
+npm run check          # typecheck + lint + build, one pass
+bash scripts/check.sh --perf   # build once, one server, perf + brand checks
+npm run check:ui       # optional: only if the repo has the Playwright suite
 ```
 
-If `check:ui` does not exist yet, add it before shipping (see
-`_shared/quality-gates.md`). Until then run the manual checks below.
+If `check:ui` does not exist yet, run the manual checks below and record that the
+automated suite is deferred. Do not add a Playwright suite to a first-pass build
+just to satisfy this list.
 
 ## Machine checks (preferred)
 
@@ -100,7 +99,7 @@ For backend-driven features, the domain skill's acceptance list still applies:
 - [ ] `npm run typecheck` passes.
 - [ ] `npm run lint` passes.
 - [ ] `npm run build` passes.
-- [ ] `check:ui` passes (or the manual equivalents are recorded).
+- [ ] `npm run check` passes (or the manual equivalents are recorded).
 - [ ] `npm run check:perf` passes and `docs/verification/perf.json` exists.
 - [ ] Store only: catalogue count and sample match the API; every variable
       product is configurable.

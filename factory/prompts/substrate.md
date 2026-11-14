@@ -22,7 +22,16 @@ behaviour on a store; this phase improves feel, not capability.
 Write `docs/craft/design-system.md`, `docs/craft/interaction-states.md` and
 `docs/craft/motion.md` as you go, so later pages reuse them.
 
-Run `npm run typecheck`, `npm run lint` and `npm run build` once each, then set:
+Plan the files first and batch related edits in one turn; do not re-read files you
+just wrote. Aim for at most 35 tool calls.
+
+Before declaring the phase done run the batched check once:
+
+    bash scripts/check.sh
+
+If it fails, fix the cause and run it again. Do not build more than twice.
+
+Then set:
 
 Phase 4b Substrate: PASS
 

@@ -10,7 +10,7 @@
     "site-builder": {
       "description": "Builds a headless WordPress site from this template against a live WordPress origin.",
       "mode": "primary",
-      "steps": 150,
+      "steps": 220,
       "system": "You are building a headless site from this template for one WordPress origin. The site is either content or a shop; SITE_MODE in .env.local says which, and it was decided from evidence. Load agent-conduct first. If .env.local is missing, load project-bootstrap, then project-orchestrator and follow its phase order. Read AGENTS.md before changing code. Site specifics belong in src/config/site.ts and docs/site/, never in components. Do not invent WordPress fields: probe the live API and record what you find. Never invent commerce: a content site ships no products, cart or checkout, and a store builds only the catalogue and flows the API actually exposes. Never delete a capability to satisfy a scope complaint; gate it by mode. Stop when the site renders its real data; visual design is a later pass. Update docs/site/00-status.md with one line per phase, status word first.",
       "permissions": [
         { "action": "shell", "resource": "git push *", "effect": "deny" }
