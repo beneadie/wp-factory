@@ -1,0 +1,228 @@
+/* ==========================================================================
+   tokens.css — the canonical design tokens every site template inherits.
+
+   This file is the single source of truth for colour, type, space, radius and
+   the prose layer. A template overlay ships a theme.css that overrides VALUES
+   only: never rename a token, never delete one, never add a component class
+   here.
+
+   Colour format
+   -------------
+   Colour tokens hold space-separated sRGB channels, not hex, because the whole
+   template resolves them through Tailwind's rgb(var(--token) / alpha) and
+   through rgb(var(--token)) in plain CSS. So a theme.css writes the channel
+   triple --color-bg: 250 248 244; and never a hex literal. The hex shown in
+   the comments below is documentation only.
+
+   Load order
+   ----------
+   tailwind base -> tailwind components -> tailwind utilities -> tokens.css ->
+   prose.css -> motion.css -> theme.css (the overlay). Tokens first so the
+   prose layer can consume them; theme.css last so a skin always wins.
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* ---------------------------------------------------------------- colour */
+  /* Page background. The warm off-white every band sits on. */
+  --color-bg: 250 248 244; /* #FAF8F4 */
+  /* Recessed band: alternating sections, table heads, disabled fields. */
+  --color-surface: 243 240 233; /* #F3F0E9 */
+  /* Raised card / panel / image slot. */
+  --color-elevated: 255 255 255; /* #FFFFFF */
+  /* Body copy and headings. */
+  --color-text: 20 20 20; /* #141414 */
+  /* Secondary copy, captions, meta, eyebrows. */
+  --color-muted: 107 107 102; /* #6B6B66 */
+  /* Hairlines, table rules, field borders. Never a shadow. */
+  --color-border: 230 226 218; /* #E6E2DA */
+  /* Primary action / ink-on-accent inverse. */
+  --color-primary: 20 20 20; /* #141414 */
+  /* The one brand colour. Accent, never a background wash. */
+  --color-accent: 180 85 45; /* #B4552D */
+  /* Text that sits on --color-accent. */
+  --color-accent-ink: 255 255 255; /* #FFFFFF */
+  /* Inverse band background (quote band, CTA band, footer). */
+  --color-inverse-bg: 28 28 26; /* #1C1C1A */
+  /* Text on --color-inverse-bg. */
+  --color-inverse-text: 245 242 236; /* #F5F2EC */
+
+  /* Status colours. Reserved for form validation and notices; they are not
+     part of the brand palette and templates should leave them alone. */
+  --color-success: 22 101 52; /* #166534 */
+  --color-warning: 161 98 7; /* #A16207 */
+  --color-error: 153 27 27; /* #991B1B */
+
+  /* ------------------------------------------------------------ typography */
+  /* Display face for h1/h2 and section titles. Serif by house default.
+     No cursive, script or italic display faces — ever. */
+  --font-display: var(--font-gelasio, "Gelasio"), ui-serif, Georgia,
+    "Times New Roman", serif;
+  /* Body and UI face. */
+  --font-sans: var(--font-inter, "Inter"), ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", sans-serif;
+  /* Code, figures that need even columns, small meta labels. */
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+
+  /* Type scale. Fixed below 2xl for predictable UI; fluid above it so a long
+     Irish placename in a hero never clips and never wraps to four lines. */
+  --text-xs: 0.75rem; /* 12px — eyebrows, captions */
+  --text-sm: 0.875rem; /* 14px — labels, meta, buttons */
+  --text-base: 1.0625rem; /* 17px — body copy */
+  --text-lg: 1.25rem; /* 20px — lede, h4 */
+  --text-xl: 1.5rem; /* 24px — h3 */
+  --text-2xl: 1.75rem; /* 28px — small section titles */
+  --text-3xl: clamp(2rem, 1.62rem + 1.9vw, 2.75rem); /* h2 */
+  --text-4xl: clamp(2.4rem, 1.9rem + 2.6vw, 3.5rem); /* h1 */
+  --text-5xl: clamp(2.9rem, 2.1rem + 4vw, 4.5rem); /* hero display */
+  --text-6xl: clamp(3.4rem, 2.2rem + 6vw, 5.5rem); /* statement display */
+
+  /* Display leading is tight; body leading is human. */
+  --leading-display: 1.06;
+  --leading-body: 1.6;
+
+  /* --------------------------------------------------------------- layout */
+  /* Reading measure. 68ch is the contract, not a suggestion. */
+  --measure: 68ch;
+  /* Outer container. Matches Tailwind's `max-w-content` (84rem). */
+  --container: 1240px;
+  /* Page gutter. Tailwind's container-page uses px-5/px-8; this is the value
+     the shared sections use directly. */
+  --gutter: 24px;
+
+  /* ---------------------------------------------------------------- space */
+  /* A strict 4px scale. space-N is N * 4px, all the way to 80px. */
+  --space-1: 0.25rem; /* 4px */
+  --space-2: 0.5rem; /* 8px */
+  --space-3: 0.75rem; /* 12px */
+  --space-4: 1rem; /* 16px */
+  --space-5: 1.25rem; /* 20px */
+  --space-6: 1.5rem; /* 24px */
+  --space-7: 1.75rem; /* 28px */
+  --space-8: 2rem; /* 32px */
+  --space-9: 2.25rem; /* 36px */
+  --space-10: 2.5rem; /* 40px */
+  --space-11: 2.75rem; /* 44px */
+  --space-12: 3rem; /* 48px */
+  --space-13: 3.25rem; /* 52px */
+  --space-14: 3.5rem; /* 56px */
+  --space-15: 3.75rem; /* 60px */
+  --space-16: 4rem; /* 64px */
+  --space-17: 4.25rem; /* 68px */
+  --space-18: 4.5rem; /* 72px */
+  --space-19: 4.75rem; /* 76px */
+  --space-20: 5rem; /* 80px */
+
+  /* --------------------------------------------------------------- radius */
+  --radius-sm: 4px; /* fields, small buttons */
+  --radius-md: 8px; /* cards, images */
+  --radius-lg: 16px; /* large panels */
+  --radius-pill: 999px; /* tags, pills */
+
+  /* Legacy alias. .btn and .field in globals.css still resolve --radius; it
+     points at --radius-sm so the existing classes keep working unchanged. */
+  --radius: var(--radius-sm);
+
+  /* ----------------------------------------------------------------- rule */
+  /* The only divider in the system. No box-shadows anywhere. */
+  --rule: 1px solid rgb(var(--color-border));
+
+  /* --------------------------------------------------------------- motion */
+  /* One easing family, five durations. Do not invent curves. */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-micro: 140ms; /* colour / border ticks */
+  --duration-fast: 240ms; /* hovers, small state changes */
+  --duration-base: 420ms; /* the reveal primitive */
+  --duration-slow: 700ms; /* image wipes */
+  --duration-ambient: 8s; /* looping ambience, used sparingly */
+
+  /* ---------------------------------------------------------------- prose */
+  /* The prose layer (prose.css) consumes only these. A template retunes
+     captured WordPress HTML by overriding these, never by forking rules. */
+
+  /* Fonts */
+  --prose-font-body: var(--font-sans);
+  --prose-font-display: var(--font-display);
+  --prose-font-mono: var(--font-mono);
+
+  /* Measure and body text */
+  --prose-measure: var(--measure);
+  --prose-size-body: 17px;
+  --prose-leading-body: var(--leading-body);
+  --prose-color-body: rgb(var(--color-text));
+  --prose-color-muted: rgb(var(--color-muted));
+
+  /* Headings */
+  --prose-size-h1: var(--text-4xl);
+  --prose-size-h2: var(--text-3xl);
+  --prose-size-h3: var(--text-xl);
+  --prose-size-h4: var(--text-lg);
+  --prose-size-h5: var(--text-base);
+  --prose-size-h6: var(--text-sm);
+  --prose-weight-heading: 500;
+  --prose-leading-heading: var(--leading-display);
+  --prose-tracking-heading: -0.01em;
+
+  /* Vertical rhythm */
+  --prose-space-block: var(--space-6); /* between blocks: 24px */
+  --prose-space-heading: var(--space-10); /* above a heading: 40px */
+  --prose-space-heading-gap: var(--space-4); /* heading -> next block: 16px */
+  --prose-space-list: var(--space-2); /* between list items */
+  --prose-space-nested: var(--space-1); /* between nested list levels */
+  --prose-indent: 1.4em; /* first list level */
+  --prose-indent-nested: 1.15em; /* second list level */
+
+  /* Rules, media, captions */
+  --prose-rule: var(--rule);
+  --prose-radius-media: var(--radius-md);
+  --prose-space-figure: var(--space-3);
+  --prose-size-caption: var(--text-sm);
+  --prose-size-small: 0.875rem;
+
+  /* Quotes */
+  --prose-size-quote: var(--text-xl);
+  --prose-leading-quote: 1.4;
+  --prose-rule-quote: 2px solid rgb(var(--color-accent));
+  --prose-space-quote-indent: var(--space-6);
+  --prose-space-attribution: var(--space-3);
+
+  /* Tables */
+  --prose-size-table: 0.9375rem; /* 15px */
+  --prose-space-cell-y: var(--space-3);
+  --prose-space-cell-x: var(--space-4);
+
+  /* Links */
+  --prose-link-color: rgb(var(--color-text));
+  --prose-link-hover: rgb(var(--color-accent));
+  --prose-underline-offset: 0.18em;
+  --prose-underline-width: 1px;
+
+  /* Fields and buttons inside captured content */
+  --prose-color-field-bg: rgb(var(--color-elevated));
+  --prose-color-field-text: rgb(var(--color-text));
+  --prose-color-check: rgb(var(--color-accent));
+  --prose-size-label: var(--text-sm);
+  --prose-size-field: var(--text-sm);
+  --prose-space-field-y: var(--space-3);
+  --prose-space-field-x: var(--space-4);
+  --prose-space-field-gap: var(--space-2);
+  --prose-space-field-group: var(--space-4);
+  --prose-radius-field: var(--radius-sm);
+  --prose-textarea-min-height: 8rem;
+  --prose-space-button-y: var(--space-3);
+  --prose-space-button-x: var(--space-5);
+  --prose-radius-button: var(--radius-sm);
+  --prose-color-button-bg: rgb(var(--color-primary));
+  --prose-color-button-text: rgb(var(--color-bg));
+
+  /* Code */
+  --prose-size-code: 0.9em;
+  --prose-color-code-bg: rgb(var(--color-surface));
+  --prose-space-code-y: 0.15em;
+  --prose-space-code-x: 0.35em;
+  --prose-space-pre: var(--space-4);
+  --prose-radius-code: var(--radius-sm);
+}

@@ -8,8 +8,9 @@ reactive. Read `docs/site/00-status.md`, `docs/site/base.md`,
 
 Do not add routes or data sources here; if a page does not render, that belongs
 to `site-base` (or `store-checkout`) and should be marked blocked rather than
-worked around. Do not run `design-adaptation` — palette and type are a later
-pass.
+worked around. Do not re-run `design-adaptation`: palette and type were applied
+as the last sub-step of Phase 4a. Preserve the token values in
+`src/styles/theme.css`; this phase improves feel, not the skin.
 
 Apply the substrate to every surface that exists: navigation, loading, images,
 focus and motion. On a store, that includes the catalogue and the cart and

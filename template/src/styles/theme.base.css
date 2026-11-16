@@ -1,0 +1,11 @@
+/* ==========================================================================
+   theme.base.css — the template skin. REGENERATED, never edited.
+
+   The factory copies templates/<name>/theme.css here on every run. It holds
+   the chosen template's token overrides in a single :root block and is not a
+   place for client state: the design pass writes the origin's values into
+   src/styles/theme.css instead, which loads after this file.
+
+   Empty in the neutral base. A missing template is a build error
+   (`template-missing`), not a reason to put client rules here.
+   ========================================================================== */

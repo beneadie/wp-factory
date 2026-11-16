@@ -57,6 +57,8 @@ def build_message(job: dict) -> str:
     ]
     if job.get("phase") and job["phase"] != "complete":
         parts.append(f"phase: {job['phase']}")
+    if job.get("template"):
+        parts.append(f"template: {job['template']}")
     if job.get("reason"):
         parts.append(f"reason: {job['reason']}")
     if job.get("exit_code") not in (None, 0):

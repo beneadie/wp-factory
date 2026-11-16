@@ -1,8 +1,9 @@
 Build the base site for {{name}} ({{slug}}) from {{wp_url}}.
 Niche: {{niche}}. Site mode: {{site_mode}}.
 
-This phase wires routes and data. It is not the visual or motion pass. Load
-`agent-conduct` first. Read `docs/site/00-status.md`, `docs/wp-discovery/*` and
+This phase wires routes and data, then applies the brand skin as its last
+sub-step. It is not the motion pass. Load `agent-conduct` first. Read
+`docs/site/00-status.md`, `docs/wp-discovery/*` and
 `docs/site/06-brand-assets.md`, then load `site-base` and follow the branch for
 `SITE_MODE`.
 
@@ -47,7 +48,8 @@ It runs typecheck, lint and build in one pass. If it fails, fix the cause and ru
 it again. Do not run the three commands separately, and do not build more than
 twice.
 
-Then set this exact line in `docs/site/00-status.md`:
+The design sub-step is appended below. Run it after the check passes, then set
+this exact line in `docs/site/00-status.md`:
 
 Phase 4a Base: PASS
 

@@ -1,0 +1,25 @@
+/* ==========================================================================
+   theme.css — CLIENT brand overrides only.
+
+   This file belongs to the site, not the template. The factory creates it once
+   and never regenerates it. The design pass writes the origin's palette, type
+   and spacing into a single :root block below, as token VALUES only.
+
+   Never edit src/styles/theme.base.css, src/config/theme.ts or
+   src/template-sections/ to get a client look: those are regenerated from the
+   template on every run. Client-only decisions belong here and in
+   docs/site/design-notes.md.
+
+   Rules:
+   - One :root block. No new selectors, layout rules or component styles.
+   - Values only. Never rename, add or remove a token.
+   - Colour tokens are space-separated sRGB channels, not hex.
+
+   Example (replace the values with the origin's):
+
+       :root {
+         --color-bg: 247 244 238;
+         --color-accent: 30 64 52;
+         --font-display: var(--font-fraunces), Georgia, serif;
+       }
+   ========================================================================== */

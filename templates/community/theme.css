@@ -1,0 +1,818 @@
+/* ==========================================================================
+   Community — belonging-led organisations.
+
+   Warm paper, near-black ink, one blue accent that belongs to action rather
+   than decoration. The page should read like a well-kept parish notice board
+   and a club's annual report: hairlines, dates, names, documents, and no
+   ornament that cannot be explained.
+
+   Values live in :root and keep their names from tokens.css. The
+   .t-community-* classes are this overlay's layout vocabulary; they are the
+   only selector names it introduces, and they never carry a client's brand.
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* ---------------------------------------------------------------- colour */
+  --color-bg: 253 252 249; /* #FDFCF9 */
+  --color-surface: 255 255 255; /* #FFFFFF */
+  --color-elevated: 255 255 255; /* #FFFFFF */
+  --color-text: 22 24 26; /* #16181A */
+  --color-muted: 95 100 105; /* #5F6469 */
+  --color-border: 228 228 224; /* #E4E4E0 */
+  --color-primary: 22 24 26; /* #16181A */
+  --color-accent: 29 78 216; /* #1D4ED8 */
+  --color-accent-ink: 255 255 255; /* #FFFFFF */
+  --color-inverse-bg: 18 22 28; /* #12161C */
+  --color-inverse-text: 247 248 249; /* #F7F8F9 */
+
+  /* ------------------------------------------------------------ typography */
+  --font-display: var(--font-gelasio, "Gelasio"), ui-serif, Georgia,
+    "Times New Roman", serif;
+  --font-sans: var(--font-public-sans, "Public Sans"), var(--font-inter, "Inter"),
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Display 44 → 72px. Section headings 32 → 44px; closing statement 44 → 56px. */
+  --text-base: 1.0625rem; /* 17px */
+  --text-3xl: clamp(2rem, 1.62rem + 1.8vw, 2.75rem); /* 32 → 44px */
+  --text-4xl: clamp(2.75rem, 2.1rem + 2.1vw, 3.5rem); /* 44 → 56px */
+  --text-5xl: clamp(2.75rem, 1.5rem + 3.9vw, 4.5rem); /* 44 → 72px */
+
+  --leading-display: 1.1;
+  --leading-body: 1.65;
+
+  /* --------------------------------------------------------------- layout */
+  --container: 1200px;
+
+  /* --------------------------------------------------------------- radius */
+  /* An 8px photograph and an 8px button. The notice flag is the only 2px edge. */
+  --radius-sm: 8px;
+  --radius-md: 8px;
+  --radius-lg: 8px;
+  --radius: var(--radius-sm);
+
+  /* ---------------------------------------------------------------- prose */
+  --prose-size-body: 17px;
+  --prose-leading-body: 1.65;
+  --prose-size-h1: var(--text-4xl);
+  --prose-size-h2: var(--text-3xl);
+  --prose-size-h3: var(--text-xl);
+  --prose-size-h4: var(--text-lg);
+  --prose-weight-heading: 500;
+  --prose-leading-heading: var(--leading-display);
+  --prose-tracking-heading: -0.01em;
+  --prose-radius-media: var(--radius-md);
+  --prose-rule-quote: 1px solid rgb(var(--color-accent));
+  --prose-link-color: rgb(var(--color-text));
+  --prose-link-hover: rgb(var(--color-accent));
+  --prose-underline-offset: 4px;
+  --prose-underline-width: 1px;
+}
+
+/* ==========================================================================
+   Shared furniture
+   ========================================================================== */
+
+.t-community-container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--space-5);
+}
+
+/* Match the global `.container-page` gutter so the site header and the
+   sections share one left edge at every width. */
+@media (min-width: 640px) {
+  .t-community-container {
+    padding-inline: var(--space-8);
+  }
+}
+
+/* Airy by contract: 52px mobile, 88px desktop. */
+.t-community-section {
+  padding-block: 3.25rem;
+}
+
+.t-community-display,
+.t-community-page-title,
+.t-community-section-title,
+.t-community-feature-item-title,
+.t-community-cta-title,
+.t-community-quote-text {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-style: normal;
+  letter-spacing: -0.01em;
+  line-height: var(--leading-display);
+  text-wrap: balance;
+}
+
+.t-community-display {
+  font-size: var(--text-5xl);
+}
+
+.t-community-page-title {
+  max-width: 20ch;
+  margin: var(--space-6) 0 0;
+  font-size: var(--text-5xl);
+}
+
+.t-community-section-title {
+  margin: var(--space-4) 0 0;
+  font-size: var(--text-3xl);
+}
+
+.t-community-eyebrow {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 0.6875rem; /* 11px */
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgb(var(--color-accent));
+}
+
+.t-community-body {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-body);
+}
+
+.t-community-lede {
+  font-family: var(--font-sans);
+  font-size: var(--text-lg);
+  line-height: 1.55;
+  color: rgb(var(--color-muted));
+}
+
+.t-community-caption {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: rgb(var(--color-muted));
+}
+
+/* The only rounded object in the section vocabulary is the photograph. */
+.t-community-photo {
+  overflow: hidden;
+  border-radius: var(--radius-md);
+}
+
+/* ------------------------------------------------------------- inverse --- */
+
+.t-community-inverse {
+  background-color: rgb(var(--color-inverse-bg));
+  color: rgb(var(--color-inverse-text));
+}
+
+.t-community-inverse :focus-visible {
+  outline: 2px solid rgb(var(--color-inverse-text));
+  outline-offset: 3px;
+  --tw-ring-color: rgb(var(--color-inverse-text));
+  --tw-ring-offset-color: rgb(var(--color-inverse-bg));
+}
+
+.t-community-inverse-muted {
+  color: rgb(var(--color-inverse-text) / 0.78);
+}
+
+/* ------------------------------------------------------- links & buttons --- */
+
+.t-community-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--space-11); /* 44px */
+  color: inherit;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  line-height: 1.4;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: rgb(var(--color-muted));
+  text-underline-offset: 0.24em;
+  transition: color var(--duration-micro) var(--ease-out),
+    text-decoration-color var(--duration-micro) var(--ease-out);
+}
+
+.t-community-link:hover,
+.t-community-link:focus-visible {
+  color: rgb(var(--color-accent));
+  text-decoration-color: currentColor;
+}
+
+.t-community-link-inverse {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--space-11);
+  color: rgb(var(--color-inverse-text));
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  line-height: 1.4;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: rgb(var(--color-inverse-text) / 0.45);
+  text-underline-offset: 0.24em;
+  transition: text-decoration-color var(--duration-micro) var(--ease-out);
+}
+
+.t-community-link-inverse:hover,
+.t-community-link-inverse:focus-visible {
+  text-decoration-color: currentColor;
+}
+
+.t-community-arrow {
+  flex: none;
+  font-family: var(--font-sans);
+  font-style: normal;
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.t-community-link:hover .t-community-arrow,
+.t-community-link:focus-visible .t-community-arrow,
+.t-community-link-inverse:hover .t-community-arrow,
+.t-community-link-inverse:focus-visible .t-community-arrow,
+.t-community-btn:hover .t-community-arrow,
+.t-community-btn:focus-visible .t-community-arrow,
+.t-community-page-link:hover .t-community-arrow,
+.t-community-page-link:focus-visible .t-community-arrow,
+.t-community-feature-link:hover .t-community-arrow,
+.t-community-feature-link:focus-visible .t-community-arrow {
+  transform: translateX(var(--space-1));
+}
+
+.t-community-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: 3rem; /* 48px */
+  padding: 0.8125rem 1.375rem;
+  border: 1px solid rgb(var(--color-accent));
+  border-radius: var(--radius-sm);
+  background-color: rgb(var(--color-accent));
+  color: rgb(var(--color-accent-ink));
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: 500;
+  line-height: 1.2;
+  text-decoration: none;
+  transition: background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+
+.t-community-btn:hover {
+  border-color: rgb(var(--color-primary));
+  background-color: rgb(var(--color-primary));
+  color: rgb(var(--color-bg));
+}
+
+.t-community-btn:focus-visible {
+  --tw-ring-color: rgb(var(--color-text));
+}
+
+.t-community-inverse .t-community-btn:hover {
+  border-color: rgb(var(--color-inverse-text));
+  background-color: rgb(var(--color-inverse-text));
+  color: rgb(var(--color-inverse-bg));
+}
+
+.t-community-inverse .t-community-btn:focus-visible {
+  --tw-ring-color: rgb(var(--color-inverse-text));
+}
+
+/* ==========================================================================
+   Hero — eyebrow, 5/7 split, one action, one text link, 3:2 photograph
+   ========================================================================== */
+
+.t-community-hero-grid {
+  display: grid;
+  gap: var(--space-10);
+  align-items: center;
+}
+
+.t-community-hero-copy {
+  min-width: 0;
+}
+
+.t-community-hero-title {
+  max-width: 15ch;
+  margin: var(--space-5) 0 0;
+}
+
+.t-community-hero-lede {
+  max-width: 46ch;
+  margin: var(--space-6) 0 0;
+}
+
+.t-community-hero-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-top: var(--space-9);
+}
+
+.t-community-hero-figure {
+  min-width: 0;
+  margin: 0;
+}
+
+.t-community-hero-figure figcaption {
+  margin-top: var(--space-3);
+}
+
+/* A centred variant is honest: copy only, no image and no overlay. */
+.t-community-hero-centered {
+  max-width: 46rem;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.t-community-hero-centered .t-community-hero-title {
+  max-width: none;
+}
+
+.t-community-hero-centered .t-community-hero-lede {
+  margin-inline: auto;
+}
+
+.t-community-hero-centered .t-community-hero-actions {
+  align-items: center;
+  justify-content: center;
+}
+
+@media (min-width: 640px) {
+  .t-community-hero-actions {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-3) var(--space-7);
+  }
+
+  .t-community-btn {
+    width: auto;
+  }
+}
+
+@media (min-width: 1024px) {
+  .t-community-hero-grid {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(3rem, 5vw, 5rem);
+  }
+
+  .t-community-hero-grid[data-has-image="false"] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .t-community-hero-grid[data-has-image="false"] .t-community-hero-copy {
+    max-width: 46rem;
+  }
+}
+
+/* ==========================================================================
+   PageHead — eyebrow, display title, hairline, three sibling links
+   ========================================================================== */
+
+.t-community-pagehead-grid {
+  display: grid;
+  gap: var(--space-8);
+}
+
+.t-community-tagline {
+  max-width: 46ch;
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-lg);
+  line-height: 1.55;
+  color: rgb(var(--color-muted));
+}
+
+.t-community-page-rule {
+  margin-top: var(--space-14);
+  border-top: var(--rule);
+}
+
+.t-community-page-links {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.t-community-page-links > li {
+  border-top: var(--rule);
+}
+
+.t-community-page-links > li:first-child {
+  border-top: 0;
+}
+
+.t-community-page-link {
+  display: flex;
+  min-height: 3.5rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-block: var(--space-4);
+  color: inherit;
+  text-decoration: none;
+}
+
+.t-community-page-link-label {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.22em;
+  transition: text-decoration-color var(--duration-micro) var(--ease-out);
+}
+
+.t-community-page-link:hover .t-community-page-link-label,
+.t-community-page-link:focus-visible .t-community-page-link-label {
+  text-decoration-color: rgb(var(--color-accent));
+}
+
+@media (min-width: 1024px) {
+  .t-community-pagehead-grid {
+    grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+    gap: var(--space-12);
+    align-items: end;
+  }
+
+  .t-community-page-rule {
+    margin-top: var(--space-16);
+  }
+
+  .t-community-page-links {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .t-community-page-links > li {
+    border-top: 0;
+    border-left: var(--rule);
+  }
+
+  .t-community-page-links > li:first-child {
+    border-left: 0;
+  }
+
+  .t-community-page-link {
+    min-height: 4.5rem;
+    padding: var(--space-5) var(--space-6);
+  }
+
+  .t-community-page-links > li:first-child .t-community-page-link {
+    padding-left: 0;
+  }
+}
+
+/* ==========================================================================
+   FeatureGrid — three ruled cards, then the document list
+   ========================================================================== */
+
+.t-community-feature-head {
+  max-width: 34rem;
+}
+
+.t-community-feature-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-10);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.t-community-feature-head + .t-community-feature-grid {
+  margin-top: var(--space-12);
+}
+
+.t-community-feature-item {
+  padding-top: var(--space-5);
+  border-top: var(--rule);
+  transition: border-color var(--duration-micro) var(--ease-out);
+}
+
+.t-community-feature-item[data-linked="true"]:hover {
+  border-top-color: rgb(var(--color-accent));
+}
+
+.t-community-feature-link {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+
+.t-community-feature-item-title {
+  margin: 0;
+  font-size: var(--text-2xl);
+  line-height: 1.2;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.18em;
+  transition: text-decoration-color var(--duration-micro) var(--ease-out);
+}
+
+.t-community-feature-item[data-linked="true"]:hover .t-community-feature-item-title,
+.t-community-feature-link:focus-visible .t-community-feature-item-title {
+  text-decoration-color: rgb(var(--color-accent));
+}
+
+.t-community-feature-body {
+  max-width: 38ch;
+  margin: var(--space-3) 0 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-body);
+  color: rgb(var(--color-muted));
+}
+
+.t-community-feature-more {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: auto;
+  padding-top: var(--space-6);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* --------------------------------------------------------- documents --- */
+
+.t-community-docs {
+  margin-top: var(--space-16);
+}
+
+.t-community-docs-head {
+  padding-top: var(--space-6);
+  border-top: var(--rule);
+}
+
+.t-community-docs-list {
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.t-community-doc-row {
+  border-bottom: var(--rule);
+}
+
+.t-community-doc-link {
+  display: flex;
+  min-height: 3.5rem;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-6);
+  padding-block: var(--space-4);
+  color: inherit;
+  text-decoration: none;
+}
+
+.t-community-doc-name {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.4;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.2em;
+  transition: text-decoration-color var(--duration-micro) var(--ease-out);
+}
+
+.t-community-doc-link:hover .t-community-doc-name,
+.t-community-doc-link:focus-visible .t-community-doc-name {
+  text-decoration-color: rgb(var(--color-accent));
+}
+
+.t-community-doc-meta {
+  flex: none;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.4;
+  color: rgb(var(--color-muted));
+  font-variant-numeric: tabular-nums lining-nums;
+  white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+  .t-community-feature-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-12) var(--space-8);
+  }
+}
+
+@media (min-width: 1024px) {
+  .t-community-feature-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-12) var(--space-10);
+  }
+
+  .t-community-feature-head + .t-community-feature-grid {
+    margin-top: var(--space-14);
+  }
+
+  .t-community-docs {
+    margin-top: var(--space-20);
+  }
+}
+
+/* ==========================================================================
+   QuoteBand — one dark statement, left-aligned, no ornament
+   ========================================================================== */
+
+.t-community-quote-inner {
+  padding-top: var(--space-10);
+  border-top: 1px solid rgb(var(--color-inverse-text) / 0.22);
+}
+
+.t-community-quote-text {
+  max-width: 30ch;
+  margin: 0;
+  font-size: clamp(1.75rem, 1.2rem + 2vw, 2.75rem);
+  line-height: 1.25;
+  text-wrap: pretty;
+}
+
+.t-community-quote-attribution {
+  max-width: 40ch;
+  margin: var(--space-7) 0 0;
+  font-family: var(--font-sans);
+  font-size: 0.6875rem; /* 11px */
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.6;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgb(var(--color-inverse-text) / 0.68);
+}
+
+.t-community-quote-cta {
+  margin-top: var(--space-5);
+}
+
+/* ==========================================================================
+   CtaBand — the donate / join close, inverse with one accent control
+   ========================================================================== */
+
+.t-community-cta-inner {
+  display: grid;
+  gap: var(--space-8);
+  padding-top: var(--space-10);
+  border-top: 1px solid rgb(var(--color-inverse-text) / 0.22);
+}
+
+.t-community-cta-title {
+  max-width: 16ch;
+  margin: 0;
+  font-size: var(--text-4xl);
+}
+
+.t-community-cta-body {
+  max-width: 48ch;
+  margin: var(--space-5) 0 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-body);
+}
+
+.t-community-cta-actions {
+  margin-top: var(--space-8);
+}
+
+@media (min-width: 1024px) {
+  .t-community-cta-inner {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: var(--space-16);
+    align-items: end;
+    padding-top: var(--space-12);
+  }
+
+  .t-community-cta-actions {
+    margin-top: 0;
+    justify-self: end;
+  }
+}
+
+/* ==========================================================================
+   StatBand — the notice strip: day, date, title, one New flag
+
+   The strip is deliberately full-bleed and rule-separated so it reads as a
+   dated notice board rather than a row of marketing figures. Dates use
+   tabular numerals; the flag sits on the first, most recent, dated row.
+   ========================================================================== */
+
+.t-community-notice {
+  border-block: var(--rule);
+  background-color: rgb(var(--color-surface));
+}
+
+.t-community-notice-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.t-community-notice-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-3);
+  min-height: 3.5rem;
+  padding-block: var(--space-3);
+}
+
+.t-community-notice-row + .t-community-notice-row {
+  border-top: var(--rule);
+}
+
+.t-community-notice-date {
+  display: flex;
+  flex-direction: column;
+  flex: none;
+  gap: 0.1rem;
+  width: 5.5rem;
+}
+
+.t-community-notice-day {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem; /* 11px */
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgb(var(--color-muted));
+}
+
+.t-community-notice-datevalue {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.t-community-notice-title {
+  flex: 1 1 12rem;
+  min-width: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.4;
+}
+
+.t-community-flag {
+  flex: none;
+  align-self: center;
+  padding: 0.3125rem 0.4375rem;
+  border-radius: 2px;
+  background-color: rgb(var(--color-accent));
+  color: rgb(var(--color-accent-ink));
+  font-family: var(--font-sans);
+  font-size: 0.625rem; /* 10px */
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+@media (min-width: 640px) {
+  .t-community-notice-row {
+    min-height: 3.75rem;
+  }
+
+  .t-community-notice-date {
+    flex-direction: row;
+    align-items: baseline;
+    gap: var(--space-2);
+    width: 8.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .t-community-section {
+    padding-block: 5.5rem; /* 88px */
+  }
+
+  .t-community-page-rule {
+    margin-top: var(--space-16);
+  }
+}

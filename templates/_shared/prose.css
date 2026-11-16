@@ -1,0 +1,441 @@
+/* ==========================================================================
+   prose.css — typography for arbitrary captured WordPress HTML.
+
+   This file exists because the pages we ship are the client's own rendered
+   theme HTML, not clean block markup. Real output from a small Irish practice
+   looks like this:
+
+       <section class="de-100pc-container de-bg-grey">
+         <div class="de-fw-container de-intro">
+           <div class="de-intro-content">
+             <h2>We can advise you on</h2>
+             <p></p><li>Whether to set up as a Sole trader…</li>
+             <li>Advantages and disadvantages of each…</li>
+           </div>
+         </div>
+       </section>
+
+   No theme stylesheet comes with it. So this layer must make that markup read
+   well on its own: stray list items, empty paragraphs, bare wrapper divs,
+   text that is a direct child of a div, images with no dimensions, tables with
+   cells that hold sentences.
+
+   Rules
+   -----
+   1. Everything is scoped to .wp-prose.
+   2. Every size, space, family and colour comes from a --prose-* token, so a
+      template retunes this layer from theme.css without forking a rule.
+   3. Selectors use :where() to stay at one class of specificity, so a template
+      utility class can still beat a single rule.
+   4. No !important. No box-shadows: 1px rules only.
+   ========================================================================== */
+
+/* --------------------------------------------------------------- the scope */
+.wp-prose {
+  width: 100%;
+  max-width: var(--prose-measure);
+  font-family: var(--prose-font-body);
+  font-size: var(--prose-size-body);
+  line-height: var(--prose-leading-body);
+  color: var(--prose-color-body);
+  overflow-wrap: break-word;
+  text-wrap: pretty;
+}
+
+/* Theme wrappers carry layout classes we no longer have. Strip their own
+   spacing; the rhythm comes from the blocks inside them. A text node that is a
+   direct child of one of these inherits the scope's body type above, which is
+   why the scope sets font/leading/colour rather than only per-element rules. */
+.wp-prose :where(div, section, article, aside, main, header, footer, nav) {
+  margin-block: 0;
+  min-width: 0;
+}
+
+/* ----------------------------------------------------------------- rhythm */
+/* One margin direction only: blocks add space above themselves. That way two
+   adjacent blocks never double up and nested wrappers cannot add phantom air. */
+.wp-prose
+  :where(p, ul, ol, dl, blockquote, figure, table, pre, form, hr, fieldset, .wp-caption) {
+  margin-block: var(--prose-space-block) 0;
+}
+
+.wp-prose :where(h1, h2, h3, h4, h5, h6) {
+  margin-block: var(--prose-space-heading) 0;
+  font-weight: var(--prose-weight-heading);
+  line-height: var(--prose-leading-heading);
+  letter-spacing: var(--prose-tracking-heading);
+  color: var(--prose-color-body);
+  text-wrap: balance;
+}
+
+/* A heading owns the gap to whatever follows it. */
+.wp-prose :where(h1, h2, h3, h4, h5, h6) + * {
+  margin-top: var(--prose-space-heading-gap);
+}
+
+.wp-prose > :where(:first-child),
+.wp-prose :where(div, section, article, aside) > :first-child {
+  margin-top: 0;
+}
+
+/* Empty paragraphs are theme output, not intent. */
+.wp-prose :where(p):empty {
+  display: none;
+}
+
+/* --------------------------------------------------------------- headings */
+.wp-prose :where(h1, h2) {
+  font-family: var(--prose-font-display);
+}
+
+.wp-prose :where(h1) {
+  font-size: var(--prose-size-h1);
+}
+
+.wp-prose :where(h2) {
+  font-size: var(--prose-size-h2);
+}
+
+.wp-prose :where(h3) {
+  font-size: var(--prose-size-h3);
+}
+
+.wp-prose :where(h4) {
+  font-size: var(--prose-size-h4);
+}
+
+.wp-prose :where(h5) {
+  font-size: var(--prose-size-h5);
+}
+
+.wp-prose :where(h6) {
+  font-size: var(--prose-size-h6);
+  letter-spacing: 0;
+  color: var(--prose-color-muted);
+}
+
+/* ------------------------------------------------------------------- text */
+.wp-prose :where(strong, b) {
+  font-weight: 600;
+}
+
+.wp-prose :where(em, i) {
+  font-style: italic;
+}
+
+.wp-prose :where(small) {
+  font-size: var(--prose-size-small);
+  color: var(--prose-color-muted);
+}
+
+.wp-prose :where(abbr[title]) {
+  text-decoration: underline dotted;
+  cursor: help;
+}
+
+.wp-prose :where(a) {
+  color: var(--prose-link-color);
+  text-decoration-line: underline;
+  text-decoration-thickness: var(--prose-underline-width);
+  text-underline-offset: var(--prose-underline-offset);
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.wp-prose :where(a):hover {
+  color: var(--prose-link-hover);
+}
+
+/* ------------------------------------------------------------------ lists */
+/* Two levels are styled; deeper levels inherit the second level so a theme
+   that nests five deep still looks deliberate. */
+.wp-prose :where(ul, ol) {
+  padding-left: var(--prose-indent);
+}
+
+.wp-prose :where(ul) {
+  list-style-type: disc;
+}
+
+.wp-prose :where(ol) {
+  list-style-type: decimal;
+}
+
+.wp-prose :where(ul) :where(ul) {
+  list-style-type: circle;
+}
+
+.wp-prose :where(ol) :where(ol) {
+  list-style-type: lower-alpha;
+}
+
+.wp-prose :where(li) {
+  margin-top: var(--prose-space-list);
+}
+
+.wp-prose :where(li) > :where(ul, ol) {
+  margin-top: var(--prose-space-nested);
+  padding-left: var(--prose-indent-nested);
+}
+
+.wp-prose :where(li) > :where(p) {
+  margin-top: var(--prose-space-list);
+}
+
+.wp-prose :where(li)::marker {
+  color: var(--prose-color-muted);
+}
+
+/* Small-business themes emit bare <li> with no list parent (a CMS quirk).
+   Browsers still paint the marker; give the marker room to breathe. */
+.wp-prose :where(div, section, article) > :where(li) {
+  padding-left: var(--prose-indent);
+}
+
+/* -------------------------------------------------------------- quotations */
+.wp-prose :where(blockquote) {
+  margin-inline: 0;
+  padding-left: var(--prose-space-quote-indent);
+  border-left: var(--prose-rule-quote);
+  font-size: var(--prose-size-quote);
+  line-height: var(--prose-leading-quote);
+  font-style: normal;
+}
+
+.wp-prose :where(blockquote) > :where(p) {
+  margin-top: 0;
+}
+
+.wp-prose :where(blockquote) > :where(p) + :where(p) {
+  margin-top: var(--prose-space-list);
+}
+
+.wp-prose :where(blockquote) :where(cite, footer) {
+  display: block;
+  margin-top: var(--prose-space-attribution);
+  font-size: var(--prose-size-small);
+  line-height: var(--prose-leading-body);
+  font-style: normal;
+  color: var(--prose-color-muted);
+}
+
+/* ------------------------------------------------------------------- media */
+.wp-prose :where(img) {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* WordPress usually ships width/height attributes with uploaded media. With
+   height: auto the browser derives the intrinsic aspect ratio from those
+   attributes, so the declared ratio is kept and the slot is reserved before
+   decode. Media without attributes can only be capped. */
+.wp-prose :where(figure) {
+  margin-inline: 0;
+}
+
+.wp-prose :where(figure) :where(img) {
+  width: 100%;
+  border-radius: var(--prose-radius-media);
+}
+
+.wp-prose :where(figcaption, .wp-caption-text) {
+  margin-top: var(--prose-space-figure);
+  font-size: var(--prose-size-caption);
+  line-height: var(--prose-leading-body);
+  color: var(--prose-color-muted);
+}
+
+.wp-prose :where(.wp-caption) {
+  max-width: 100%;
+}
+
+.wp-prose :where(iframe, video, embed, object, audio) {
+  max-width: 100%;
+}
+
+.wp-prose :where(iframe) {
+  width: 100%;
+  border: 0;
+}
+
+/* ------------------------------------------------------------------ tables */
+.wp-prose :where(table) {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--prose-size-table);
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+}
+
+.wp-prose :where(caption) {
+  caption-side: bottom;
+  margin-top: var(--prose-space-figure);
+  font-size: var(--prose-size-caption);
+  color: var(--prose-color-muted);
+  text-align: left;
+}
+
+.wp-prose :where(th, td) {
+  padding: var(--prose-space-cell-y) var(--prose-space-cell-x);
+  border-bottom: var(--prose-rule);
+  vertical-align: top;
+  text-align: left;
+}
+
+.wp-prose :where(thead th) {
+  border-top: var(--prose-rule);
+  font-weight: 600;
+}
+
+.wp-prose :where(th) {
+  font-weight: 600;
+}
+
+/* ---------------------------------------------------------- forms & fields */
+.wp-prose :where(fieldset) {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.wp-prose :where(label) {
+  display: block;
+  margin-top: var(--prose-space-field-group);
+  margin-bottom: var(--prose-space-field-gap);
+  font-size: var(--prose-size-label);
+  font-weight: 600;
+}
+
+.wp-prose :where(form) > :where(label):first-child {
+  margin-top: 0;
+}
+
+.wp-prose :where(input, textarea, select, button) {
+  font-family: var(--prose-font-body);
+  font-size: var(--prose-size-field);
+  color: var(--prose-color-field-text);
+}
+
+/* Text-ish inputs only. Checkboxes, radios and submit buttons are handled
+   separately below. */
+.wp-prose
+  :where(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not(
+        [type="button"]
+      ):not([type="reset"]),
+    textarea,
+    select
+  ) {
+  display: block;
+  width: 100%;
+  padding: var(--prose-space-field-y) var(--prose-space-field-x);
+  background-color: var(--prose-color-field-bg);
+  border: var(--prose-rule);
+  border-radius: var(--prose-radius-field);
+  line-height: var(--prose-leading-body);
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+
+.wp-prose
+  :where(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not(
+        [type="button"]
+      ):not([type="reset"]),
+    textarea,
+    select
+  ):focus-visible {
+  border-color: var(--prose-link-hover);
+}
+
+.wp-prose :where(textarea) {
+  min-height: var(--prose-textarea-min-height);
+  resize: vertical;
+}
+
+.wp-prose :where(input[type="checkbox"], input[type="radio"]) {
+  margin-right: var(--prose-space-field-gap);
+  accent-color: var(--prose-color-check);
+}
+
+.wp-prose
+  :where(
+    button,
+    input[type="submit"],
+    input[type="button"],
+    input[type="reset"],
+    .wp-block-button__link
+  ) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: var(--prose-space-field-group);
+  padding: var(--prose-space-button-y) var(--prose-space-button-x);
+  border: 0;
+  border-radius: var(--prose-radius-button);
+  background-color: var(--prose-color-button-bg);
+  color: var(--prose-color-button-text);
+  font-size: var(--prose-size-field);
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.wp-prose
+  :where(
+    button,
+    input[type="submit"],
+    input[type="button"],
+    input[type="reset"],
+    .wp-block-button__link
+  ):hover {
+  opacity: 0.88;
+  color: var(--prose-color-button-text);
+}
+
+/* ------------------------------------------------------------ definition */
+.wp-prose :where(dt) {
+  margin-top: var(--prose-space-block);
+  font-weight: 600;
+}
+
+.wp-prose :where(dt):first-child {
+  margin-top: 0;
+}
+
+.wp-prose :where(dd) {
+  margin-left: 0;
+  padding-left: var(--prose-indent);
+}
+
+/* -------------------------------------------------------- code and rules */
+.wp-prose :where(code, kbd, samp) {
+  font-family: var(--prose-font-mono);
+  font-size: var(--prose-size-code);
+  padding: var(--prose-space-code-y) var(--prose-space-code-x);
+  background-color: var(--prose-color-code-bg);
+  border-radius: var(--prose-radius-code);
+}
+
+.wp-prose :where(pre) {
+  padding: var(--prose-space-pre);
+  background-color: var(--prose-color-code-bg);
+  border: var(--prose-rule);
+  border-radius: var(--prose-radius-media);
+  overflow-x: auto;
+  font-family: var(--prose-font-mono);
+  font-size: var(--prose-size-code);
+  line-height: var(--prose-leading-body);
+}
+
+.wp-prose :where(pre) :where(code) {
+  padding: 0;
+  background: none;
+  font-size: inherit;
+}
+
+.wp-prose :where(hr) {
+  height: 0;
+  border: 0;
+  border-top: var(--prose-rule);
+}

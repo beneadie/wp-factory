@@ -1,0 +1,1030 @@
+/* ==========================================================================
+   Property — a listing-led auctioneer template.
+
+   White walls, one bronze accent, hairlines instead of shadows. The
+   photograph carries the emotion; the listing card carries the facts. Serif
+   addresses, tabular figures, and a search strip that reads as a single piece
+   of joinery rather than four floating controls.
+
+   Values only. Every token below keeps the name it has in tokens.css. The
+   namespaced .t-property-* classes are this template's furniture: layout,
+   typography mapping and hover states, all built from those tokens.
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* ---------------------------------------------------------------- colour */
+  --color-bg: 255 255 255; /* #FFFFFF */
+  --color-surface: 246 245 242; /* #F6F5F2 */
+  --color-elevated: 255 255 255; /* #FFFFFF */
+  --color-text: 20 24 28; /* #14181C */
+  --color-muted: 102 112 122; /* #66707A */
+  --color-border: 225 227 230; /* #E1E3E6 */
+  --color-primary: 20 24 28; /* #14181C */
+  --color-accent: 138 106 59; /* #8A6A3B */
+  --color-accent-ink: 255 255 255; /* #FFFFFF */
+  --color-inverse-bg: 19 26 32; /* #131A20 */
+  --color-inverse-text: 243 244 245; /* #F3F4F5 */
+
+  /* ------------------------------------------------------------ typography */
+  --font-display: var(--font-gelasio, "Gelasio"), ui-serif,
+    Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-inter, "Inter"), ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", sans-serif;
+
+  /* Display runs 48–80px. Body stays at 17/1.6; prices are 18px semibold. */
+  --text-base: 1.0625rem; /* 17px */
+  --text-lg: 1.25rem; /* 20px */
+  --text-xl: 1.5rem; /* 24px */
+  --text-2xl: 1.75rem; /* 28px */
+  --text-3xl: clamp(2rem, 1.62rem + 1.7vw, 2.75rem); /* 32 → 44px */
+  --text-4xl: clamp(2.5rem, 1.95rem + 2.4vw, 3.5rem); /* 40 → 56px */
+  --text-5xl: clamp(3rem, 2.2rem + 3.4vw, 5rem); /* 48 → 80px */
+  --text-6xl: clamp(3.25rem, 2.2rem + 4.6vw, 5.5rem); /* 52 → 88px */
+
+  --leading-display: 1.08;
+  --leading-body: 1.6;
+
+  /* --------------------------------------------------------------- radius */
+  /* Photographs are square. Controls get a 2px edge, nothing softer. */
+  --radius-sm: 2px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-pill: 999px;
+  --radius: var(--radius-sm);
+
+  /* ---------------------------------------------------------------- prose */
+  --prose-measure: 68ch;
+  --prose-font-body: var(--font-sans);
+  --prose-font-display: var(--font-display);
+  --prose-size-body: 17px;
+  --prose-leading-body: 1.6;
+  --prose-color-body: rgb(var(--color-text));
+  --prose-color-muted: rgb(var(--color-muted));
+  --prose-size-h1: var(--text-4xl);
+  --prose-size-h2: var(--text-3xl);
+  --prose-size-h3: var(--text-xl);
+  --prose-size-h4: var(--text-lg);
+  --prose-weight-heading: 500;
+  --prose-leading-heading: var(--leading-display);
+  --prose-tracking-heading: -0.015em;
+  --prose-rule: var(--rule);
+  --prose-radius-media: var(--radius-md);
+  --prose-link-color: rgb(var(--color-text));
+  --prose-link-hover: rgb(var(--color-accent));
+  --prose-underline-offset: 0.18em;
+  --prose-rule-quote: 1px solid rgb(var(--color-accent));
+  --prose-color-button-bg: rgb(var(--color-primary));
+  --prose-color-button-text: rgb(var(--color-bg));
+  --prose-radius-button: var(--radius-sm);
+}
+
+/* ==========================================================================
+   Shared furniture
+   ========================================================================== */
+
+.t-property-container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--space-5);
+}
+
+.t-property-display {
+  font-family: var(--font-display);
+  font-weight: 500;
+  line-height: var(--leading-display);
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.t-property-eyebrow {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 0.6875rem; /* 11px */
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgb(var(--color-muted));
+}
+
+.t-property-eyebrow-on-dark {
+  color: rgb(var(--color-inverse-text) / 0.92);
+}
+
+.t-property-price {
+  font-family: var(--font-sans);
+  font-size: 1.125rem; /* 18px */
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.005em;
+  font-variant-numeric: tabular-nums lining-nums;
+  white-space: nowrap;
+}
+
+.t-property-on-dark {
+  color: rgb(var(--color-inverse-text));
+}
+
+/* The one link treatment: a 1px rule, 0.28em below the baseline. Hover and
+   focus take the bronze accent and a 2px rule. */
+.t-property-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.28em;
+  transition: color var(--duration-micro) var(--ease-out),
+    text-decoration-color var(--duration-micro) var(--ease-out),
+    text-decoration-thickness var(--duration-micro) var(--ease-out);
+}
+
+.t-property-link:hover,
+.t-property-link:focus-visible {
+  color: rgb(var(--color-accent));
+  text-decoration-color: rgb(var(--color-accent));
+  text-decoration-thickness: 2px;
+}
+
+.t-property-link-on-dark:hover,
+.t-property-link-on-dark:focus-visible {
+  color: rgb(var(--color-inverse-text));
+  text-decoration-color: rgb(var(--color-accent));
+  text-decoration-thickness: 2px;
+}
+
+.t-property-arrow {
+  flex: none;
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.t-property-link:hover .t-property-arrow,
+.t-property-link:focus-visible .t-property-arrow,
+.t-property-card:hover .t-property-arrow,
+.t-property-pagehead-link:hover .t-property-arrow,
+.t-property-pagehead-link:focus-visible .t-property-arrow,
+.t-property-btn:hover .t-property-arrow,
+.t-property-btn:focus-visible .t-property-arrow,
+.t-property-search-submit:hover .t-property-arrow,
+.t-property-search-submit:focus-visible .t-property-arrow {
+  transform: translateX(var(--space-1));
+}
+
+/* The one filled control: bronze with ink-white type, ink on hover. */
+.t-property-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  min-height: 3rem;
+  padding: 0.8125rem 1.5rem;
+  border: 1px solid rgb(var(--color-accent));
+  border-radius: var(--radius-sm);
+  background-color: rgb(var(--color-accent));
+  color: rgb(var(--color-accent-ink));
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.015em;
+  text-decoration: none;
+  transition: background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+
+.t-property-btn:hover {
+  border-color: rgb(var(--color-primary));
+  background-color: rgb(var(--color-primary));
+  color: rgb(var(--color-bg));
+}
+
+.t-property-btn:focus-visible {
+  outline: 2px solid rgb(var(--color-text));
+  outline-offset: 3px;
+  box-shadow: none;
+}
+
+.t-property-on-dark .t-property-btn:focus-visible {
+  outline-color: rgb(var(--color-inverse-text));
+}
+
+.t-property-on-dark .t-property-btn:hover {
+  border-color: rgb(var(--color-inverse-text));
+  background-color: rgb(var(--color-inverse-text));
+  color: rgb(var(--color-inverse-bg));
+}
+
+/* ==========================================================================
+   Hero — a 16:9 listing photograph, copy on the lower left, and a search
+   strip that sits 40px over the photograph's bottom edge.
+   ========================================================================== */
+
+.t-property-hero {
+  padding-bottom: var(--space-14);
+  background-color: rgb(var(--color-bg));
+}
+
+.t-property-hero-media {
+  position: relative;
+  overflow: hidden;
+  /* A definite width, or aspect-ratio + min/max-height derives the *width*
+     from the clamped height (853px at 390, 1365px at 1440) and the
+     "full-bleed" photograph stops short of the viewport edge. Height is
+     cropped by object-cover, never letterboxed. */
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-height: 30rem;
+  max-height: 48rem;
+  background-color: rgb(var(--color-inverse-bg));
+}
+
+.t-property-hero-figure {
+  position: absolute;
+  inset: 0;
+}
+
+.t-property-hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.t-property-hero-scrim {
+  position: absolute;
+  inset: 0;
+  /* Dark enough under the copy block for 11px eyebrow text on a bright sky:
+     the eyebrow sits around 60% up the frame, where this ramp is ~0.6. The
+     photograph still reads in the top third. */
+  background-image: linear-gradient(
+    to top,
+    rgb(var(--color-inverse-bg) / 0.94) 0%,
+    rgb(var(--color-inverse-bg) / 0.84) 34%,
+    rgb(var(--color-inverse-bg) / 0.62) 60%,
+    rgb(var(--color-inverse-bg) / 0.24) 84%,
+    rgb(var(--color-inverse-bg) / 0.14) 100%
+  );
+}
+
+.t-property-hero-copy {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding-bottom: var(--space-20);
+}
+
+.t-property-hero-title {
+  max-width: 17ch;
+  margin: var(--space-4) 0 0;
+  font-size: var(--text-5xl);
+  color: rgb(var(--color-inverse-text));
+}
+
+.t-property-hero-lede {
+  display: none;
+  max-width: 42ch;
+  margin: var(--space-5) 0 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-lg);
+  line-height: 1.5;
+  color: rgb(var(--color-inverse-text) / 0.78);
+}
+
+.t-property-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4) var(--space-7);
+  margin-top: var(--space-7);
+}
+
+.t-property-hero-actions .t-property-link {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+
+/* The primary hero link is the only accent rule in the photograph. */
+.t-property-hero-actions .t-property-link:first-child {
+  text-decoration-color: rgb(var(--color-accent));
+  text-decoration-thickness: 2px;
+}
+
+/* No image: the same hierarchy, type-led, with the search strip below it. */
+.t-property-hero-plain-inner {
+  padding-block: var(--space-16) var(--space-6);
+  border-top: var(--rule);
+}
+
+.t-property-hero-plain .t-property-hero-title {
+  color: rgb(var(--color-text));
+  max-width: 18ch;
+}
+
+.t-property-hero-plain .t-property-hero-lede {
+  display: block;
+  color: rgb(var(--color-muted));
+}
+
+.t-property-hero-plain .t-property-search-wrap {
+  margin-top: var(--space-10);
+}
+
+/* The centered fallback: copy only, no photograph. The search strip still
+   follows, because a property hero is always a way into the listings. */
+.t-property-hero-centered .t-property-hero-plain-inner {
+  text-align: center;
+}
+
+.t-property-hero-centered .t-property-hero-title {
+  max-width: 20ch;
+  margin-inline: auto;
+}
+
+.t-property-hero-centered .t-property-hero-lede {
+  margin-inline: auto;
+}
+
+.t-property-hero-centered .t-property-hero-actions {
+  justify-content: center;
+}
+
+/* ------------------------------------------------------------ search strip */
+
+.t-property-search-wrap {
+  position: relative;
+  z-index: 2;
+  margin-top: -2.5rem; /* 40px over the photograph */
+}
+
+.t-property-search {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  overflow: hidden;
+  border: var(--rule);
+  border-radius: var(--radius-sm);
+  background-color: rgb(var(--color-elevated));
+}
+
+.t-property-search-field {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-1);
+  min-width: 0;
+  min-height: 4rem;
+  padding: var(--space-3) var(--space-4);
+  border-right: var(--rule);
+  border-bottom: var(--rule);
+}
+
+.t-property-search-field:nth-child(2n) {
+  border-right: 0;
+}
+
+.t-property-search-label {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem; /* 11px */
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgb(var(--color-muted));
+}
+
+.t-property-select-wrap {
+  position: relative;
+  min-width: 0;
+}
+
+.t-property-select {
+  width: 100%;
+  appearance: none;
+  padding: 0 1.25rem 0 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: rgb(var(--color-text));
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.t-property-input {
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: rgb(var(--color-text));
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.t-property-input::placeholder {
+  color: rgb(var(--color-muted));
+  opacity: 1;
+}
+
+.t-property-input:focus-visible {
+  outline: 2px solid rgb(var(--color-accent));
+  outline-offset: 2px;
+}
+
+.t-property-select:focus-visible {
+  outline: 2px solid rgb(var(--color-accent));
+  outline-offset: 2px;
+}
+
+/* Drawn chevron, so the strip keeps its own geometry on every platform. */
+.t-property-select-wrap::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 2px;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-right: 1px solid rgb(var(--color-muted));
+  border-bottom: 1px solid rgb(var(--color-muted));
+  transform: translateY(-70%) rotate(45deg);
+  pointer-events: none;
+}
+
+.t-property-search-submit {
+  display: inline-flex;
+  grid-column: 1 / -1;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  min-height: 3.25rem;
+  padding: var(--space-3) var(--space-6);
+  border: 0;
+  border-radius: 0;
+  background-color: rgb(var(--color-accent));
+  color: rgb(var(--color-accent-ink));
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+
+.t-property-search-submit:hover {
+  background-color: rgb(var(--color-primary));
+  color: rgb(var(--color-bg));
+}
+
+.t-property-search-submit:focus-visible {
+  outline: 2px solid rgb(var(--color-text));
+  outline-offset: -4px;
+}
+
+/* ==========================================================================
+   PageHead — eyebrow, display title, one hairline, three sibling links.
+   No image, no body copy: the composition carries the page.
+   ========================================================================== */
+
+.t-property-pagehead {
+  padding-block: var(--space-12) var(--space-10);
+  background-color: rgb(var(--color-bg));
+}
+
+.t-property-pagehead-top {
+  padding-top: var(--space-6);
+  border-top: var(--rule);
+}
+
+.t-property-pagehead-title {
+  max-width: 18ch;
+  margin: var(--space-6) 0 0;
+  font-size: var(--text-5xl);
+  color: rgb(var(--color-text));
+}
+
+.t-property-pagehead-tagline {
+  max-width: 48ch;
+  margin: var(--space-5) 0 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-lg);
+  line-height: 1.5;
+  color: rgb(var(--color-muted));
+}
+
+.t-property-pagehead-rule {
+  margin-top: var(--space-10);
+  border-top: var(--rule);
+}
+
+.t-property-pagehead-links {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.t-property-pagehead-links > li {
+  border-top: var(--rule);
+}
+
+.t-property-pagehead-links > li:first-child {
+  border-top: 0;
+}
+
+.t-property-pagehead-link {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-block: var(--space-5);
+  color: inherit;
+  text-decoration: none;
+}
+
+/* The sibling links carry the same 1px rule at 0.28em as every other link in
+   the template; the whole row is the target, so hover and keyboard focus both
+   take the bronze accent and a 2px rule. */
+.t-property-pagehead-label {
+  text-decoration-line: underline;
+  text-decoration-color: currentColor;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.28em;
+  transition: color var(--duration-micro) var(--ease-out),
+    text-decoration-color var(--duration-micro) var(--ease-out),
+    text-decoration-thickness var(--duration-micro) var(--ease-out);
+}
+
+.t-property-pagehead-link:hover .t-property-pagehead-label,
+.t-property-pagehead-link:focus-visible .t-property-pagehead-label {
+  color: rgb(var(--color-accent));
+  text-decoration-color: rgb(var(--color-accent));
+  text-decoration-thickness: 2px;
+}
+
+.t-property-pagehead-index {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  font-variant-numeric: tabular-nums;
+  color: rgb(var(--color-muted));
+}
+
+.t-property-pagehead-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.t-property-pagehead-label {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.012em;
+  transition: color var(--duration-micro) var(--ease-out);
+}
+
+.t-property-pagehead-link:hover .t-property-pagehead-label,
+.t-property-pagehead-link:focus-visible .t-property-pagehead-label {
+  color: rgb(var(--color-accent));
+}
+
+/* ==========================================================================
+   FeatureGrid — the signature listing card, three up, on the recessed band.
+   ========================================================================== */
+
+.t-property-feature {
+  padding-block: var(--space-12);
+  background-color: rgb(var(--color-surface));
+}
+
+.t-property-feature-head {
+  padding-top: var(--space-6);
+  border-top: var(--rule);
+}
+
+.t-property-feature-title {
+  max-width: 24ch;
+  margin: var(--space-4) 0 0;
+  font-size: var(--text-3xl);
+  color: rgb(var(--color-text));
+}
+
+.t-property-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-6);
+  margin: var(--space-10) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.t-property-card {
+  display: flex;
+  min-width: 0;
+  border: var(--rule);
+  background-color: rgb(var(--color-elevated));
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+
+.t-property-card:hover {
+  border-color: rgb(var(--color-text) / 0.4);
+}
+
+.t-property-card-link {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+
+.t-property-card-media {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 3 / 2;
+  background-color: rgb(var(--color-surface));
+}
+
+.t-property-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--duration-slow) var(--ease-out);
+}
+
+.t-property-card:hover .t-property-card-image {
+  transform: scale(1.025);
+}
+
+.t-property-card-flag {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0.375rem 0.625rem;
+  background-color: rgb(var(--color-elevated));
+  color: rgb(var(--color-text));
+  font-family: var(--font-sans);
+  font-size: 0.625rem; /* 10px */
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.t-property-card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: var(--space-5);
+}
+
+.t-property-card-status {
+  margin: 0 0 var(--space-3);
+}
+
+.t-property-card-title {
+  min-height: 2.44em;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 500;
+  line-height: 1.22;
+  letter-spacing: -0.012em;
+  text-wrap: balance;
+}
+
+/* The spec row and the price share one ruled line: three figures left, one
+   price right, hairlines between. */
+.t-property-card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+  padding-top: var(--space-3);
+  border-top: var(--rule);
+}
+
+.t-property-card-specs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem; /* 13px */
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums lining-nums;
+  color: rgb(var(--color-muted));
+}
+
+.t-property-card-spec + .t-property-card-spec {
+  margin-left: var(--space-3);
+  padding-left: var(--space-3);
+  border-left: var(--rule);
+}
+
+.t-property-card-price {
+  flex: none;
+  margin: 0;
+  color: rgb(var(--color-text));
+}
+
+.t-property-card-blurb {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: var(--space-4) 0 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: rgb(var(--color-muted));
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+/* ==========================================================================
+   QuoteBand — the single pulled quote, on the inverse band.
+   ========================================================================== */
+
+.t-property-quote {
+  padding-block: var(--space-12);
+  background-color: rgb(var(--color-inverse-bg));
+  color: rgb(var(--color-inverse-text));
+}
+
+.t-property-quote-inner {
+  display: grid;
+  gap: var(--space-8);
+  margin: 0;
+  padding-top: var(--space-8);
+  border-top: 1px solid rgb(var(--color-inverse-text) / 0.2);
+}
+
+.t-property-quote-text {
+  max-width: 30ch;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: -0.012em;
+  text-wrap: pretty;
+}
+
+.t-property-quote-text p {
+  margin: 0;
+}
+
+.t-property-quote-aside {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding-top: var(--space-5);
+  border-top: 1px solid rgb(var(--color-inverse-text) / 0.2);
+}
+
+.t-property-quote-attribution {
+  max-width: 34ch;
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  font-style: normal;
+  line-height: 1.6;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgb(var(--color-inverse-text) / 0.68);
+}
+
+.t-property-quote-cta {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.4;
+}
+
+/* ==========================================================================
+   CtaBand — the dark booking band that closes the listing grid.
+   ========================================================================== */
+
+.t-property-cta {
+  padding-block: var(--space-12);
+  background-color: rgb(var(--color-inverse-bg));
+  color: rgb(var(--color-inverse-text));
+}
+
+.t-property-cta-inner {
+  display: grid;
+  gap: var(--space-8);
+  padding-top: var(--space-8);
+  border-top: 1px solid rgb(var(--color-inverse-text) / 0.2);
+}
+
+.t-property-cta-title {
+  max-width: 15ch;
+  margin: 0;
+  font-size: var(--text-4xl);
+  color: rgb(var(--color-inverse-text));
+}
+
+.t-property-cta-aside {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-6);
+}
+
+.t-property-cta-body {
+  max-width: 42ch;
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-body);
+  color: rgb(var(--color-inverse-text) / 0.72);
+}
+
+/* ==========================================================================
+   StatBand — four figures, tabular, ruled above and below.
+   ========================================================================== */
+
+.t-property-stat {
+  padding-block: var(--space-12);
+  background-color: rgb(var(--color-bg));
+}
+
+.t-property-stat-inner {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-6);
+  margin: 0;
+  padding-block: var(--space-8);
+  border-top: var(--rule);
+  border-bottom: var(--rule);
+}
+
+.t-property-stat-cell {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.t-property-stat-value {
+  order: -1;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.015em;
+  font-variant-numeric: tabular-nums lining-nums;
+  color: rgb(var(--color-text));
+}
+
+.t-property-stat-label {
+  max-width: 22ch;
+  margin: var(--space-3) 0 0;
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgb(var(--color-muted));
+}
+
+/* ==========================================================================
+   Breakpoints
+   ========================================================================== */
+
+@media (min-width: 640px) {
+  .t-property-container {
+    padding-inline: var(--space-8);
+  }
+
+  .t-property-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-8);
+  }
+
+  .t-property-select,
+  .t-property-input {
+    font-size: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .t-property-feature,
+  .t-property-quote,
+  .t-property-cta,
+  .t-property-stat {
+    padding-block: var(--space-20);
+  }
+
+  .t-property-pagehead {
+    padding-block: var(--space-20) var(--space-14);
+  }
+
+  .t-property-hero {
+    padding-bottom: var(--space-20);
+  }
+
+  .t-property-pagehead-links {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .t-property-pagehead-links > li {
+    border-top: 0;
+    border-left: var(--rule);
+  }
+
+  .t-property-pagehead-links > li:first-child {
+    border-left: 0;
+  }
+
+  .t-property-pagehead-link {
+    height: 100%;
+    padding: var(--space-6) var(--space-8) var(--space-3);
+  }
+
+  .t-property-pagehead-links > li:first-child .t-property-pagehead-link {
+    padding-left: 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .t-property-hero-lede {
+    display: block;
+  }
+
+  .t-property-search {
+    grid-template-columns:
+      minmax(0, 1.25fr) minmax(0, 1fr) minmax(0, 1.1fr)
+      minmax(0, 0.8fr) auto;
+  }
+
+  .t-property-search-field {
+    min-height: 4.75rem;
+    padding: var(--space-3) var(--space-5);
+    border-right: var(--rule);
+    border-bottom: 0;
+  }
+
+  .t-property-search-field:nth-child(2n) {
+    border-right: var(--rule);
+  }
+
+  .t-property-search-field:nth-child(4) {
+    border-right: var(--rule);
+  }
+
+  .t-property-search-submit {
+    grid-column: auto;
+    min-width: 10.5rem;
+  }
+
+  .t-property-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .t-property-quote-inner {
+    grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+    gap: var(--space-16);
+    align-items: end;
+  }
+
+  .t-property-cta-inner {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: var(--space-16);
+    align-items: end;
+    padding-block: var(--space-16);
+  }
+
+  .t-property-stat-inner {
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: 0;
+  }
+
+  .t-property-stat-cell + .t-property-stat-cell {
+    padding-left: var(--space-8);
+    border-left: var(--rule);
+  }
+}

@@ -1,0 +1,269 @@
+/* ==========================================================================
+   motion.css — the shared interaction layer.
+
+   ONE easing family (--ease-out), one set of durations, and no curve of its
+   own. Every rule below animates transform / opacity / clip-path only. Never
+   add `transition: all`.
+
+   The reveal gate
+   ---------------
+   `.reveal` and `.reveal-image` are the public contract: all eight presets use
+   those class names and they must not change. Both primitives are inert until
+   JavaScript adds `reveal-ready` to <html> (src/components/motion/
+   reveal-observer.tsx). That gives three states:
+
+     1. No JavaScript          -> no `reveal-ready` -> everything visible.
+     2. prefers-reduced-motion -> observer never arms -> everything visible.
+     3. html.reveal-ready      -> below-the-fold elements are gated, then
+                                  revealed by the single IntersectionObserver.
+
+   The first viewport is never gated: the observer reveals everything whose top
+   is above the fold in the same synchronous pass, *before* it adds
+   `reveal-ready`. Above-the-fold and LCP content therefore paints at its final
+   state, not at opacity 0.
+
+   Escape hatch
+   ------------
+   Any element that must never be gated — a possible LCP candidate, a
+   measurement-sensitive band — opts out explicitly:
+
+     <div class="reveal no-reveal">…</div>
+     <div class="reveal-image" data-reveal="instant">…</div>
+
+   Stagger
+   -------
+   `--reveal-delay` is a step count (0, 1, 2 …), multiplied by 60ms:
+
+     style={{ "--reveal-delay": index }}      // inline
+     data-reveal-delay={index}                // copied to the inline var
+
+   Usage
+   -----
+     <h2 class="reveal">…</h2>                 12px rise, --duration-base
+     <div class="reveal-image">…</div>          clip wipe, --duration-slow
+     <section data-reveal>…</section>           same as .reveal, attribute form
+     <div data-reveal="image">…</div>           same as .reveal-image
+
+   Put `reveal` on the block, never on every inline element.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   No JS: explicit, defensive no-op. Nothing may be hidden without the gate.
+   -------------------------------------------------------------------------- */
+html:not(.reveal-ready) .reveal,
+html:not(.reveal-ready) .reveal-image,
+html:not(.reveal-ready) [data-reveal] {
+  opacity: 1;
+  transform: none;
+  clip-path: none;
+}
+
+/* --------------------------------------------------------------------------
+   Armed: text and generic attribute reveals. `[data-reveal="instant"]` and
+   `.no-reveal` are excluded from the hidden state.
+   -------------------------------------------------------------------------- */
+html.reveal-ready .reveal:not(.is-revealed):not(.no-reveal):not([data-reveal="instant"]),
+html.reveal-ready
+  [data-reveal]:not([data-reveal="image"]):not([data-reveal="instant"]):not(.is-revealed):not(.no-reveal) {
+  opacity: 0;
+  transform: translate3d(0, 12px, 0);
+}
+
+html.reveal-ready .reveal.is-revealed:not(.reveal-image),
+html.reveal-ready
+  [data-reveal]:not([data-reveal="image"]):not([data-reveal="instant"]).is-revealed:not(.reveal-image) {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity var(--duration-base) var(--ease-out),
+    transform var(--duration-base) var(--ease-out);
+  transition-delay: calc(var(--reveal-delay, 0) * 60ms);
+}
+
+/* --------------------------------------------------------------------------
+   Armed: image reveals wipe rather than fade, so the photo is uncovered.
+   -------------------------------------------------------------------------- */
+html.reveal-ready .reveal-image:not(.is-revealed):not(.no-reveal):not([data-reveal="instant"]),
+html.reveal-ready
+  [data-reveal="image"]:not(.is-revealed):not(.no-reveal):not([data-reveal="instant"]) {
+  clip-path: inset(0 0 100% 0);
+}
+
+html.reveal-ready .reveal-image.is-revealed,
+html.reveal-ready [data-reveal="image"].is-revealed:not([data-reveal="instant"]) {
+  opacity: 1;
+  transform: none;
+  clip-path: inset(0 0 0 0);
+  transition:
+    opacity var(--duration-base) var(--ease-out),
+    transform var(--duration-base) var(--ease-out),
+    clip-path var(--duration-slow) var(--ease-out);
+  transition-delay: calc(var(--reveal-delay, 0) * 60ms);
+}
+
+/* --------------------------------------------------------------------------
+   Reduced motion removes motion, never content. */
+@media (prefers-reduced-motion: reduce) {
+  html.reveal-ready .reveal,
+  html.reveal-ready .reveal-image,
+  html.reveal-ready [data-reveal] {
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+    transition: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Keyframes kept for the presets: portfolio/theme.css drives
+   `ds-reveal-image` from a view() timeline. Do not delete these names.
+   -------------------------------------------------------------------------- */
+@keyframes ds-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ds-reveal-image {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Scroll-linked photography. Where the platform supports view() timelines, a
+   photograph inside `.reveal-image` settles from a 4% overscale as it enters
+   the viewport, and is already at rest by the time it is fully in view. A hero
+   that is in the first viewport is therefore painted at scale 1, not mid-move.
+
+   `scale` — a transform longhand — is used instead of `transform` so a preset's
+   hover transform (portfolio's 1.02 on the image) composes with it rather than
+   being clobbered by the animation.
+
+   Guarded twice: no timeline support = no rule; reduced motion = no rule, and
+   the image keeps its natural size. The `html.reveal-ready` prefix also means
+   the effect is inert without JavaScript.
+   -------------------------------------------------------------------------- */
+@keyframes ds-image-settle {
+  from {
+    scale: 1.04;
+  }
+  to {
+    scale: 1;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* The timeline is declared on the wrapper, not the <img>. An image inside
+       an `overflow: hidden` slot would make that slot the nearest scroll
+       container for view(), which has no scroll range and pins progress at 1.
+       The wrapper sits above the slot, so its timeline tracks the page. */
+    html.reveal-ready .reveal-image,
+    html.reveal-ready [data-reveal="image"] {
+      view-timeline-name: --ds-image-view;
+      view-timeline-axis: block;
+    }
+
+    html.reveal-ready .reveal-image img,
+    html.reveal-ready [data-reveal="image"] img {
+      animation: ds-image-settle linear both;
+      animation-timeline: --ds-image-view;
+      animation-range: entry 0% entry 100%;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Route progress — navigation feedback, including query-only navigations
+   (pagination, search) that never remount a route segment. The single
+   indicator; NavigationPending's full-page overlay was removed.
+   -------------------------------------------------------------------------- */
+.route-progress {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 60;
+  height: 2px;
+  pointer-events: none;
+}
+
+.route-progress-bar {
+  height: 100%;
+  width: 100%;
+  transform-origin: left center;
+  background-color: rgb(var(--color-accent));
+  transform: scaleX(0);
+  animation: route-progress-grow var(--duration-ambient) var(--ease-out) forwards;
+  transition:
+    transform var(--duration-micro) var(--ease-out),
+    opacity var(--duration-micro) linear;
+}
+
+.route-progress[data-done="true"] .route-progress-bar {
+  animation: none;
+  transform: scaleX(1);
+  opacity: 0;
+}
+
+@keyframes route-progress-grow {
+  from {
+    transform: scaleX(0.08);
+  }
+  to {
+    transform: scaleX(0.82);
+  }
+}
+
+/* A progress bar that animates is motion. Keep the state, drop the movement. */
+@media (prefers-reduced-motion: reduce) {
+  .route-progress-bar {
+    animation: none;
+    transform: scaleX(1);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Sticky header shell. Hysteresis lives in src/components/site-header-shell.tsx;
+   this file only styles the two states. Height is deliberately not transitioned
+   — animating height/padding is layout animation and causes thrash.
+   -------------------------------------------------------------------------- */
+.site-header-shell {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+/* State changes are instantaneous. The only animated properties in this layer
+   are transform, opacity and clip-path; a header that faded its own background
+   would introduce a second, unrelated timing to every scroll. */
+.site-header-shell > header {
+  background-color: rgb(var(--color-bg));
+}
+
+.site-header-shell[data-scrolled="true"] > header {
+  background-color: rgb(var(--color-bg) / 0.92);
+  box-shadow: 0 1px 0 rgb(var(--color-border));
+  backdrop-filter: saturate(1.1) blur(12px);
+}
+
+/* 64px -> 52px. Instant: see the note above. */
+.site-header-shell .header-inner {
+  height: 4rem;
+}
+
+.site-header-shell[data-scrolled="true"] .header-inner {
+  height: 3.25rem;
+}
+
+/* The shrink itself changes height only. Nothing here transitions it: a
+   height/padding animation is a layout animation, and the scroll path must not
+   become a per-frame reflow. The state is motion-free by construction, so the
+   reduced-motion path needs no extra override. */

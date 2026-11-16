@@ -23,12 +23,14 @@ from pathlib import Path
 
 DB_PATH = Path(__file__).resolve().parent / "queue.db"
 SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9-]*$")
+TEMPLATE_RE = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 
 # Columns added after the first release. `migrate` ALTERs them into older DBs
 # because CREATE TABLE IF NOT EXISTS never changes an existing table.
 LATE_COLUMNS = {
     "phase": "TEXT",
     "reason": "TEXT",
+    "template": "TEXT",
 }
 
 SCHEMA = """
@@ -40,6 +42,7 @@ CREATE TABLE IF NOT EXISTS jobs (
   niche       TEXT,
   notes       TEXT,
   repo        TEXT,
+  template    TEXT,
   status      TEXT NOT NULL DEFAULT 'queued',
   exit_code   INTEGER,
   log_path    TEXT,
@@ -96,22 +99,36 @@ def normalize_url(value: str) -> str:
     return f"{parts.scheme.lower()}://{parts.netloc.lower()}"
 
 
+def normalize_template(value: str | None) -> str | None:
+    """Nullable template name. The runner proves the template files exist."""
+    value = (value or "").strip()
+    if not value:
+        return None
+    if not TEMPLATE_RE.match(value):
+        raise SystemExit(
+            f"invalid template: {value!r} (use a-z, 0-9, dashes)"
+        )
+    return value
+
+
 def enqueue(slug: str, name: str, wp_url: str, niche: str | None = None,
-            notes: str | None = None, repo: str | None = None) -> dict:
+            notes: str | None = None, repo: str | None = None,
+            template: str | None = None) -> dict:
     if not SLUG_RE.match(slug):
         raise SystemExit(f"invalid slug: {slug!r} (use a-z, 0-9, dashes)")
     name = (name or "").strip()
     if not name:
         raise SystemExit("name is empty")
     wp_url = normalize_url(wp_url)
+    template = normalize_template(template)
     with connect() as conn:
         existing = conn.execute("SELECT * FROM jobs WHERE slug = ?", (slug,)).fetchone()
         if existing:
             return as_dict(existing)
         conn.execute(
-            "INSERT INTO jobs (slug, name, wp_url, niche, notes, repo, created_at)"
-            " VALUES (?, ?, ?, ?, ?, ?, ?)",
-            (slug, name, wp_url.rstrip("/"), niche, notes, repo, now()),
+            "INSERT INTO jobs (slug, name, wp_url, niche, notes, repo, template, created_at)"
+            " VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            (slug, name, wp_url.rstrip("/"), niche, notes, repo, template, now()),
         )
         return as_dict(conn.execute("SELECT * FROM jobs WHERE slug = ?", (slug,)).fetchone())
 
@@ -152,6 +169,13 @@ def finish(slug: str, exit_code: int, log_path: str | None = None,
 def set_phase(slug: str, phase: str) -> None:
     with connect() as conn:
         conn.execute("UPDATE jobs SET phase = ? WHERE slug = ?", (phase, slug))
+
+
+def set_template(slug: str, template: str | None) -> dict | None:
+    template = normalize_template(template)
+    with connect() as conn:
+        conn.execute("UPDATE jobs SET template = ? WHERE slug = ?", (template, slug))
+        return as_dict(conn.execute("SELECT * FROM jobs WHERE slug = ?", (slug,)).fetchone())
 
 
 def requeue(slug: str) -> dict | None:
@@ -236,6 +260,7 @@ def main() -> int:
     add.add_argument("--niche")
     add.add_argument("--notes")
     add.add_argument("--repo")
+    add.add_argument("--template", help="template under templates/, e.g. shop or practice")
 
     sub.add_parser("take-next")
 
@@ -250,6 +275,10 @@ def main() -> int:
     phase = sub.add_parser("set-phase")
     phase.add_argument("--slug", required=True)
     phase.add_argument("--phase", required=True)
+
+    template = sub.add_parser("set-template")
+    template.add_argument("--slug", required=True)
+    template.add_argument("--template", required=True)
 
     again = sub.add_parser("requeue")
     again.add_argument("--slug", required=True)
@@ -277,7 +306,7 @@ def main() -> int:
 
     if args.command == "add":
         print(json.dumps(enqueue(args.slug, args.name, args.wp_url, args.niche,
-                                 args.notes, args.repo)))
+                                 args.notes, args.repo, args.template)))
     elif args.command == "take-next":
         job = take_next()
         if job:
@@ -287,6 +316,8 @@ def main() -> int:
                                 args.status, args.reason, args.phase)))
     elif args.command == "set-phase":
         set_phase(args.slug, args.phase)
+    elif args.command == "set-template":
+        print(json.dumps(set_template(args.slug, args.template)))
     elif args.command == "requeue":
         print(json.dumps(requeue(args.slug)))
     elif args.command == "reap":

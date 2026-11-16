@@ -18,6 +18,11 @@
     },
     "niche": { "type": "string" },
     "notes": { "type": "string" },
-    "repo": { "type": "string", "description": "owner/name for the private repo" }
+    "repo": { "type": "string", "description": "owner/name for the private repo" },
+    "template": {
+      "type": ["string", "null"],
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "description": "Template directory under templates/ (e.g. shop, practice). Nullable: the runner picks one from discovery evidence when a site has none. Set with queue.py add --template or set-template."
+    }
   }
 }

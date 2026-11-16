@@ -1,0 +1,896 @@
+/* ==========================================================================
+   theme.css — hospitality overlay.
+
+   Appetite-led venues: café, restaurant, pub, bakery, deli. Warm off-white
+   paper, one oxblood accent, photography as the only decoration. Token values
+   only at the root; the t-hospitality-* classes below are this template's
+   composition vocabulary, not new design tokens.
+
+   Colour tokens are space-separated sRGB channels. Hex is documentation.
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* ---------------------------------------------------------------- colour */
+  --color-bg: 251 247 241; /* #FBF7F1 — warm paper */
+  --color-surface: 255 255 255; /* #FFFFFF */
+  --color-elevated: 255 255 255; /* #FFFFFF */
+  --color-text: 26 22 19; /* #1A1613 */
+  --color-muted: 119 110 99; /* #776E63 */
+  --color-border: 232 223 211; /* #E8DFD3 */
+  --color-primary: 32 24 15; /* #20180F — roast, near-black */
+  --color-accent: 107 47 30; /* #6B2F1E — oxblood */
+  --color-accent-ink: 255 255 255; /* #FFFFFF */
+  --color-inverse-bg: 32 24 15; /* #20180F */
+  --color-inverse-text: 248 243 234; /* #F8F3EA */
+
+  /* ------------------------------------------------------------ typography */
+  --font-display: var(
+      --font-newsreader,
+      var(--font-source-serif, "Newsreader")
+    ),
+    Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-inter, "Inter"), ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", sans-serif;
+
+  /* Body 17/1.65. Display 52–88px, tracking -0.015em, leading 1.06. */
+  --text-base: 1.0625rem;
+  --leading-body: 1.65;
+  --text-3xl: clamp(2rem, 1.62rem + 1.9vw, 2.75rem);
+  --text-4xl: clamp(2.5rem, 1.9rem + 2.8vw, 4rem);
+  --text-5xl: clamp(3.25rem, 2.15rem + 4.9vw, 5.5rem);
+  --text-6xl: clamp(3.5rem, 2.2rem + 6vw, 6.5rem);
+  --leading-display: 1.06;
+
+  /* --------------------------------------------------------------- layout */
+  --measure: 62ch;
+  --container: 1200px;
+  --gutter: 20px;
+
+  /* --------------------------------------------------------------- radius */
+  /* The room is square: photographs and panels are cut, not rounded.
+     Only the booking pill is round. */
+  --radius-sm: 2px;
+  --radius-md: 2px;
+  --radius-lg: 2px;
+  --radius-pill: 999px;
+
+  /* --------------------------------------------------------------- motion */
+  /* Same curves, calmer durations. The hero image wipe is the one moment. */
+  --duration-base: 520ms;
+  --duration-slow: 900ms;
+
+  --rule: 1px solid rgb(var(--color-border));
+
+  /* ---------------------------------------------------------------- prose */
+  --prose-font-body: var(--font-sans);
+  --prose-font-display: var(--font-display);
+  --prose-size-body: 17px;
+  --prose-leading-body: 1.65;
+  --prose-weight-heading: 400;
+  --prose-tracking-heading: -0.015em;
+  --prose-color-body: rgb(var(--color-text));
+  --prose-color-muted: rgb(var(--color-muted));
+  --prose-link-hover: rgb(var(--color-accent));
+  --prose-rule: var(--rule);
+  --prose-rule-quote: 1px solid rgb(var(--color-accent));
+  --prose-radius-media: var(--radius-md);
+}
+
+/* ==========================================================================
+   Canvas
+   ========================================================================== */
+
+.t-hospitality-wrap {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--space-5);
+}
+
+@media (min-width: 768px) {
+  .t-hospitality-wrap {
+    padding-inline: var(--space-8);
+  }
+}
+
+/* 56px mobile / 96px desktop. The whole template breathes at this rhythm. */
+.t-hospitality-section {
+  padding-block: var(--space-14);
+}
+
+@media (min-width: 768px) {
+  .t-hospitality-section {
+    padding-block: 6rem;
+  }
+}
+
+.t-hospitality-eyebrow {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgb(var(--color-muted));
+}
+
+.t-hospitality-eyebrow-inverse {
+  color: rgb(var(--color-inverse-text) / 0.7);
+}
+
+/* A short rule above an eyebrow. The repeated editorial signature. */
+.t-hospitality-kicker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.t-hospitality-kicker::before {
+  content: "";
+  display: block;
+  width: 2.5rem;
+  height: 1px;
+  background: rgb(var(--color-muted) / 0.6);
+}
+
+.t-hospitality-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: var(--leading-display);
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+/* ==========================================================================
+   Buttons and links
+   ========================================================================== */
+
+.t-hospitality-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 0.875rem 1.5rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  background: rgb(var(--color-inverse-text));
+  color: rgb(var(--color-inverse-bg));
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+
+.t-hospitality-pill:hover {
+  border-color: rgb(var(--color-inverse-text) / 0.45);
+  background: transparent;
+  color: rgb(var(--color-inverse-text));
+}
+
+.t-hospitality-pill-dark {
+  border-color: transparent;
+  background: rgb(var(--color-primary));
+  color: rgb(var(--color-bg));
+}
+
+.t-hospitality-pill-dark:hover {
+  border-color: transparent;
+  background: rgb(var(--color-accent));
+  color: rgb(var(--color-accent-ink));
+}
+
+.t-hospitality-textlink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-bottom: var(--space-1);
+  border-bottom: 1px solid rgb(var(--color-border));
+  color: rgb(var(--color-text));
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+
+.t-hospitality-textlink:hover {
+  border-color: rgb(var(--color-accent));
+  color: rgb(var(--color-accent));
+}
+
+.t-hospitality-textlink-inverse {
+  border-color: rgb(var(--color-inverse-text) / 0.3);
+  color: rgb(var(--color-inverse-text));
+}
+
+.t-hospitality-textlink-inverse:hover {
+  border-color: rgb(var(--color-inverse-text));
+  color: rgb(var(--color-inverse-text));
+}
+
+.t-hospitality-arrow {
+  display: inline-block;
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.t-hospitality-textlink:hover .t-hospitality-arrow {
+  transform: translateX(3px);
+}
+
+/* ==========================================================================
+   Hero — one photograph, one line, one CTA
+   ========================================================================== */
+
+.t-hospitality-hero {
+  position: relative;
+  isolation: isolate;
+  background: rgb(var(--color-primary));
+}
+
+.t-hospitality-hero-media {
+  position: relative;
+}
+
+.t-hospitality-hero-plate {
+  position: relative;
+}
+
+/* The 3:2 frame is capped so the overlaid line and pill stay above the fold
+   on a laptop; the photograph crops inside the slot. Width must be stated: an
+   `auto` width lets the max-height clamp shrink the frame to 1230px on a 1440
+   viewport and leaves a bare strip at the right edge. */
+.t-hospitality-hero-slot {
+  width: 100%;
+  max-height: calc(100svh - 5rem);
+}
+
+.t-hospitality-hero-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgb(var(--color-primary) / 0.92) 0%,
+    rgb(var(--color-primary) / 0.82) 25%,
+    rgb(var(--color-primary) / 0.62) 50%,
+    rgb(var(--color-primary) / 0.38) 70%,
+    rgb(var(--color-primary) / 0.12) 88%,
+    rgb(var(--color-primary) / 0) 100%
+  );
+}
+
+.t-hospitality-hero-copy {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  padding-bottom: var(--space-10);
+  color: rgb(var(--color-inverse-text));
+}
+
+@media (min-width: 768px) {
+  .t-hospitality-hero-copy {
+    padding-bottom: var(--space-14);
+  }
+}
+
+.t-hospitality-hero-title {
+  max-width: 17ch;
+  color: rgb(var(--color-inverse-text));
+  font-size: var(--text-5xl);
+}
+
+.t-hospitality-hero-lede {
+  max-width: 42ch;
+  color: rgb(var(--color-inverse-text) / 0.82);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.t-hospitality-on-image {
+  color: rgb(var(--color-inverse-text) / 0.82);
+}
+
+/* With no photograph the hero is type on paper, never a blank slot. */
+.t-hospitality-hero-fallback {
+  display: flex;
+  min-height: 56vh;
+  align-items: flex-end;
+  background: rgb(var(--color-bg));
+}
+
+.t-hospitality-hero-fallback .t-hospitality-hero-title {
+  color: rgb(var(--color-text));
+}
+
+.t-hospitality-hero-fallback .t-hospitality-hero-lede {
+  color: rgb(var(--color-muted));
+}
+
+/* ==========================================================================
+   Page head — eyebrow, display title, hairline, sibling links
+   ========================================================================== */
+
+.t-hospitality-page-head {
+  padding-block: var(--space-16) var(--space-14);
+  border-bottom: var(--rule);
+  background: rgb(var(--color-bg));
+}
+
+@media (min-width: 768px) {
+  .t-hospitality-page-head {
+    padding-block: 7rem 4.5rem;
+  }
+}
+
+.t-hospitality-page-title {
+  max-width: 18ch;
+  color: rgb(var(--color-text));
+  font-size: var(--text-5xl);
+}
+
+.t-hospitality-page-tagline {
+  max-width: 48ch;
+  margin-top: var(--space-6);
+  color: rgb(var(--color-muted));
+  font-size: var(--text-lg);
+  line-height: 1.55;
+}
+
+.t-hospitality-page-links {
+  margin-top: var(--space-12);
+  border-top: var(--rule);
+}
+
+.t-hospitality-page-links-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.t-hospitality-page-link {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-4);
+  padding-block: var(--space-5);
+  color: rgb(var(--color-text));
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.t-hospitality-page-link:hover {
+  color: rgb(var(--color-accent));
+}
+
+@media (min-width: 640px) {
+  .t-hospitality-page-links-grid {
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  }
+
+  .t-hospitality-page-link {
+    padding: var(--space-6) var(--space-7);
+    border-bottom: 0;
+    border-left: var(--rule);
+  }
+
+  .t-hospitality-page-links-grid > .t-hospitality-page-link:first-child {
+    padding-left: 0;
+    border-left: 0;
+  }
+}
+
+.t-hospitality-page-index {
+  color: rgb(var(--color-muted));
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.14em;
+}
+
+.t-hospitality-page-link-label {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.t-hospitality-page-arrow {
+  margin-left: auto;
+  color: rgb(var(--color-muted));
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+}
+
+.t-hospitality-page-link:hover .t-hospitality-page-arrow {
+  color: rgb(var(--color-accent));
+  transform: translateX(3px);
+}
+
+/* ==========================================================================
+   Feature grid — "today at the café"
+   ========================================================================== */
+
+.t-hospitality-features {
+  background: rgb(var(--color-bg));
+}
+
+.t-hospitality-feature-title {
+  max-width: 24ch;
+  margin-top: var(--space-5);
+  color: rgb(var(--color-text));
+  font-size: var(--text-4xl);
+}
+
+.t-hospitality-feature-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-12) var(--space-8);
+  margin-top: var(--space-12);
+}
+
+@media (min-width: 640px) {
+  .t-hospitality-feature-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .t-hospitality-feature-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-10);
+    margin-top: var(--space-14);
+  }
+}
+
+.t-hospitality-card {
+  min-width: 0;
+}
+
+.t-hospitality-card-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.t-hospitality-card-arrow {
+  color: rgb(var(--color-muted));
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+}
+
+.t-hospitality-card-link:hover .t-hospitality-card-heading,
+.t-hospitality-card-link:focus-visible .t-hospitality-card-heading {
+  color: rgb(var(--color-accent));
+}
+
+.t-hospitality-card-link:hover .t-hospitality-card-arrow {
+  color: rgb(var(--color-accent));
+  transform: translateX(3px);
+}
+
+.t-hospitality-card-media {
+  display: block;
+  overflow: hidden;
+  background: rgb(var(--color-surface));
+}
+
+.t-hospitality-card-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--duration-slow) var(--ease-out);
+}
+
+/* One retry already failed: SiteImage swaps in a text slot; keep it centred. */
+.t-hospitality-card-image[role="img"] {
+  display: flex;
+  height: auto;
+}
+
+.t-hospitality-card:hover .t-hospitality-card-image {
+  transform: scale(1.025);
+}
+
+.t-hospitality-card-caption {
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: var(--rule);
+}
+
+.t-hospitality-card-heading {
+  color: rgb(var(--color-text));
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.t-hospitality-card-body {
+  max-width: 40ch;
+  margin-top: var(--space-2);
+  color: rgb(var(--color-muted));
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
+
+/* Designed 4:5 plate for a card with no photograph: type, not an empty box. */
+.t-hospitality-card-panel {
+  display: flex;
+  aspect-ratio: 4 / 5;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  border: var(--rule);
+  background: rgb(var(--color-surface));
+}
+
+.t-hospitality-card-panel-index {
+  color: rgb(var(--color-muted));
+  font-family: var(--font-display);
+  font-size: var(--text-4xl);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+/* ==========================================================================
+   The menu as a typographic artifact
+   Dish and price on one line, dotted leader between; course names in small
+   caps above a hairline; prices in tabular numerals.
+   ========================================================================== */
+
+.t-hospitality-menu {
+  margin-top: var(--space-12);
+  padding-top: var(--space-5);
+  border-top: var(--rule);
+}
+
+@media (min-width: 768px) {
+  .t-hospitality-menu {
+    margin-top: 5rem;
+    padding-top: var(--space-6);
+  }
+}
+
+.t-hospitality-menu-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-6);
+}
+
+.t-hospitality-menu-note {
+  color: rgb(var(--color-muted));
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+.t-hospitality-menu-grid {
+  margin-top: var(--space-8);
+  columns: 1;
+  column-gap: var(--space-16);
+}
+
+@media (min-width: 768px) {
+  .t-hospitality-menu-grid {
+    columns: 2;
+    column-gap: 5rem;
+  }
+}
+
+.t-hospitality-menu-course {
+  break-inside: avoid;
+  margin-bottom: var(--space-10);
+}
+
+.t-hospitality-course-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-4);
+  padding-top: var(--space-3);
+  border-top: var(--rule);
+}
+
+.t-hospitality-course-title {
+  color: rgb(var(--color-text));
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 500;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+}
+
+.t-hospitality-course-note {
+  color: rgb(var(--color-muted));
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  line-height: 1.4;
+  text-align: right;
+}
+
+.t-hospitality-dish-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.t-hospitality-dish {
+  padding-block: var(--space-3);
+}
+
+.t-hospitality-dish-line {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.t-hospitality-dish-name {
+  flex: 0 1 auto;
+  min-width: 0;
+  color: rgb(var(--color-text));
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+.t-hospitality-dish-leader {
+  flex: 1 1 1.5rem;
+  min-width: 1.5rem;
+  border-bottom: 1px dotted rgb(var(--color-muted) / 0.5);
+  transform: translateY(-0.15em);
+}
+
+.t-hospitality-dish-price {
+  flex: none;
+  color: rgb(var(--color-text));
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.t-hospitality-dish-desc {
+  display: block;
+  max-width: 46ch;
+  margin-top: 0.15rem;
+  color: rgb(var(--color-muted));
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+/* ==========================================================================
+   Quote band
+   ========================================================================== */
+
+.t-hospitality-quote {
+  background: rgb(var(--color-inverse-bg));
+  color: rgb(var(--color-inverse-text));
+}
+
+.t-hospitality-quote-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-6);
+  padding-block: var(--space-14);
+}
+
+@media (min-width: 768px) {
+  .t-hospitality-quote-grid {
+    grid-template-columns: 5rem minmax(0, 1fr);
+    gap: var(--space-12);
+    padding-block: 6rem;
+  }
+}
+
+.t-hospitality-quote-mark {
+  color: rgb(var(--color-inverse-text) / 0.22);
+  font-family: var(--font-display);
+  font-size: 4rem;
+  line-height: 0.65;
+}
+
+@media (min-width: 768px) {
+  .t-hospitality-quote-mark {
+    font-size: 7rem;
+  }
+}
+
+.t-hospitality-quote-text {
+  max-width: 30ch;
+  color: rgb(var(--color-inverse-text));
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 1.15rem + 2vw, 2.75rem);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.012em;
+  text-wrap: pretty;
+}
+
+.t-hospitality-quote-attribution {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+  color: rgb(var(--color-inverse-text) / 0.66);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.t-hospitality-quote-attribution::before {
+  content: "";
+  display: block;
+  width: 2rem;
+  height: 1px;
+  background: rgb(var(--color-inverse-text) / 0.4);
+}
+
+.t-hospitality-quote-cta {
+  margin-top: var(--space-8);
+}
+
+/* ==========================================================================
+   Closing band — hours and the booking pill, on inverse
+   ========================================================================== */
+
+.t-hospitality-cta {
+  background: rgb(var(--color-inverse-bg));
+  color: rgb(var(--color-inverse-text));
+}
+
+.t-hospitality-cta-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-12);
+  padding-block: var(--space-14);
+}
+
+@media (min-width: 768px) {
+  .t-hospitality-cta-grid {
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 0.85fr);
+    align-items: start;
+    gap: 4rem;
+    padding-block: 6rem;
+  }
+}
+
+.t-hospitality-cta-title {
+  max-width: 16ch;
+  color: rgb(var(--color-inverse-text));
+  font-size: var(--text-4xl);
+}
+
+.t-hospitality-cta-body {
+  max-width: 46ch;
+  margin-top: var(--space-5);
+  color: rgb(var(--color-inverse-text) / 0.72);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-body);
+}
+
+.t-hospitality-hours {
+  margin: var(--space-5) 0 0;
+  padding: 0;
+}
+
+.t-hospitality-hours-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-block: 0.7rem;
+  border-top: 1px solid rgb(var(--color-inverse-text) / 0.16);
+  color: rgb(var(--color-inverse-text) / 0.74);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.4;
+}
+
+.t-hospitality-hours-row:last-child {
+  border-bottom: 1px solid rgb(var(--color-inverse-text) / 0.16);
+}
+
+/* Today is heavier, never a different colour. */
+.t-hospitality-hours-row.is-today {
+  color: rgb(var(--color-inverse-text) / 0.74);
+  font-weight: 600;
+}
+
+.t-hospitality-hours-row dt,
+.t-hospitality-hours-row dd {
+  margin: 0;
+}
+
+.t-hospitality-hours-time {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.t-hospitality-hours-note {
+  margin-top: var(--space-4);
+  color: rgb(var(--color-inverse-text) / 0.56);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+}
+
+/* ==========================================================================
+   Figures
+   ========================================================================== */
+
+.t-hospitality-stats {
+  background: rgb(var(--color-bg));
+}
+
+.t-hospitality-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-8) var(--space-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.t-hospitality-stat {
+  padding-top: var(--space-5);
+  border-top: var(--rule);
+}
+
+.t-hospitality-stat-value {
+  color: rgb(var(--color-text));
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 1.9rem + 2.4vw, 3.5rem);
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.t-hospitality-stat-label {
+  max-width: 20ch;
+  margin-top: var(--space-3);
+  color: rgb(var(--color-muted));
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   Reduced motion: the wipe and the hover crop both collapse to still frames.
+   Content is complete in either state.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .t-hospitality-card:hover .t-hospitality-card-image {
+    transform: none;
+  }
+}

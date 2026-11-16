@@ -1,0 +1,778 @@
+/* ==========================================================================
+   Practice — a trust-led professional practice.
+   Warm paper, one rust accent, hairlines instead of shadows, and a serif
+   display face carried by tabular figures and a single link rule.
+
+   The :root block below overrides token values only. Everything after it is
+   namespaced `.t-practice-*` section furniture; there are no global element
+   selectors, no global utilities and no token renamed.
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* ---------------------------------------------------------------- colour */
+  --color-bg: 250 248 244; /* #FAF8F4 */
+  --color-surface: 255 255 255; /* #FFFFFF */
+  --color-elevated: 255 255 255; /* #FFFFFF */
+  --color-text: 20 20 20; /* #141414 */
+  --color-muted: 107 107 102; /* #6B6B66 */
+  --color-border: 230 226 218; /* #E6E2DA */
+  --color-primary: 20 20 20; /* #141414 */
+  --color-accent: 180 85 45; /* #B4552D */
+  --color-accent-ink: 255 255 255; /* #FFFFFF */
+  --color-inverse-bg: 28 28 26; /* #1C1C1A */
+  --color-inverse-text: 245 243 238; /* #F5F3EE */
+
+  /* ------------------------------------------------------------ typography */
+  --font-display: var(--font-source-serif, "Source Serif 4"), ui-serif, Georgia,
+    "Times New Roman", serif;
+  --font-sans: var(--font-inter, "Inter"), ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", sans-serif;
+
+  /* The display sizes run 52–88px: a page title tops out at 76px, the home
+     statement at 88px. Text below 2xl stays fixed for predictable UI. */
+  --text-base: 1.0625rem; /* 17px */
+  --text-lg: 1.3125rem; /* 21px */
+  --text-xl: 1.5rem; /* 24px */
+  --text-2xl: 1.75rem; /* 28px */
+  --text-3xl: clamp(2rem, 1.6rem + 1.8vw, 2.75rem); /* 32 → 44px */
+  --text-4xl: clamp(2.6rem, 2.1rem + 2.4vw, 3.4rem); /* 42 → 54px */
+  --text-5xl: clamp(3.25rem, 2.4rem + 3.8vw, 4.75rem); /* 52 → 76px */
+  --text-6xl: clamp(3.4rem, 2.1rem + 6.2vw, 5.5rem); /* 54 → 88px */
+
+  --leading-display: 1.04;
+  --leading-body: 1.6;
+
+  /* --------------------------------------------------------------- radius */
+  /* Square images, a 2px field/button edge. Nothing softer. */
+  --radius-sm: 2px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius: var(--radius-sm);
+
+  /* ---------------------------------------------------------------- prose */
+  /* Captured WordPress HTML inherits the same measure, link rule and serif
+     headings as the sections. */
+  --prose-measure: 68ch;
+  --prose-size-body: var(--text-base);
+  --prose-leading-body: var(--leading-body);
+  --prose-color-body: rgb(var(--color-text));
+  --prose-color-muted: rgb(var(--color-muted));
+  --prose-size-h1: var(--text-4xl);
+  --prose-size-h2: var(--text-3xl);
+  --prose-size-h3: var(--text-xl);
+  --prose-size-h4: var(--text-lg);
+  --prose-weight-heading: 500;
+  --prose-leading-heading: var(--leading-display);
+  --prose-tracking-heading: -0.02em;
+  --prose-link-color: rgb(var(--color-text));
+  --prose-underline-offset: var(--space-1);
+  --prose-underline-width: 1px;
+  --prose-color-check: rgb(var(--color-text));
+  --prose-size-quote: var(--text-xl);
+  --prose-leading-quote: 1.4;
+  --prose-rule-quote: 1px solid rgb(var(--color-border));
+  --prose-space-quote-indent: var(--space-6);
+  --prose-radius-media: var(--radius-md);
+}
+
+/* ==========================================================================
+   Shared furniture
+   ========================================================================== */
+
+.t-practice-container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.t-practice-section {
+  padding-block: var(--space-14); /* 56px */
+}
+
+.t-practice-display {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: var(--leading-display);
+  text-wrap: balance;
+}
+
+.t-practice-eyebrow {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 0.6875rem; /* 11px */
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgb(var(--color-muted));
+}
+
+.t-practice-caption {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem; /* 13px */
+  line-height: 1.5;
+  color: rgb(var(--color-muted));
+}
+
+/* ------------------------------------------------------------ link rule ---
+   The signature device. Every inline link sits on a 1px rule, offset 4px.
+   On hover and keyboard focus the rule becomes 2px and takes the accent. The
+   words themselves stay ink; a block link carries the rule on its label. */
+
+.t-practice-link,
+.t-practice-link-label {
+  text-decoration-line: underline;
+  text-decoration-color: currentColor;
+  text-decoration-thickness: 1px;
+  text-underline-offset: var(--space-1);
+  transition: text-decoration-color var(--duration-micro) var(--ease-out),
+    color var(--duration-micro) var(--ease-out);
+}
+
+.t-practice-link:hover,
+.t-practice-link:focus-visible,
+.t-practice-link-block:hover .t-practice-link-label,
+.t-practice-link-block:focus-visible .t-practice-link-label {
+  text-decoration-color: rgb(var(--color-accent));
+  text-decoration-thickness: 2px;
+}
+
+.t-practice-link {
+  color: inherit;
+}
+
+.t-practice-link-block {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.t-practice-arrow {
+  flex: none;
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.t-practice-link:hover .t-practice-arrow,
+.t-practice-link:focus-visible .t-practice-arrow,
+.t-practice-link-block:hover .t-practice-arrow,
+.t-practice-link-block:focus-visible .t-practice-arrow,
+.t-practice-btn:hover .t-practice-arrow,
+.t-practice-btn:focus-visible .t-practice-arrow {
+  transform: translateX(var(--space-1));
+}
+
+/* The one filled control. Accent by default, ink on hover. */
+.t-practice-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  min-height: var(--space-12);
+  padding: var(--space-3) var(--space-5);
+  border: 1px solid rgb(var(--color-accent));
+  border-radius: var(--radius-sm);
+  background-color: rgb(var(--color-accent));
+  color: rgb(var(--color-accent-ink));
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  transition: background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+
+.t-practice-btn:hover {
+  border-color: rgb(var(--color-primary));
+  background-color: rgb(var(--color-primary));
+  color: rgb(var(--color-bg));
+}
+
+.t-practice-btn:focus-visible {
+  outline: 2px solid rgb(var(--color-text));
+  outline-offset: 3px;
+  box-shadow: none;
+}
+
+/* ==========================================================================
+   Hero — rule, eyebrow, 7/5 split, 4:5 portrait, caption
+   ========================================================================== */
+
+.t-practice-hero {
+  padding-block: var(--space-14);
+}
+
+.t-practice-hero-grid {
+  display: grid;
+  gap: var(--space-10);
+  padding-top: var(--space-6);
+  border-top: var(--rule);
+}
+
+.t-practice-hero-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.t-practice-hero-title {
+  max-width: 16ch;
+  margin: var(--space-7) 0 0;
+  font-size: var(--text-6xl);
+}
+
+.t-practice-lede {
+  max-width: 44ch;
+  margin: var(--space-8) 0 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-lg);
+  line-height: 1.55;
+  color: rgb(var(--color-muted));
+}
+
+.t-practice-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4) var(--space-7);
+  margin-top: var(--space-10);
+}
+
+.t-practice-actions > .t-practice-link {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.4;
+}
+
+/* Stacked below 1024: the photograph fills the column at every width, so a
+   tablet never gets a 30rem portrait floating in a wider column. The split
+   itself constrains it above 1024. */
+.t-practice-hero-figure {
+  max-width: none;
+  margin: 0;
+}
+
+.t-practice-hero-figure figcaption {
+  margin-top: var(--space-3);
+}
+
+/* Contract-only compositions. The practice's own pages use split. */
+.t-practice-hero--centered {
+  text-align: center;
+}
+
+.t-practice-hero-centered {
+  max-width: 46rem;
+  margin-inline: auto;
+  padding-top: var(--space-8);
+  border-top: var(--rule);
+}
+
+.t-practice-hero--centered .t-practice-hero-title {
+  max-width: 22ch;
+  margin-inline: auto;
+  font-size: var(--text-5xl);
+}
+
+.t-practice-hero--centered .t-practice-lede {
+  margin-inline: auto;
+}
+
+.t-practice-hero--centered .t-practice-actions {
+  justify-content: center;
+}
+
+.t-practice-hero.t-practice-hero--full {
+  position: relative;
+  display: flex;
+  min-height: clamp(32rem, 60vh, 42rem);
+  padding-block: 0;
+  overflow: hidden;
+  background-color: rgb(var(--color-inverse-bg));
+  color: rgb(var(--color-inverse-text));
+}
+
+.t-practice-hero-full-media {
+  position: absolute;
+  inset: 0;
+}
+
+.t-practice-hero-full-scrim {
+  position: absolute;
+  inset: 0;
+  background-color: rgb(var(--color-inverse-bg) / 0.72);
+}
+
+.t-practice-hero-full-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: 100%;
+  align-items: flex-end;
+  padding-block: var(--space-16);
+}
+
+.t-practice-hero-full-copy {
+  max-width: 46rem;
+}
+
+.t-practice-hero--full .t-practice-hero-title {
+  max-width: 18ch;
+  font-size: var(--text-5xl);
+}
+
+.t-practice-hero--full .t-practice-eyebrow {
+  color: rgb(var(--color-inverse-text) / 0.88);
+}
+
+.t-practice-hero--full .t-practice-lede {
+  color: rgb(var(--color-inverse-text) / 0.9);
+}
+
+.t-practice-hero-full-caption {
+  margin-top: var(--space-6);
+  color: rgb(var(--color-inverse-text) / 0.8);
+}
+
+/* At 1024–1279 the 7/5 split leaves a 539–630px copy column: 88px puts
+   "Steady" alone on the first line. One step down keeps a three-line rag and
+   the photograph still reads. */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .t-practice-hero-title {
+    font-size: var(--text-5xl);
+  }
+}
+
+/* ==========================================================================
+   PageHead — eyebrow, display title, hairline, three sibling links
+   ========================================================================== */
+
+.t-practice-pagehead {
+  padding-block: var(--space-14);
+}
+
+.t-practice-pagehead-top {
+  padding-top: var(--space-6);
+  border-top: var(--rule);
+}
+
+.t-practice-page-title {
+  max-width: 18ch;
+  margin: var(--space-7) 0 0;
+  font-size: var(--text-5xl);
+}
+
+.t-practice-tagline {
+  max-width: 46ch;
+  margin: var(--space-7) 0 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-lg);
+  line-height: 1.55;
+  color: rgb(var(--color-muted));
+}
+
+.t-practice-page-rule {
+  margin-top: var(--space-10);
+  border-top: var(--rule);
+}
+
+.t-practice-page-links {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.t-practice-page-links > li {
+  border-top: var(--rule);
+}
+
+.t-practice-page-links > li:first-child {
+  border-top: 0;
+}
+
+.t-practice-page-link {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding-block: var(--space-5);
+}
+
+.t-practice-page-link-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.t-practice-page-link-label {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.t-practice-index {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  color: rgb(var(--color-muted));
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   FeatureGrid — a ruled index of services, no cards, no shadows
+   ========================================================================== */
+
+.t-practice-feature-head {
+  display: grid;
+  gap: var(--space-5);
+  padding-top: var(--space-6);
+  border-top: var(--rule);
+}
+
+.t-practice-feature-title {
+  max-width: 22ch;
+  margin: 0;
+  font-size: var(--text-3xl);
+}
+
+.t-practice-feature-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-9);
+  margin: var(--space-12) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.t-practice-feature-item {
+  padding-top: var(--space-6);
+  border-top: var(--rule);
+}
+
+.t-practice-feature-anchor {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.t-practice-feature-item-title {
+  margin: var(--space-5) 0 0;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+
+.t-practice-feature-body {
+  max-width: 34ch;
+  margin: var(--space-3) 0 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-body);
+  color: rgb(var(--color-muted));
+}
+
+.t-practice-feature-more {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  align-self: flex-start;
+  margin-top: auto;
+  padding-top: var(--space-6);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.4;
+}
+
+/* ==========================================================================
+   QuoteBand — the single dark moment, still left-aligned
+   ========================================================================== */
+
+.t-practice-quote {
+  padding-block: var(--space-14);
+  background-color: rgb(var(--color-inverse-bg));
+  color: rgb(var(--color-inverse-text));
+}
+
+.t-practice-quote-inner {
+  display: grid;
+  gap: var(--space-8);
+  margin: 0;
+  padding-top: var(--space-10);
+  border-top: 1px solid rgb(var(--color-inverse-text) / 0.22);
+}
+
+.t-practice-quote-body {
+  margin: 0;
+}
+
+.t-practice-quote-text {
+  max-width: 28ch;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: 500;
+  line-height: 1.22;
+  letter-spacing: -0.015em;
+  text-wrap: pretty;
+}
+
+.t-practice-quote-aside {
+  padding-top: var(--space-6);
+  border-top: 1px solid rgb(var(--color-inverse-text) / 0.22);
+}
+
+.t-practice-quote-attribution {
+  display: block;
+  max-width: 32ch;
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-style: normal;
+  line-height: 1.6;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgb(var(--color-inverse-text) / 0.72);
+}
+
+.t-practice-quote-cta {
+  margin: var(--space-5) 0 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.4;
+}
+
+.t-practice-on-inverse :focus-visible {
+  outline: 2px solid rgb(var(--color-inverse-text));
+  outline-offset: 4px;
+  box-shadow: none;
+}
+
+/* ==========================================================================
+   CtaBand — a closing statement, ruled above and below
+   ========================================================================== */
+
+.t-practice-cta {
+  padding-block: var(--space-14);
+}
+
+.t-practice-cta-inner {
+  display: grid;
+  gap: var(--space-8);
+  padding-block: var(--space-10);
+  border-top: var(--rule);
+  border-bottom: var(--rule);
+}
+
+.t-practice-cta-title {
+  max-width: 16ch;
+  margin: 0;
+  font-size: var(--text-5xl);
+}
+
+.t-practice-cta-copy {
+  max-width: 38ch;
+}
+
+.t-practice-cta-body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-body);
+  color: rgb(var(--color-muted));
+}
+
+.t-practice-cta-actions {
+  margin-top: var(--space-8);
+}
+
+/* ==========================================================================
+   StatBand — the credentials band: a hairline above and below, display
+   values with tabular numerals, small letter-spaced labels.
+   ========================================================================== */
+
+.t-practice-stat {
+  padding-block: var(--space-14);
+}
+
+.t-practice-stat-band {
+  padding-block: var(--space-8);
+  border-top: var(--rule);
+  border-bottom: var(--rule);
+}
+
+.t-practice-stat-eyebrow {
+  margin-bottom: var(--space-6);
+}
+
+.t-practice-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+  gap: var(--space-8) var(--space-6);
+  margin: 0;
+}
+
+.t-practice-stat-cell {
+  min-width: 0;
+}
+
+.t-practice-stat-label {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgb(var(--color-muted));
+}
+
+.t-practice-stat-value {
+  margin: var(--space-2) 0 0;
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  font-variant-numeric: tabular-nums lining-nums;
+  text-wrap: balance;
+}
+
+/* ==========================================================================
+   Breakpoints
+   ========================================================================== */
+
+@media (min-width: 640px) {
+  .t-practice-feature-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-12) var(--space-8);
+  }
+
+  .t-practice-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 768px) {
+  .t-practice-section,
+  .t-practice-hero,
+  .t-practice-pagehead,
+  .t-practice-quote,
+  .t-practice-cta,
+  .t-practice-stat {
+    padding-block: 6rem; /* 96px */
+  }
+
+  .t-practice-feature-grid {
+    margin-top: var(--space-14);
+  }
+
+  .t-practice-stat-band {
+    padding-block: var(--space-10);
+  }
+
+  .t-practice-quote-inner {
+    padding-top: var(--space-12);
+  }
+}
+
+@media (min-width: 1024px) {
+  .t-practice-hero-grid {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: clamp(3rem, 5vw, 6rem);
+    align-items: start;
+    padding-top: var(--space-8);
+  }
+
+  .t-practice-hero-grid[data-has-image="false"] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .t-practice-hero-grid[data-has-image="false"] .t-practice-hero-copy {
+    max-width: 46rem;
+  }
+
+  .t-practice-feature-head {
+    grid-template-columns: 3fr 9fr;
+    gap: var(--space-8);
+    align-items: start;
+    padding-top: var(--space-8);
+  }
+
+  .t-practice-feature-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-14) var(--space-12);
+  }
+
+  .t-practice-feature-grid[data-columns="2"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .t-practice-page-links {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .t-practice-page-links > li {
+    border-top: 0;
+    border-left: var(--rule);
+  }
+
+  .t-practice-page-links > li:first-child {
+    border-left: 0;
+  }
+
+  .t-practice-page-link {
+    height: 100%;
+    padding: var(--space-6) var(--space-8) var(--space-4);
+  }
+
+  .t-practice-page-links > li:first-child .t-practice-page-link {
+    padding-left: 0;
+  }
+
+  .t-practice-page-links > li:last-child .t-practice-page-link {
+    padding-right: 0;
+  }
+
+  .t-practice-quote-inner {
+    grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+    gap: var(--space-16);
+    align-items: end;
+  }
+
+  .t-practice-quote-aside {
+    margin-bottom: var(--space-1);
+  }
+
+  .t-practice-cta-inner {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: var(--space-16);
+    align-items: end;
+    padding-block: var(--space-16);
+  }
+
+  .t-practice-stats {
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: 0;
+  }
+
+  .t-practice-stats > .t-practice-stat-cell + .t-practice-stat-cell {
+    padding-left: var(--space-8);
+    border-left: var(--rule);
+  }
+}

@@ -29,9 +29,14 @@ it, proves it is WordPress, and writes `.env.local` before
 | `src/lib/wp/` | Typed WordPress client: pages, media, fetcher |
 | `src/app/[...slug]` | Page routes with permalink parity and real 404s |
 | `src/app/page.tsx` | Neutral home: site name and top-level pages |
-| `src/app/globals.css` | Neutral tokens (grayscale, system font); the design pass swaps values |
+| `src/styles/theme.base.css` | Template skin, regenerated from `templates/<name>/theme.css`; never edit |
+| `src/styles/theme.css` | Client brand token values; created once, edited by the design pass, never regenerated |
+| `src/template-sections/` | Section components regenerated from the chosen template |
+| `src/config/theme.ts` | The chosen template's theme values, regenerated |
+| `src/app/globals.css` | Base primitives and neutral fallbacks |
 | `src/components/site-image.tsx` | Image slot: visible placeholder, aspect ratio, retry |
-| `src/components/navigation-pending.tsx` | Page-level pending skeleton for client navigation |
+| `src/components/motion/` | Reveal observer, route progress and reduced-motion provider |
+| `src/components/site-header-shell.tsx` | Sticky header shell with scroll hysteresis |
 | `docs/site/00-status.md` | Build state and what is stubbed |
 | `.opencode/skills/` | The build skills |
 
@@ -48,5 +53,6 @@ it, proves it is WordPress, and writes `.env.local` before
 npm run check          # typecheck + lint + build, one pass
 npm run check:fast     # typecheck + lint
 bash scripts/check.sh --perf   # adds one server + the perf/brand gate
+npm run shots -- --url http://localhost:3000   # home/inner/mobile screenshots
 npm run probe -- https://origin.example /tmp/wp-probe all   # batched probes
 ```

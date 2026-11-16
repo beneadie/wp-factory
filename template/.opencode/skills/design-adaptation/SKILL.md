@@ -68,8 +68,13 @@ Fill `docs/site/<client>/design-tokens.md` (template in `references/`). Extract:
 - **Density**: airy vs compact; choose spacing tokens accordingly.
 
 ### 3. Map to the theme
-Apply tokens in the theme file and CSS variables. Keep the role names; swap the
-values. Restrict arbitrary values.
+Apply tokens in `src/styles/theme.css` and CSS variables. Keep the role names;
+swap the values. Restrict arbitrary values.
+
+`src/styles/theme.css` is the client's file and is never regenerated.
+`src/styles/theme.base.css`, `src/config/theme.ts` and
+`src/template-sections/` are regenerated from the chosen template on every run;
+never put client values in them.
 
 ### 4. Restyle by section
 Go section by section in the order they appear. For each:
@@ -128,10 +133,13 @@ Run `verification`. A skin is not done until it passes.
 ## References
 
 - `references/design-tokens-template.md` — the token sheet to fill.
+- `references/visual-review.md` — the screenshot rubric; appearance needs a
+  viewed PNG, not the accessibility tree.
 - `_shared/design-brief-template.md` — intake questions.
 - `docs/craft/page-archetypes.md` — what each page needs.
 
 If `docs/craft/` does not exist, create `design-tokens.md` and
-`design-brief.md` under `docs/site/<client>/` first and use the repo's
-`src/app/globals.css` token block as the design system. Do not block the
+`design-brief.md` under `docs/site/<client>/` first and use
+`src/styles/tokens.css` plus the composed `src/styles/theme.base.css` as the
+design system. Write client values to `src/styles/theme.css`. Do not block the
 restyle on missing craft docs.

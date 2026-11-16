@@ -11,6 +11,7 @@
     "check": "bash scripts/check.sh",
     "check:fast": "bash scripts/check.sh --fast",
     "check:perf": "node scripts/check-perf.mjs",
+    "shots": "node scripts/shots.mjs",
     "probe": "bash scripts/wp-probe.sh"
   },
   "dependencies": {

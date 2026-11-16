@@ -39,14 +39,14 @@ artifact_ok() {
 # Render a phase prompt with the job's values substituted.
 render() {
   local template="$ROOT/factory/prompts/$1.md"
-  python3 - "$template" "$slug" "$name" "$wp_url" "${niche:-unknown}" "${site_mode:-store}" <<'PY'
+  python3 - "$template" "$slug" "$name" "$wp_url" "${niche:-unknown}" "${site_mode:-store}" "${TEMPLATE:-unknown}" <<'PY'
 import sys
-path, slug, name, url, niche, mode = sys.argv[1:7]
+path, slug, name, url, niche, mode, template = sys.argv[1:8]
 text = open(path).read()
 for key, value in (
     ("{{slug}}", slug), ("{{name}}", name),
     ("{{wp_url}}", url), ("{{niche}}", niche or "unknown"),
-    ("{{site_mode}}", mode or "store"),
+    ("{{site_mode}}", mode or "store"), ("{{template}}", template or "unknown"),
 ):
     text = text.replace(key, value)
 sys.stdout.write(text)

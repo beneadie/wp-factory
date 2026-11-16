@@ -2,24 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  /* Neutral base. The design pass replaces these values per client; nothing
-     here should read as a brand. */
-  --color-bg: 255 255 255;
-  --color-surface: 250 250 250;
-  --color-text: 17 17 17;
-  --color-muted: 107 114 128;
-  --color-border: 229 231 235;
-  --color-primary: 17 17 17;
-  --color-accent: 17 17 17;
-  --color-success: 22 101 52;
-  --color-warning: 161 98 7;
-  --color-error: 153 27 27;
-
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-
-  --radius: 2px;
-}
+/* The design system loads after the Tailwind layers so its tokens, the prose
+   layer and the motion primitives win over utility output. theme.base.css is
+   the template skin and is regenerated on every run; theme.css is the client's
+   own overrides and loads last, so the client always wins. */
+@import "../styles/tokens.css";
+@import "../styles/prose.css";
+@import "../styles/motion.css";
+@import "../styles/theme.base.css";
+@import "../styles/theme.css";
 
 @layer base {
   html {
@@ -68,12 +59,28 @@
     @apply btn border border-border bg-transparent text-text hover:border-text;
   }
 
+  /* For inverse bands (quote band, full-bleed hero). The base set is
+     primary/outline; overlays may restyle, but these two names stay. */
+  .btn-inverse {
+    @apply btn bg-bg text-text hover:bg-surface;
+  }
+
+  .btn-outline-inverse {
+    @apply btn border border-inverse-text/40 bg-transparent text-inverse-text hover:border-inverse-text;
+  }
+
   .field {
     @apply w-full rounded-[var(--radius)] border border-border bg-surface px-4 py-3 text-sm transition-colors duration-200 focus:border-text focus-visible:outline-none;
   }
 
   .link-underline {
     @apply relative inline-block after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-current after:transition-[width] after:duration-300 hover:after:w-full;
+  }
+
+  /* Captured WordPress HTML. Every page that echoes theme markup wraps it in
+     this scope; prose.css does the typography. */
+  .wp-prose {
+    @apply mx-auto;
   }
 }
 

@@ -24,6 +24,7 @@ npm run dev        # local dev
 npm run check      # typecheck + lint + build, one pass
 npm run check:fast # typecheck + lint only
 bash scripts/check.sh --perf   # the above plus one server + check:perf
+npm run shots -- --url http://localhost:3000   # home/inner/mobile screenshots
 npm run probe -- https://origin.example /tmp/wp-probe all
 ```
 
@@ -50,13 +51,21 @@ Tests are the slowest part of a loop and usually repeat. Run them deliberately:
   add store UI to a content site.
 - **Never remove a capability to satisfy a scope.** Gate it by mode. See
   `agent-conduct`.
+- **Judge appearance from a screenshot, not the accessibility tree.** The
+  Playwright MCP server is accessibility-tree based by default and does **not**
+  show appearance. Before declaring a page done, call `browser_take_screenshot`,
+  view the image, and check it against
+  `.opencode/skills/design-adaptation/references/visual-review.md`. A passing
+  DOM/ARIA tree is not visual evidence.
 - **Do not mutate WordPress from build/render code.** Only BFF route handlers
   may POST.
 - **Keep URL parity.** Preserve the origin's permalinks, including nesting and
   the trailing-slash style. Do not assume `/shop/` or `/product/`.
 - **Site specifics live in one place.** `src/config/site.ts` for names, nav,
-  domains; `src/app/globals.css` for design tokens. Never hardcode a brand name,
-  colour or domain inside a component.
+  domains; `src/styles/theme.css` for client brand token values. Never hardcode a
+  brand name, colour or domain inside a component. `src/styles/theme.base.css`,
+  `src/config/theme.ts` and `src/template-sections/` are regenerated from the
+  template: never edit them for a client look.
 - Prefer server components. Add `"use client"` only to the smallest interactive
   leaf.
 - **Document traps.** When you hit a non-obvious API or rendering behaviour,
@@ -69,8 +78,12 @@ src/
   app/                 # App Router routes
     [...slug]/         # WordPress pages (permalink parity, real 404s)
     api/               # BFF route handlers (store builds)
-  components/          # shared UI (image slot, navigation pending)
+  components/          # shared UI (image slot, motion, sticky header)
   config/site.ts       # all client-specific values
+  config/theme.ts      # template theme values (regenerated)
+  styles/theme.base.css # template skin (regenerated; never edit)
+  styles/theme.css     # client brand token values (never regenerated)
+  template-sections/   # section components (regenerated from the template)
   lib/
     wp/                # typed WordPress client (pages, media)
 docs/
@@ -91,5 +104,8 @@ docs/
   never hidden.
 - `npm run check` passes (typecheck, lint and build in one pass).
 - `npm run check:perf` passes and `docs/verification/perf.json` exists.
+- Home, an inner page and mobile were screenshotted, viewed, and judged against
+  the visual rubric; `docs/site/design-notes.md` records what was applied and
+  what was deliberately not matched.
 - `docs/site/00-status.md` states what works and what is still stubbed.
 - No secret, token or credential is in the working tree.

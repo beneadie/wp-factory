@@ -13,7 +13,7 @@ intake	Phase 1 Unknowns	docs/wp-discovery/unknowns.md	all
 intake	Phase 2a Content	docs/wp-discovery/content-seo.md,docs/site/06-brand-assets.md	all
 commerce	Phase 2b Commerce	docs/wp-discovery/capability-register.md,docs/wp-discovery/commerce.md	store
 spikes	Phase 3 Spikes	docs/wp-discovery/spike-results.md	store
-base	Phase 4a Base	docs/site/base.md	all
+base	Phase 4a Base	docs/site/base.md,docs/site/design-notes.md	all
 commerce-build	Phase 4c Commerce	docs/site/commerce-build.md	store
 substrate	Phase 4b Substrate	docs/craft/interaction-states.md	all
 verify	Phase 5 Verify	docs/verification/perf.json	all

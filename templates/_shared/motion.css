@@ -1,0 +1,66 @@
+/* ==========================================================================
+   motion.css — the two reveal primitives, and nothing else.
+
+   There is one easing family (--ease-out) and one duration per primitive.
+   Do not add curves here; a template that wants slower motion overrides the
+   duration token in theme.css.
+
+   Both primitives are pure CSS: they play on paint, need no observer, and are
+   completely inert under prefers-reduced-motion — the content is visible with
+   no transform, no clip and no fade.
+
+   Usage
+   -----
+   <h2 class="reveal">…</h2>
+   <div class="reveal-image"><SiteImage … /></div>
+
+   For body copy, use .reveal on the block, never on every inline element.
+   ========================================================================== */
+
+/* 12px rise, 420ms. */
+@keyframes ds-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Clip-path wipe, 700ms. Applied to the slot around a decoded image so the
+   photo is uncovered rather than faded in. */
+@keyframes ds-reveal-image {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    animation: ds-reveal var(--duration-base) var(--ease-out) both;
+  }
+
+  .reveal-image {
+    animation: ds-reveal-image var(--duration-slow) var(--ease-out) both;
+  }
+}
+
+/* Explicit no-op: content visible, no animation, no reserved clip. This also
+   documents intent for anyone reading the reduced-motion path. */
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .reveal-image {
+    animation: none;
+    clip-path: none;
+  }
+}

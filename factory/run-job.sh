@@ -69,12 +69,17 @@ slug="$(read_field slug)"
 name="$(read_field name)"
 wp_url="$(read_field wp_url)"
 niche="$(read_field niche)"
+job_template="$(read_field template)"
 dir=""
+site_existed=0
 if [ -d "$ROOT/sites/$slug" ]; then
   # Legacy location, from before SITES_ROOT existed.
   dir="$ROOT/sites/$slug"
 else
   dir="$SITES_ROOT/$slug"
+fi
+if [ -d "$dir" ]; then
+  site_existed=1
 fi
 logdir="$ROOT/logs/$slug"
 
@@ -214,6 +219,9 @@ SITE_DESCRIPTION=The website for $name.
 SITE_URL=http://localhost:3000
 SITE_LOCALE=en-IE
 EOF
+  if [ -n "$job_template" ]; then
+    printf 'TEMPLATE=%s\n' "$job_template" >> "$dir/.env.local"
+  fi
 fi
 
 # Keep the mode line authoritative on resume, including sites created before
@@ -223,6 +231,270 @@ if grep -q '^SITE_MODE=' "$dir/.env.local" 2>/dev/null; then
 else
   printf 'SITE_MODE=%s\n' "$site_mode" >> "$dir/.env.local"
 fi
+
+# Template choice follows the same rule: an explicit job value wins, otherwise
+# a value already in the site stays authoritative. It is resolved from evidence
+# only when the site has none (see choose_template below).
+read_env_template() {
+  [ -f "$dir/.env.local" ] || return 0
+  awk -F= '$1 == "TEMPLATE" { sub(/^[^=]*=/, ""); sub(/\r$/, ""); print; exit }' "$dir/.env.local"
+}
+
+set_env_template() {
+  local value="$1"
+  if grep -q '^TEMPLATE=' "$dir/.env.local" 2>/dev/null; then
+    sed -i "s/^TEMPLATE=.*/TEMPLATE=$value/" "$dir/.env.local"
+  else
+    printf 'TEMPLATE=%s\n' "$value" >> "$dir/.env.local"
+  fi
+}
+
+validate_template_name() {
+  local value="$1"
+  [ -n "$value" ] || return 1
+  case "$value" in
+    *[!a-z0-9-]*) return 1 ;;
+    [!a-z0-9]*) return 1 ;;
+  esac
+  return 0
+}
+
+TEMPLATE="$(read_env_template || true)"
+if [ -n "$job_template" ]; then
+  if ! validate_template_name "$job_template"; then
+    block "template-invalid"
+  fi
+  TEMPLATE="$job_template"
+  set_env_template "$TEMPLATE"
+fi
+if ! validate_template_name "$TEMPLATE"; then
+  # A hand-edited .env.local must not become a path traversal.
+  TEMPLATE=""
+fi
+
+composed_template=""
+synclog="$logdir/sync.log"
+compose_log="$logdir/compose.log"
+
+# regenerated artifacts are separate from client artifacts; never write client state into a regenerated file.
+#
+#   regenerated on every run: src/styles/theme.base.css, src/config/theme.ts,
+#                             src/template-sections/, docs/site/template.md,
+#                             docs/site/reference/
+#   client-owned, never touched by compose: src/styles/theme.css,
+#                             docs/site/design-notes.md
+#
+# theme.base.css is the template skin. theme.css is the origin's values, created
+# once by the factory and edited only by the design pass.
+compose_regenerated_file() {
+  local from="$1" to="$2" label="$3"
+  if [ ! -f "$from" ]; then
+    echo "skip $label: not in template" >> "$compose_log"
+    return 0
+  fi
+  mkdir -p "$(dirname "$to")"
+  if cmp -s "$from" "$to" 2>/dev/null; then
+    echo "unchanged $label" >> "$compose_log"
+  else
+    cp "$from" "$to"
+    echo "regenerated $label" >> "$compose_log"
+  fi
+}
+
+ensure_client_theme() {
+  local target="$dir/src/styles/theme.css"
+  if [ -f "$target" ]; then
+    echo "kept client-owned src/styles/theme.css" >> "$compose_log"
+    return 0
+  fi
+  mkdir -p "$dir/src/styles"
+  cat > "$target" <<'EOF'
+/* theme.css — CLIENT brand overrides only.
+ *
+ * Created once for this site. The design pass writes the origin's palette and
+ * type here as token VALUES in one :root block. Never rename a token.
+ *
+ * Never edit src/styles/theme.base.css, src/config/theme.ts or
+ * src/template-sections/: those are regenerated from the template on every
+ * run. Client-only decisions belong here and in docs/site/design-notes.md.
+ */
+EOF
+  echo "created client-owned src/styles/theme.css" >> "$compose_log"
+}
+
+compose_tree() {
+  local from="$1" to="$2" label="$3"
+  mkdir -p "$(dirname "$to")"
+  if command -v rsync >/dev/null 2>&1; then
+    if rsync -a --delete "$from/" "$to/" >> "$compose_log" 2>&1; then
+      echo "composed $label" >> "$compose_log"
+      return 0
+    fi
+    echo "rsync failed for $label; using cp" >> "$compose_log"
+  fi
+  case "$to" in
+    "$dir"/*) rm -rf "$to" ;;
+    *)
+      echo "refusing to replace $to" >> "$compose_log"
+      return 1
+      ;;
+  esac
+  mkdir -p "$to"
+  cp -a "$from/." "$to/" >> "$compose_log" 2>&1
+  echo "composed $label (cp fallback)" >> "$compose_log"
+}
+
+compose_overlay() {
+  [ -n "$TEMPLATE" ] || return 0
+  local src="$ROOT/templates/$TEMPLATE"
+  if [ ! -f "$src/theme.css" ] || [ ! -f "$src/sections/index.ts" ]; then
+    echo "template-missing: $TEMPLATE (need $src/theme.css and $src/sections/index.ts)" \
+      | tee -a "$compose_log" >&2
+    block "template-missing"
+  fi
+
+  : > "$compose_log"
+  echo "template: $TEMPLATE" >> "$compose_log"
+  mkdir -p "$dir/src/styles" "$dir/src/template-sections" "$dir/src/config" \
+    "$dir/docs/site"
+
+  # Template-owned: regenerated from templates/<name>/ on every run.
+  compose_regenerated_file "$src/theme.css" "$dir/src/styles/theme.base.css" \
+    "src/styles/theme.base.css"
+  compose_regenerated_file "$src/theme.ts" "$dir/src/config/theme.ts" \
+    "src/config/theme.ts"
+  compose_regenerated_file "$src/design.md" "$dir/docs/site/template.md" \
+    "docs/site/template.md"
+
+  # Client-owned: created once, then never overwritten. The design pass owns
+  # the token values in this file.
+  ensure_client_theme
+
+  # The reference record is optional, but when an overlay ships one it belongs
+  # with the site so the design pass can read what the look came from.
+  if [ -d "$src/reference" ]; then
+    compose_tree "$src/reference" "$dir/docs/site/reference" "docs/site/reference"
+  fi
+
+  # Section components are template-owned, not agent-authored. A re-compose is
+  # authoritative for this directory.
+  compose_tree "$src/sections" "$dir/src/template-sections" "src/template-sections"
+  echo "template: composed $TEMPLATE" >> "$compose_log"
+}
+
+compose_if_ready() {
+  [ -n "$TEMPLATE" ] || return 0
+  [ "$composed_template" = "$TEMPLATE" ] && return 0
+  compose_overlay
+  composed_template="$TEMPLATE"
+}
+
+# No TEMPLATE and no explicit job value: use discovery evidence. The helper
+# writes docs/site/template-choice.md, including the weak-evidence fallback.
+choose_template() {
+  [ -n "$TEMPLATE" ] && return 0
+  local choice=""
+  mkdir -p "$dir/docs/site"
+  choice="$(python3 "$ROOT/factory/template_choice.py" --site "$dir" --slug "$slug" \
+    --write 2>>"$logdir/template-choice.log" | tail -n 1)" || choice=""
+  if [ -z "$choice" ]; then
+    choice="practice"
+    cat > "$dir/docs/site/template-choice.md" <<EOF
+# Template choice — $slug
+
+Chosen: \`practice\`
+Confidence: weak
+
+The evidence helper produced no result, so the factory defaulted to \`practice\`
+rather than guessing. Set \`TEMPLATE\` in \`.env.local\` to override.
+EOF
+  fi
+  if ! validate_template_name "$choice"; then
+    block "template-invalid"
+  fi
+  TEMPLATE="$choice"
+  set_env_template "$TEMPLATE"
+  echo "template: chose $TEMPLATE from discovery evidence (docs/site/template-choice.md)"
+}
+
+# On a resume, discovery evidence may already be on disk. Resolve it before the
+# first phase runs, so the overlay is in place even for a retried base pass.
+if [ -z "$TEMPLATE" ] && [ "$site_existed" -eq 1 ] \
+   && { [ -f "$dir/docs/wp-discovery/site-profile.md" ] \
+        || [ -f "$dir/docs/wp-discovery/capability-register.md" ]; }; then
+  choose_template
+fi
+
+compose_if_ready
+
+# Re-copy the skill set and agent config before every attempt. The template is
+# authoritative for .opencode/ and opencode.json; the site's docs/ and src/ are
+# never touched here. Only the two paths below are synced.
+sync_tree() {
+  local src="$1" dst="$2" label="$3"
+  if [ ! -d "$src" ]; then
+    echo "skip $label: template source missing" >> "$synclog"
+    return 0
+  fi
+  if command -v rsync >/dev/null 2>&1; then
+    local changes
+    changes="$(rsync -ain --delete "$src/" "$dst/" 2>/dev/null || true)"
+    if [ -z "$changes" ]; then
+      echo "unchanged $label" >> "$synclog"
+      return 0
+    fi
+    mkdir -p "$dst"
+    if ! rsync -a --delete "$src/" "$dst/" >> "$synclog" 2>&1; then
+      echo "sync failed: $label" >> "$synclog"
+      return 1
+    fi
+    echo "synced $label ($(printf '%s\n' "$changes" | wc -l | tr -d ' ') changes)" >> "$synclog"
+  else
+    if command -v diff >/dev/null 2>&1 && [ -d "$dst" ] \
+       && diff -qr "$src" "$dst" >/dev/null 2>&1; then
+      echo "unchanged $label" >> "$synclog"
+      return 0
+    fi
+    case "$dst" in
+      "$dir"/*) rm -rf "$dst" ;;
+      *)
+        echo "refusing to replace $dst" >> "$synclog"
+        return 1
+        ;;
+    esac
+    mkdir -p "$dst"
+    if ! cp -a "$src/." "$dst/" >> "$synclog" 2>&1; then
+      echo "sync failed: $label (cp fallback)" >> "$synclog"
+      return 1
+    fi
+    echo "synced $label (cp fallback)" >> "$synclog"
+  fi
+}
+
+sync_file() {
+  local src="$1" dst="$2" label="$3"
+  if [ ! -f "$src" ]; then
+    echo "skip $label: template source missing" >> "$synclog"
+    return 0
+  fi
+  if [ -f "$dst" ] && cmp -s "$src" "$dst"; then
+    echo "unchanged $label" >> "$synclog"
+  else
+    mkdir -p "$(dirname "$dst")"
+    if ! cp "$src" "$dst"; then
+      echo "sync failed: $label" >> "$synclog"
+      return 1
+    fi
+    echo "synced $label" >> "$synclog"
+  fi
+}
+
+sync_template() {
+  : > "$synclog"
+  printf 'sync %s template=%s\n' "$(date -u +%FT%TZ)" "${TEMPLATE:-unset}" >> "$synclog"
+  sync_tree "$ROOT/template/.opencode" "$dir/.opencode" ".opencode"
+  sync_file "$ROOT/template/opencode.json" "$dir/opencode.json" "opencode.json"
+}
 
 if [ "${DRY_RUN:-0}" != "1" ] && [ "${SKIP_INSTALL:-0}" != "1" ] \
    && [ ! -d "$dir/node_modules" ] && [ -f "$dir/package-lock.json" ]; then
@@ -297,13 +569,31 @@ for run in $runs; do
     continue
   fi
 
+  # Base needs the composed overlay, so resolve a missing template from the
+  # evidence intake has just written before the first build phase launches.
+  if [ -z "$TEMPLATE" ] && [ "$run" != "intake" ]; then
+    choose_template
+    compose_if_ready
+  fi
+
   python3 factory/queue.py set-phase --slug "$slug" --phase "$run" >/dev/null
 
   ok=0
   attempt=1
   while [ "$attempt" -le "$PHASE_ATTEMPTS" ]; do
     log="$logdir/$run-$attempt.jsonl"
+    # Template skills/config can change while a build is running. Sync before
+    # every attempt, not just at setup, so a running site sees the current set.
+    if ! sync_template; then
+      block "sync-failed"
+    fi
     prompt="$(render "$run")"
+    if [ "$run" = "base" ]; then
+      # The design pass is a sub-step of the same agent session, not a phase.
+      prompt="$prompt
+
+$(render design)"
+    fi
     args=( "$dir" "$slug" "$run" "$log" "$prompt" )
     if [ "$attempt" -gt 1 ]; then
       prompt="$prompt

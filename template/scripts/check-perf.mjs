@@ -2,9 +2,10 @@
 /**
  * check:perf — the perceived-performance and brand-asset gate.
  *
- * Static checks always run. If a URL is running (PERF_URL, default
- * http://localhost:3000 when reachable) it also verifies the built HTML exposes
- * an icon and an OG image and that both resolve.
+ * Static checks always run. If PERF_URL points at a running server it also
+ * verifies the emitted icon/OG tags and the structural rules: exactly one h1,
+ * declared image ratios, a visible LCP candidate, and no fonts.googleapis.com.
+ * `scripts/check.sh --perf` starts that server.
  *
  * Browser-measured timings (pending paint, CLS, LCP) require Playwright. Install
  * it once with `npm i -D playwright && npx playwright install chromium`; when it
@@ -40,6 +41,124 @@ async function text(rel) {
 function record(name, ok, detail, required = true) {
   results.push({ name, ok: Boolean(ok), detail, required });
   if (required && !ok) failed = true;
+}
+
+function attribute(tag, name) {
+  const match = tag.match(
+    new RegExp(`(?:^|\\s)${name}\\s*=\\s*["']?([^"'\\s>]+)`, "i"),
+  );
+  return match ? match[1] : "";
+}
+
+function hasDeclaredRatio(tag, html, index) {
+  if (/\bclass\s*=\s*["'][^"']*\baspect-/i.test(tag)) return true;
+  if (/\bstyle\s*=\s*["'][^"']*aspect-ratio\s*:/i.test(tag)) return true;
+  // SiteImage reserves the ratio on the slot wrapper, not on the img itself.
+  const before = html.slice(Math.max(0, index - 600), index);
+  const slots = before.match(
+    /<(?:span|div|figure)\b[^>]*data-image-slot[^>]*>/gi,
+  );
+  const slot = slots ? slots[slots.length - 1] : "";
+  return Boolean(slot && /\baspect-/i.test(slot));
+}
+
+function structuralChecks(html, label) {
+  const body = html
+    .replace(/<script\b[\s\S]*?<\/script>/gi, "")
+    .replace(/<style\b[\s\S]*?<\/style>/gi, "");
+
+  const h1Count = (body.match(/<h1\b/gi) || []).length;
+  record(
+    `html/${label}/h1`,
+    h1Count === 1,
+    `${h1Count} <h1> element(s)`,
+    true,
+  );
+
+  const images = [...body.matchAll(/<img\b[^>]*>/gi)];
+  const unsized = images.filter((match) => {
+    const tag = match[0];
+    const width = attribute(tag, "width");
+    const height = attribute(tag, "height");
+    return (
+      !(width && height) && !hasDeclaredRatio(tag, body, match.index ?? 0)
+    );
+  });
+  record(
+    `html/${label}/img-dimensions`,
+    unsized.length === 0,
+    unsized.length === 0
+      ? `${images.length} img(s) sized`
+      : `${unsized.length}/${images.length} lack width+height or aspect-ratio: ${unsized[0][0].slice(0, 120)}`,
+    true,
+  );
+
+  // The LCP candidate is the first image, or the h1 when there is no image. An
+  // entrance animation must not start it at opacity: 0.
+  const firstImg = images[0]?.[0] ?? "";
+  const firstH1 = body.match(/<h1\b[^>]*>/i)?.[0] ?? "";
+  const lcpTags = [firstImg, firstH1].filter(Boolean);
+  const hidden = lcpTags.filter(
+    (tag) =>
+      /\bopacity-0\b/i.test(tag) ||
+      /opacity\s*:\s*0(?:[;\s"']|$)/i.test(tag),
+  );
+  record(
+    `html/${label}/lcp-visible`,
+    hidden.length === 0,
+    hidden.length === 0
+      ? "LCP candidate starts visible"
+      : `LCP candidate starts at opacity:0: ${hidden[0].slice(0, 120)}`,
+    true,
+  );
+
+  record(
+    `html/${label}/self-hosted-fonts`,
+    !/fonts\.googleapis\.com/i.test(html),
+    /fonts\.googleapis\.com/i.test(html)
+      ? "served HTML loads fonts.googleapis.com"
+      : "no fonts.googleapis.com in served HTML",
+    true,
+  );
+}
+
+function firstInternalHref(html, base) {
+  let baseUrl;
+  try {
+    baseUrl = new URL(base);
+  } catch {
+    return "";
+  }
+  for (const match of html.matchAll(/<a\b[^>]*href=["']([^"']+)["']/gi)) {
+    let url;
+    try {
+      url = new URL(match[1], baseUrl);
+    } catch {
+      continue;
+    }
+    if (url.origin !== baseUrl.origin) continue;
+    if (url.pathname === baseUrl.pathname || url.pathname === "/") continue;
+    if (url.pathname.startsWith("/api/")) continue;
+    if (/^\/(_?styleguide)(\/|$)/.test(url.pathname)) continue;
+    if (
+      /\.(png|jpe?g|svg|webp|avif|gif|pdf|zip|css|js|xml|ico)$/i.test(
+        url.pathname,
+      )
+    ) {
+      continue;
+    }
+    return url.href;
+  }
+  return "";
+}
+
+async function fetchHtml(target) {
+  try {
+    const res = await fetch(target, { redirect: "follow" });
+    return res.ok ? await res.text() : "";
+  } catch {
+    return "";
+  }
 }
 
 async function collect(dir, acc = []) {
@@ -116,21 +235,28 @@ record("nav/pending", joined.includes("data-navigation-pending"), "page-level pe
 record("media/placeholder", joined.includes("data-image-placeholder"), "visible image placeholder");
 record("motion/reduced", /prefers-reduced-motion/.test(await text("src/app/globals.css")), "reduced-motion reset");
 
-// 4. Optional: verify the emitted tags against a server you own. No default
-// URL — checking whatever happens to listen on :3000 can validate the wrong
-// project.
+// 4. Optional: verify the emitted tags and structure against a server you own.
+// No default URL — checking whatever happens to listen on :3000 can validate the
+// wrong project.
 const url = process.env.PERF_URL || "";
 let html = "";
+let innerUrl = "";
 if (url) {
-  try {
-    const res = await fetch(url, { redirect: "follow" });
-    if (res.ok) html = await res.text();
-  } catch {
-    html = "";
-  }
+  html = await fetchHtml(url);
+  if (html) innerUrl = firstInternalHref(html, url);
 }
 
 if (html) {
+  structuralChecks(html, "home");
+  if (innerUrl) {
+    const innerHtml = await fetchHtml(innerUrl);
+    if (innerHtml) {
+      structuralChecks(innerHtml, "inner");
+    } else {
+      record("html/inner", false, `could not fetch ${innerUrl}`, false);
+    }
+  }
+
   const icon = html.match(/<link[^>]+rel=["'](?:shortcut )?icon["'][^>]*>/i)?.[0] ?? "";
   const apple = html.match(/<link[^>]+rel=["']apple-touch-icon["'][^>]*>/i)?.[0] ?? "";
   const og = html.match(/<meta[^>]+property=["']og:image["'][^>]*>/i)?.[0] ?? "";
@@ -159,6 +285,12 @@ if (html) {
     "html/checks",
     true,
     url ? `no server at ${url}` : "set PERF_URL after `next start` to check the emitted tags",
+    false,
+  );
+  record(
+    "html/structural",
+    true,
+    "set PERF_URL after `next start` to check h1, image ratios, LCP opacity and fonts",
     false,
   );
 }

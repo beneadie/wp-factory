@@ -4,7 +4,8 @@ Telegram in, built site out. Content sites and shops, from one neutral base.
 
 ```
 wp-factory/
-├─ template/   neutral base every prospect is cloned from (skills live here)
+├─ template/   neutral base every prospect is copied from (skills live here)
+├─ templates/  visual overlays: theme.css, theme.ts, sections/, design.md
 ├─ factory/    queue, runner, Telegram transport
 ├─ sites/      generated per-prospect repos (gitignored)
 └─ logs/       one jsonl per build (gitignored)
@@ -31,9 +32,13 @@ bash factory/run-job.sh                 # terminal 2 (or cron): one job
 Or bypass Telegram:
 
 ```bash
-python3 factory/queue.py add --slug acme-wool --name "Acme Wool" --wp-url https://acme.ie
+python3 factory/queue.py add --slug acme-wool --name "Acme Wool" --wp-url https://acme.ie --template shop
 bash factory/run-job.sh
 ```
+
+`--template` is optional. Without it the runner chooses from discovery evidence
+on the first resume and records the choice in `docs/site/template-choice.md`;
+weak evidence defaults to `practice` and says so.
 
 `run-job.sh` is idempotent and guarded by `flock`, so it is safe to call from a
 timer:
@@ -72,13 +77,20 @@ opencode                  # same skills, same agent, same sessions
 
 ## Design pass
 
-The template ships with neutral tokens. After the base renders the real pages,
-hand over screenshots and run:
+Design is the last sub-step of the `base` agent run, not a separate phase. The
+agent reads `docs/site/06-brand-assets.md`, writes the origin's palette and type
+into `src/styles/theme.css` as token values only, applies the chosen template's
+section composition, starts a preview server, takes home/inner/mobile
+screenshots, compares them with the origin, fixes at most two things and writes
+`docs/site/design-notes.md`.
 
-```bash
-cd sites/acme-wool
-opencode run -c "Here is the design reference. Follow design-adaptation."
-```
+`src/styles/theme.base.css` is the template skin and is regenerated on every run.
+`src/styles/theme.css` is client-owned and is never overwritten; it loads after
+the base, so the client always wins.
+
+The Playwright MCP server provides the camera; `npm run shots -- --url ...`
+provides a scripted fallback. A page is not done until the agent has viewed the
+screenshot. See `template/.opencode/skills/design-adaptation/references/visual-review.md`.
 
 ## Contract between the two halves
 
