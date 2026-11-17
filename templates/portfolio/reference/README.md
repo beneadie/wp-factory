@@ -73,5 +73,6 @@ no fade.
 - **Capture date:** 17 November 2026, from the composed template at `/demo`
   and `/demo/inner`.
 - **Files:** `home-1440.png`, `page-head-1440.png`, `home-390.png`.
+- **Commit:** `8fc1dfb`.
 - **Type licence:** Inter and Instrument Serif are served through
   `next/font/google` under the SIL Open Font License.

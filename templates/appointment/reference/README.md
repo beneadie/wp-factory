@@ -48,6 +48,7 @@ Must demonstrate:
 - **Captured:** 17 November 2026, from the composed template at `/demo` and
   `/demo/inner`.
 - **Files:** `01-hero-1440.png`, `02-timetable-1440.png`, `03-page-head-390.png`.
+- **Commit:** `8fc1dfb`.
 - **Licence:** original layout and fixture copy. No stock photography ships with the template. Petrona and Inter are loaded through `next/font` from Google Fonts under the SIL Open Font License.
 - **Re-capture:** after a brand adaptation, replace these three images at the same widths. Do not add a fourth state; the three cover the signature, the thin page and the phone width.
 

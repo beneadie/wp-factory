@@ -69,6 +69,7 @@ Must demonstrate:
   `/demo/inner`. The hover state described above is not committed; the resting
   card is.
 - **Files:** `01-home-1440.png`, `02-pagehead-1440.png`, `03-home-390.png`.
+- **Commit:** `8fc1dfb`.
 - **Licence:** original layout and fixture copy. The captures use the template's
   demo photography (remote Unsplash and Picsum URLs in `sections/fixtures.ts`),
   which is not shipped as client art. Instrument Serif and Inter load through

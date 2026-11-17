@@ -62,6 +62,7 @@ stop. Record what remains in `docs/site/design-notes.md`.
 - **Captured:** 17 November 2026, from the composed template at `/demo` and
   `/demo/inner`.
 - **Files:** `home-1440.png`, `inner-1440.png`, `home-390.png`.
+- **Commit:** `8fc1dfb`.
 - **Licence:** original layout and fixture copy. The captures use the template's
   demo photography (remote Unsplash and Pexels URLs in `sections/fixtures.ts`),
   which is not shipped as client art. Inter loads through `next/font` under the

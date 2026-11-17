@@ -21,6 +21,7 @@ screenshot fails regardless of how good the hero looks.
 - **Captured:** 17 November 2026, from the composed template at `/demo` and
   `/demo/inner`.
 - **Files:** `home-1440.png`, `page-head-1440.png`, `home-390.png`.
+- **Commit:** `8fc1dfb`.
 - **Licence:** original layout and fixture copy. The captures use the template's
   demo photography (remote Picsum URLs in `sections/fixtures.ts`), which is not
   shipped as client art. Newsreader and Inter load through `next/font` under the

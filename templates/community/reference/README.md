@@ -14,6 +14,7 @@ crowded sidebars.
 | Template | `community` |
 | Source URL(s) | None. Composite of public community-sector conventions. |
 | Capture date | **17 November 2026** — captured from the composed template at `/demo` and `/demo/inner`. |
+| Commit | `8fc1dfb` (the commit that added the captures). |
 | Licence | Original overlay. No third-party code, image, logo or copy is reproduced. All fixture copy is fictional. |
 | Fixture photograph | The reference shots use the template's demo image (a remote Picsum URL in `sections/fixtures.ts`). A real photograph of real people must replace it before a client build goes live. |
 

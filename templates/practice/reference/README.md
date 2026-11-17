@@ -72,4 +72,4 @@ and why. A template is not signed off on source review alone.
 **Status:** captured. `01-home-1440.png`, `02-pagehead-1440.png` and
 `03-home-390.png` sit beside this file and were reviewed at 1440, 390 and 320
 on 17 November 2026. The composed page had no horizontal overflow at any of the
-three widths.
+three widths. **Commit:** `8fc1dfb`.
