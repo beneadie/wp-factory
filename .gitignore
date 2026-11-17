@@ -9,9 +9,23 @@ logs/
 # local template previews and screenshot scratch
 .density/
 
-# queue state
+# queue state and local databases/logs
 factory/queue.db
 .factory.lock
+*.db
+*.sqlite
+*.sqlite3
+*.log
+
+# editor / OS junk
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# python virtualenvs
+.venv/
+venv/
 
 # node
 node_modules/

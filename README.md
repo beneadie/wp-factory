@@ -25,7 +25,7 @@ build of a site is slower and later ones reuse the npm cache.
 ## Run a build
 
 ```bash
-python3 factory/telegram.py --loop      # terminal 1: listens for /build
+bash factory/telegram.sh --loop         # terminal 1: listens for /build
 bash factory/run-job.sh                 # terminal 2 (or cron): one job
 ```
 
@@ -67,6 +67,18 @@ For a dry run that sets the site up without spending tokens:
 DRY_RUN=1 bash factory/run-job.sh
 ```
 
+## Bot access and security
+
+The bot is private. It only accepts private chats whose ID is in
+`TELEGRAM_ALLOWED_CHAT_IDS`; if that list is empty it falls back to
+`TELEGRAM_CHAT_ID`. If neither is set it refuses to start. Unauthorized messages
+are ignored and logged with the sender's chat ID, so an accidentally public bot
+cannot enqueue work. To share access, add more IDs as a comma-separated list.
+
+`.env` holds the bot token and is gitignored; it has never been committed. If
+the token is ever exposed, revoke it in BotFather. Generated `sites/`, `logs/`,
+`factory/queue.db` and `.density/` stay local.
+
 ## Evaluate a build
 
 ```bash
@@ -96,3 +108,9 @@ screenshot. See `template/.opencode/skills/design-adaptation/references/visual-r
 
 Anything that can enqueue a row is a valid client. Nothing else needs to know
 about the runner. Job shape: `factory/job.schema.json`.
+
+## Licence
+
+All rights reserved. See `LICENSE`. This repository is public for viewing and
+evaluation only; no permission is granted to reuse, redistribute or deploy the
+code, prompts or design system.

@@ -70,7 +70,7 @@ templates/<name>/
    └─ README.md         source URL(s), screenshots, date captured, licence note
 ```
 
-`<name>` is the slug used by the queue (e.g. `kerry-woollen-mills`). One
+`<name>` is the slug used by the queue (e.g. `acme-wool`). One
 directory per template; no shared files between overlays.
 
 ## 3. Composition

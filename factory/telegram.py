@@ -55,6 +55,37 @@ def slugify(value: str) -> str:
     return slug[:48] or "site"
 
 
+def parse_chat_ids(raw: str) -> set[int]:
+    """Parse a comma-separated allowlist. Invalid entries are ignored loudly."""
+    allowed: set[int] = set()
+    for part in raw.replace(";", ",").split(","):
+        part = part.strip()
+        if not part:
+            continue
+        try:
+            allowed.add(int(part))
+        except ValueError:
+            print(f"ignoring invalid chat id: {part!r}", flush=True)
+    return allowed
+
+
+def allowed_chat_ids() -> set[int]:
+    """Who may use the bot: the explicit list, else the report chat id."""
+    raw = os.environ.get("TELEGRAM_ALLOWED_CHAT_IDS", "").strip()
+    if not raw:
+        raw = os.environ.get("TELEGRAM_CHAT_ID", "").strip()
+    return parse_chat_ids(raw)
+
+
+def is_authorized(message: dict, allowed: set[int]) -> bool:
+    """Private chat only, and the chat id must be in the allowlist."""
+    chat = message.get("chat") or {}
+    if chat.get("type") != "private":
+        return False
+    chat_id = chat.get("id")
+    return isinstance(chat_id, int) and chat_id in allowed
+
+
 def handle(token: str, chat_id: int, text: str) -> None:
     parts = text.strip().split()
     command = parts[0].split("@")[0].lower() if parts else ""
@@ -65,7 +96,7 @@ def handle(token: str, chat_id: int, text: str) -> None:
         if len(parts) < 2:
             reply = (
                 "Usage: /build <url> [name]\n"
-                "Example: /build kerrywoollenmills.ie Kerry Woollen Mills"
+                "Example: /build https://acme.ie Acme Wool"
             )
         else:
             wp_url = parts[1]
@@ -96,7 +127,7 @@ def handle(token: str, chat_id: int, text: str) -> None:
     api(token, "sendMessage", chat_id=chat_id, text=reply)
 
 
-def poll_once(token: str) -> int:
+def poll_once(token: str, allowed: set[int]) -> int:
     offset = job_queue.get_meta("telegram_offset")
     payload = {"timeout": 50, "allowed_updates": json.dumps(["message"])}
     if offset:
@@ -107,6 +138,14 @@ def poll_once(token: str) -> int:
         job_queue.set_meta("telegram_offset", str(update["update_id"] + 1))
         message = update.get("message")
         if not message:
+            continue
+        if not is_authorized(message, allowed):
+            chat = message.get("chat") or {}
+            print(
+                f"ignored message from chat {chat.get('id')} "
+                f"({chat.get('type') or 'unknown'})",
+                flush=True,
+            )
             continue
         if "text" not in message:
             if any(key in message for key in ("document", "photo", "video", "audio")):
@@ -131,9 +170,17 @@ def main() -> int:
         print("TELEGRAM_BOT_TOKEN is not set")
         return 1
 
+    allowed = allowed_chat_ids()
+    if not allowed:
+        print(
+            "TELEGRAM_CHAT_ID or TELEGRAM_ALLOWED_CHAT_IDS is not set; "
+            "refusing to run an open bot"
+        )
+        return 1
+
     while True:
         try:
-            poll_once(token)
+            poll_once(token, allowed)
         except Exception as error:  # network blips should not kill the loop
             print(f"poll failed: {error}", flush=True)
         if not args.loop:

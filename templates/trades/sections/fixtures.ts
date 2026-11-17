@@ -25,7 +25,7 @@ export const heroFixture: HeroProps = {
   title: "When the power goes, we go.",
   lede: "Fault-finding, rewires and fuse-board upgrades across the north city. A qualified electrician answers the phone, and most call-outs are sorted the same day.",
   primaryCta: { label: "Get a quote", href: "/contact/" },
-  secondaryCta: { label: "Call 086 412 7780", href: "tel:+353864127780" },
+  secondaryCta: { label: "Call 000 000 0000", href: "tel:+353000000000" },
   image: {
     src: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=1600&h=900&q=80",
     alt: "An electrician testing a distribution board during a call-out",
@@ -110,7 +110,7 @@ export const quoteBandFixture: QuoteBandProps = {
 export const ctaBandFixture: CtaBandProps = {
   title: "Something tripping that you cannot find?",
   body: "Tell us what is tripping, what has stopped working and where you are. We will tell you what it likely is, what it will cost and when we can get to you.",
-  cta: { label: "Call 086 412 7780", href: "tel:+353864127780" },
+  cta: { label: "Call 000 000 0000", href: "tel:+353000000000" },
 };
 
 export const statBandFixture: StatBandProps = {

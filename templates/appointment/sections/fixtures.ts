@@ -18,8 +18,8 @@ export const heroProps: HeroProps = {
   lede: "Same-week appointments with a small, unhurried team. Book online in under a minute, or call and we will find a time that fits around your day.",
   primaryCta: { label: "Book an appointment", href: "/book/" },
   secondaryCta: {
-    label: "Call 01 676 2210",
-    href: "tel:+35316762210",
+    label: "Call 01 000 0000",
+    href: "tel:+35310000000",
   },
   variant: "split",
 };
@@ -108,7 +108,7 @@ export const statBandProps: StatBandProps = {
 
 export const ctaBandProps: CtaBandProps = {
   title: "Your first appointment is the easy part.",
-  body: "Tell us what is bothering you and when you are free. We will confirm by text, usually within one working hour. Prefer to talk? Call 01 676 2210.",
+  body: "Tell us what is bothering you and when you are free. We will confirm by text, usually within one working hour. Prefer to talk? Call 01 000 0000.",
   cta: { label: "Check availability", href: "/book/" },
 };
 

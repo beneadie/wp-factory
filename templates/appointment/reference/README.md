@@ -46,9 +46,9 @@ Must demonstrate:
 - **Reference:** original composition for the factory, not a copy of a single site. The nearest references are appointment-led clinic websites and printed clinic fee lists; no third-party layout, photography or icon set is reproduced.
 - **Source URL(s):** none. There is no upstream page or capture to credit.
 - **Captured:** 17 November 2026, from the composed template at `/demo` and
-  `/demo/inner`.
+  `/demo/inner`. The demo phone number in the fixtures was sanitized after this
+  pass; these three shots use the demo CTA copy and do not show it.
 - **Files:** `01-hero-1440.png`, `02-timetable-1440.png`, `03-page-head-390.png`.
-- **Commit:** `8fc1dfb`.
 - **Licence:** original layout and fixture copy. No stock photography ships with the template. Petrona and Inter are loaded through `next/font` from Google Fonts under the SIL Open Font License.
 - **Re-capture:** after a brand adaptation, replace these three images at the same widths. Do not add a fourth state; the three cover the signature, the thin page and the phone width.
 
