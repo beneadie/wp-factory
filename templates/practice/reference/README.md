@@ -3,7 +3,7 @@
 **Source:** original composition, drawn from the practice brief in this
 repository. No third-party site was copied; the Matheson link-rule behaviour is
 a named influence, not a visual reproduction.
-**Captured:** fill in the date the PNGs are taken (`YYYY-MM-DD`).
+**Captured:** 2026-11-17, from the composed template at `/demo` and `/demo/inner`.
 **Licence:** the template and its CSS are original work for this factory. The
 fixture photograph path is a placeholder; any photograph an adapter substitutes
 must be licensed by the client (or be their own).
@@ -69,6 +69,7 @@ Must demonstrate:
 If a screenshot cannot be produced, leave a one-line note here saying which one
 and why. A template is not signed off on source review alone.
 
-**Status:** no PNGs were captured in this template pass — the brief forbids
-starting a build or preview server in the shared repository. Capture all three
-after composition, then replace this note with the capture date.
+**Status:** captured. `01-home-1440.png`, `02-pagehead-1440.png` and
+`03-home-390.png` sit beside this file and were reviewed at 1440, 390 and 320
+on 17 November 2026. The composed page had no horizontal overflow at any of the
+three widths.

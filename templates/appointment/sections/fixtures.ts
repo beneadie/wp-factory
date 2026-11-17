@@ -1,11 +1,12 @@
 import type {
   CtaBandProps,
-  FeatureGridProps,
   HeroProps,
   PageHeadProps,
   QuoteBandProps,
   StatBandProps,
 } from "@/lib/section-types";
+
+import type { AppointmentFeatureGridProps } from "./feature-grid";
 
 /* Fixtures for a small Dublin dental and physiotherapy clinic. Real treatment
    names, real fees, real waiting-room tone. Replace every string with the
@@ -33,9 +34,11 @@ export const pageHeadProps: PageHeadProps = {
   ],
 };
 
-export const featureGridProps: FeatureGridProps = {
+export const featureGridProps: AppointmentFeatureGridProps = {
   eyebrow: "Treatments & fees",
   title: "A clear price before you sit down.",
+  ledgerNote:
+    "Every fee includes a written treatment plan and a copy of your estimate. Radiographs and laboratory work are quoted separately.",
   items: [
     {
       title: "New patient examination",

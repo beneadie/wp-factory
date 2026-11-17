@@ -56,11 +56,11 @@ PageHead title. There are no shadows anywhere.
   title (52–76px, max 18ch), optional 21px tagline, a full-width hairline, then
   three sibling links as a ruled three-column index with 01/02/03 numerals.
   It is complete with no image, no body copy and no tagline.
-- **FeatureGrid** — a ruled index, not cards. Asymmetric header (eyebrow in a
-  3/12 column, title in 9/12), then items topped by hairlines: two-digit index,
-  24px serif title, one 17px paragraph capped at 34ch, and a ruled "Read more".
-  `href` makes the whole item the anchor.
-- **QuoteBand** — the single dark moment. Inverse band, 32–44px serif quote
+- **FeatureGrid** — a ruled index, not cards. Asymmetric header (eyebrow and a
+  counted meta line in a 3/12 column, title in 9/12), then items topped by
+  hairlines: two-digit index, 24px serif title, one 17px paragraph capped at
+  34ch, and a ruled "Read more". `href` makes the whole item the anchor.
+- **QuoteBand** — the single dark moment. Inverse band, 36–48px serif quote
   left-aligned across 8/12, attribution and optional link in the remaining
   4/12, separated by an alpha hairline. No quote-mark ornament, no italic.
 - **CtaBand** — a closing statement ruled above and below: 52–76px serif title
@@ -73,9 +73,10 @@ PageHead title. There are no shadows anywhere.
 ## Spacing, type and motion
 
 - Container `1240px` (`--container`), gutter 24px, reading measure 68ch.
-- Section padding **96px desktop / 56px mobile**; the StatBand band itself adds
-  40px/32px inside its hairlines. Hero, PageHead and CtaBand use the same
-  rhythm.
+- Section padding **96px desktop / 56px mobile**; the StatBand section is
+  tightened to **64px desktop** so its hairlines sit close to the figures, and
+  the band adds 40px/32px inside those rules. Hero, PageHead and CtaBand use
+  the full 96px rhythm.
 - Body 17px/1.6; lede 21px/1.55; display tracking −0.02em and leading 1.04.
   Eyebrow 11px uppercase at 0.14em. Caption 13px muted.
 - Hero/PageHead statement is 88px/76px at 1440, still ≥52px at 390.
@@ -88,9 +89,8 @@ PageHead title. There are no shadows anywhere.
 - `theme.ts` default-exports the `TemplateTheme` record
   (`name: "practice"`, `displayFace: "serif"`, `heroVariant: "split"`,
   `bandedSections: false`, `proseMeasure: "standard"`) and re-exports the
-  Source Serif 4 / Inter wiring from `@/lib/fonts` as
-  `--font-source-serif` / `--font-inter`. `theme.css` only references those
-  variables.
+  Gelasio / Inter wiring from `@/lib/fonts` as `--font-gelasio` /
+  `--font-inter`. `theme.css` only references those variables.
 - `theme.css` holds one `:root` block of overridden values plus namespaced
   `.t-practice-*` component classes. No global element selectors, no global
   utilities, no second accent and no token renamed.

@@ -76,7 +76,7 @@ export function Hero({
         <div className="t-shop-hero-head mt-7 md:mt-9">
           <h1 className="t-shop-display reveal max-w-[13ch]">{title}</h1>
           {lede ? (
-            <p className="t-shop-lede t-shop-hero-standfirst max-w-[40ch]">
+            <p className="t-shop-lede t-shop-hero-standfirst max-w-[40ch] lg:hidden">
               {lede}
             </p>
           ) : null}
@@ -114,6 +114,13 @@ export function Hero({
                 className="h-full w-full scale-150 object-cover object-[74%_26%]"
               />
             </figure>
+
+            <aside className="t-shop-hero-note">
+              <p className="t-shop-eyebrow">The collection</p>
+              {lede ? (
+                <p className="t-shop-lede max-w-[34ch]">{lede}</p>
+              ) : null}
+            </aside>
           </div>
         ) : null}
       </div>

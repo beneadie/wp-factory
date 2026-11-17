@@ -258,12 +258,15 @@
   color: rgb(var(--color-inverse-text));
 }
 
+/* The hero index is the signature mark, not decoration: it has to survive the
+   lightest part of the photograph. Full paper, never a faded tint. */
 .t-portfolio-on-image-muted {
-  color: rgb(var(--color-inverse-text) / 0.7);
+  color: rgb(var(--color-inverse-text));
 }
 
+/* A flat legibility wash, strong enough for 11px chrome at the top of a sky. */
 .t-portfolio-hero-scrim {
-  background-color: rgb(var(--color-inverse-bg) / 0.28);
+  background-color: rgb(var(--color-inverse-bg) / 0.36);
 }
 
 /* Keep the chrome and title on the same vertical line as the shell below the

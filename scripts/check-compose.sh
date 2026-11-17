@@ -46,6 +46,13 @@ for name in "${presets[@]}"; do
     echo "typecheck: FAIL"
     fail=1
   fi
+
+  if ( cd "$out" && npx eslint src ); then
+    echo "eslint: PASS"
+  else
+    echo "eslint: FAIL"
+    fail=1
+  fi
 done
 
 printf '\n'

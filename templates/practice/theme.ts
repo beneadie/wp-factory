@@ -1,23 +1,21 @@
-import { Inter, Source_Serif_4 } from "next/font/google";
+import { Inter, Gelasio } from "next/font/google";
 
 /**
  * Practice — typography and the non-CSS theme decisions.
  *
- * Source Serif 4 carries every heading and Inter the UI. Both are loaded here
+ * Gelasio carries every heading and Inter the UI. Both are loaded here
  * (next/font, self-hosted, `display: swap`) and exposed as CSS variables, so
  * theme.css only ever names `var(--font-display)` / `var(--font-sans)`.
  *
- * Load Source Serif 4 in this module rather than relying on the substrate's
- * default: the shared `@/lib/fonts` loads Gelasio as `--font-gelasio`, so a
- * preset whose theme.css asks for `var(--font-source-serif, "Source Serif 4")`
- * without defining it falls back to Georgia (or DejaVu Serif on Linux) and the
- * page quietly loses the face the design was drawn around.
+ * Gelasio is the house display face and is Georgia-compatible, so the practice
+ * keeps its book-like authority without a second webfont. The export is still
+ * named `sourceSerif` for wiring compatibility; it now holds Gelasio.
  */
-export const sourceSerif = Source_Serif_4({
+export const sourceSerif = Gelasio({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   display: "swap",
-  variable: "--font-source-serif",
+  variable: "--font-gelasio",
   fallback: ["Georgia", "Times New Roman", "serif"],
   adjustFontFallback: true,
   preload: true,

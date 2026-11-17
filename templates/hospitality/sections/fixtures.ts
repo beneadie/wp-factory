@@ -10,7 +10,6 @@ import type {
   HeroProps,
   PageHeadProps,
   QuoteBandProps,
-  StatBandProps,
 } from "@/lib/section-types";
 import type { HospitalityCtaBandProps } from "./cta-band";
 import type { HospitalityFeatureGridProps } from "./feature-grid";
@@ -47,6 +46,7 @@ export const featureGridFixture: HospitalityFeatureGridProps = {
       title: "Soda bread, still warm",
       body: "Buttermilk, coarse wholemeal and a handful of oats. Baked at six, sliced until it runs out.",
       href: "/menus/breakfast/",
+      meta: "Bakery · from 7am",
       image: {
         src: "https://picsum.photos/seed/fixture-soda-bread/1200/1500",
         alt: "A sliced loaf of brown soda bread on a wooden board",
@@ -58,6 +58,7 @@ export const featureGridFixture: HospitalityFeatureGridProps = {
       title: "Crab on brown bread",
       body: "West Cork crab, dill, lemon and sea salt. The one dish that never leaves the lunch board.",
       href: "/menus/lunch/",
+      meta: "Lunch · from 12",
       image: {
         src: "https://picsum.photos/seed/fixture-crab-soda/1200/1500",
         alt: "Crab meat on buttered brown bread with dill and lemon",
@@ -69,6 +70,7 @@ export const featureGridFixture: HospitalityFeatureGridProps = {
       title: "Sea salt caramel tart",
       body: "Dark caramel, a little salt, crème fraîche on the side. Cut thick, served cold from the counter.",
       href: "/menus/sweets/",
+      meta: "Counter · all day",
       image: {
         src: "https://picsum.photos/seed/fixture-caramel-tart/1200/1500",
         alt: "A slice of sea salt caramel tart with crème fraîche",
@@ -79,6 +81,11 @@ export const featureGridFixture: HospitalityFeatureGridProps = {
   ],
   menuLabel: "On the board",
   menuNote: "Breakfast until 11.30 · Lunch from 12 · Bread and pastry from the counter",
+  menuFoot: [
+    "Prices in euro · cards welcome",
+    "Allergens listed at the counter",
+    "Kitchen stops 45 minutes before close",
+  ],
   menu: [
     {
       title: "Breakfast",
@@ -184,7 +191,11 @@ export const ctaBandFixture: HospitalityCtaBandProps = {
   ],
 };
 
-export const statBandFixture: StatBandProps = {
+import type { HospitalityStatBandProps } from "./stat-band";
+
+export const statBandFixture: HospitalityStatBandProps = {
+  label: "The room in numbers",
+  note: "Bridge Street · Clifden",
   stats: [
     { value: "2016", label: "Baking on Bridge Street since" },
     { value: "6am", label: "First loaves out of the oven" },

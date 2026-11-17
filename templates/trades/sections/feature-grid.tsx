@@ -70,7 +70,7 @@ export function FeatureGrid({
                 <p className="t-trades-eyebrow">{eyebrow}</p>
               ) : null}
               {title ? (
-                <h2 className="t-trades-display t-trades-h3 t-trades-section-head__title">
+                <h2 className="t-trades-display t-trades-h2 t-trades-section-head__title">
                   {title}
                 </h2>
               ) : null}

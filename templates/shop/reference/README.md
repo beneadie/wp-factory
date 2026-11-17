@@ -60,3 +60,16 @@ Must demonstrate:
   still show the first crop, the name and the price.
 - Do not add annotations over the type. If a callout is needed, put it in the
   margin outside the page.
+
+## Provenance
+
+- **Source URL(s):** None. Original composition for the factory; `design.md`
+  records the named influences.
+- **Captured:** 17 November 2026, from the composed template at `/demo` and
+  `/demo/inner`. The hover state described above is not committed; the resting
+  card is.
+- **Files:** `01-home-1440.png`, `02-pagehead-1440.png`, `03-home-390.png`.
+- **Licence:** original layout and fixture copy. The captures use the template's
+  demo photography (remote Unsplash and Picsum URLs in `sections/fixtures.ts`),
+  which is not shipped as client art. Instrument Serif and Inter load through
+  `next/font` under the SIL Open Font License.

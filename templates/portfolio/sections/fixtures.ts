@@ -46,8 +46,8 @@ export const heroFixture: HeroProps = {
   primaryCta: { label: "View the index", href: "/work/" },
   secondaryCta: { label: "The studio", href: "/studio/" },
   image: photograph(
-    "1518837695005-2083093ee35b",
-    "Long swell off the Mayo coast at first light, from the North Atlantic series",
+    "1559827260-dc66d52bef19",
+    "A breaking swell under dusk cloud off the Mayo coast, from the North Atlantic series",
     2000,
     1125,
   ),

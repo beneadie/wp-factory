@@ -25,7 +25,7 @@
   --color-inverse-text: 245 243 238; /* #F5F3EE */
 
   /* ------------------------------------------------------------ typography */
-  --font-display: var(--font-source-serif, "Source Serif 4"), ui-serif, Georgia,
+  --font-display: var(--font-gelasio, "Gelasio"), ui-serif, Georgia,
     "Times New Roman", serif;
   --font-sans: var(--font-inter, "Inter"), ui-sans-serif, system-ui,
     -apple-system, "Segoe UI", sans-serif;
@@ -36,7 +36,7 @@
   --text-lg: 1.3125rem; /* 21px */
   --text-xl: 1.5rem; /* 24px */
   --text-2xl: 1.75rem; /* 28px */
-  --text-3xl: clamp(2rem, 1.6rem + 1.8vw, 2.75rem); /* 32 → 44px */
+  --text-3xl: clamp(2.25rem, 1.7rem + 2.1vw, 3rem); /* 36 → 48px */
   --text-4xl: clamp(2.6rem, 2.1rem + 2.4vw, 3.4rem); /* 42 → 54px */
   --text-5xl: clamp(3.25rem, 2.4rem + 3.8vw, 4.75rem); /* 52 → 76px */
   --text-6xl: clamp(3.4rem, 2.1rem + 6.2vw, 5.5rem); /* 54 → 88px */
@@ -211,6 +211,9 @@
 
 .t-practice-hero-grid {
   display: grid;
+  /* One column below 1024. minmax(0, 1fr) matters: an `auto` track sizes to
+     the image's intrinsic width (1600px on a 390 phone). */
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-10);
   padding-top: var(--space-6);
   border-top: var(--rule);
@@ -443,16 +446,32 @@
 }
 
 .t-practice-feature-title {
-  max-width: 22ch;
+  max-width: 20ch;
   margin: 0;
   font-size: var(--text-3xl);
+}
+
+/* A quiet second line in the narrow header column, so the eyebrow column is
+   furnished rather than empty. Counted from the items, not hard-coded. */
+.t-practice-feature-meta {
+  min-width: 0;
+}
+
+.t-practice-feature-note {
+  max-width: 18ch;
+  margin: var(--space-3) 0 0;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem; /* 13px */
+  line-height: 1.5;
+  color: rgb(var(--color-muted));
+  font-variant-numeric: tabular-nums lining-nums;
 }
 
 .t-practice-feature-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--space-9);
-  margin: var(--space-12) 0 0;
+  margin: var(--space-10) 0 0;
   padding: 0;
   list-style: none;
 }
@@ -536,6 +555,18 @@
   border-top: 1px solid rgb(var(--color-inverse-text) / 0.22);
 }
 
+.t-practice-quote-label {
+  display: block;
+  margin-bottom: var(--space-4);
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgb(var(--color-inverse-text) / 0.62);
+}
+
 .t-practice-quote-attribution {
   display: block;
   max-width: 32ch;
@@ -585,6 +616,20 @@
   font-size: var(--text-5xl);
 }
 
+/* The CTA fixture's closing word is long ("Conversation."). At 52px it only
+   just fits a 390 phone; below that it sets the grid's min-content and pushes
+   the whole band sideways, so narrow phones take one step down. This must
+   follow the base rule above to win the cascade. */
+@media (max-width: 389px) {
+  .t-practice-cta-title {
+    font-size: var(--text-4xl);
+  }
+}
+
+.t-practice-cta-eyebrow {
+  margin-bottom: var(--space-5);
+}
+
 .t-practice-cta-copy {
   max-width: 38ch;
 }
@@ -632,6 +677,9 @@
 }
 
 .t-practice-stat-label {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
   margin: 0;
   font-family: var(--font-sans);
   font-size: 0.6875rem;
@@ -642,13 +690,19 @@
   color: rgb(var(--color-muted));
 }
 
+.t-practice-stat-index {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+  color: rgb(var(--color-accent));
+}
+
 .t-practice-stat-value {
-  margin: var(--space-2) 0 0;
+  margin: var(--space-3) 0 0;
   font-family: var(--font-display);
-  font-size: var(--text-2xl);
+  font-size: clamp(1.9rem, 1.5rem + 1.4vw, 2.5rem); /* 30 → 40px */
   font-weight: 500;
-  line-height: 1.1;
-  letter-spacing: -0.015em;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums lining-nums;
   text-wrap: balance;
 }
@@ -673,13 +727,19 @@
   .t-practice-hero,
   .t-practice-pagehead,
   .t-practice-quote,
-  .t-practice-cta,
-  .t-practice-stat {
+  .t-practice-cta {
     padding-block: 6rem; /* 96px */
   }
 
+  /* The credentials band sits directly under the hero: 64px above and below
+     keeps the hairlines close to the figures instead of letting the band
+     float in a 190px gap. */
+  .t-practice-stat {
+    padding-block: var(--space-16); /* 64px */
+  }
+
   .t-practice-feature-grid {
-    margin-top: var(--space-14);
+    margin-top: var(--space-10);
   }
 
   .t-practice-stat-band {

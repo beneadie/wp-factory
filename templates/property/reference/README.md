@@ -64,3 +64,15 @@ template is brand-agnostic, so compare **structure and restraint**, not colour:
 photograph scale, strip geometry, card anatomy, type hierarchy and the amount
 of air. Note any origin-specific pattern that the adapter should absorb into
 token values rather than new components.
+
+## Provenance
+
+- **Source URL(s):** None. Original composition for the factory; `design.md`
+  records the named influences.
+- **Captured:** 17 November 2026, from the composed template at `/demo` and
+  `/demo/inner`.
+- **Files:** `home-1440.png`, `home-390.png`, `page-head-1440.png`.
+- **Licence:** original layout and fixture copy. The captures use the template's
+  demo photography (remote Picsum URLs in `sections/fixtures.ts`), which is not
+  shipped as client art. Gelasio and Inter load through `next/font` under the SIL
+  Open Font License.

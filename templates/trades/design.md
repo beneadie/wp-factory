@@ -26,8 +26,8 @@ Never place a second StatBand.
 ## Spacing and type
 
 - Section padding: 72px desktop, 48px mobile (`.t-trades-section`). The hero and
-  stat strip are the exceptions: the strip is compact (32–40px per cell) so it
-  reads as a plinth under the photograph.
+  stat strip are the exceptions: the strip is compact (20px per cell on
+  phones, 32–40px from 768px up) so it reads as a plinth under the photograph.
 - Container: 1200px max; gutters 20px mobile / 32px desktop.
 - Display 48–80px, weight 700, tracking -0.03em, leading 1.02, sentence case,
   never italic. Body 17px / 1.6. Eyebrow 11px uppercase, 0.14em, accent.
@@ -37,8 +37,10 @@ Never place a second StatBand.
   reveal it must use the shared `.reveal` / `.reveal-image` primitives only.
 - The mobile quote bar is fixed and safe-area padded; `body:has(.t-trades-mobilebar)`
   reserves its height at document end so the footer is never covered.
-- No shadows anywhere. Hairlines are `--rule`. One accent, #D2542A, used for
-  eyebrows, ledger indices, arrows on hover, and the hero button's hover fill.
+- No shadows anywhere. Hairlines are `--rule`. One accent, #C54F27, used for
+  eyebrows on paper, ledger indices, arrows on hover, and the hero button's
+  hover fill. The hero eyebrow sits on the photograph, where the accent is only
+  3.96:1, so it uses inverse ink and the accent moves to its leading rule.
 
 ## What an adapter may change
 
@@ -96,5 +98,6 @@ Never place a second StatBand.
    Nothing looks like a missing hero.
 6. **Restraint and contrast:** one accent in use; no shadow, gradient text or
    second display face; body/muted/inverse text pass AA, and accent is kept to
-   11px labels, indices and hover states (accent on white is 4.17:1, so it is
-   never used for body copy).
+   11px labels, indices and hover states (accent on white is 4.65:1, and 3.96:1
+   on the inverse band, so on dark surfaces the text stays inverse and only the
+   rule or underline turns accent).

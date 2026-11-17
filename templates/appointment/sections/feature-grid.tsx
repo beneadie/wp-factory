@@ -75,7 +75,17 @@ const WEEK = [
   },
 ];
 
-export function FeatureGrid({ eyebrow, title, items }: FeatureGridProps) {
+export type AppointmentFeatureGridProps = FeatureGridProps & {
+  /** Small print under the fee ledger, e.g. what a fee includes. */
+  ledgerNote?: string;
+};
+
+export function FeatureGrid({
+  eyebrow,
+  title,
+  items,
+  ledgerNote,
+}: AppointmentFeatureGridProps) {
   const treatments = items.map((item) => ({
     ...item,
     ...parseTreatment(item.body),
@@ -107,7 +117,7 @@ export function FeatureGrid({ eyebrow, title, items }: FeatureGridProps) {
           ) : null}
 
           {title ? (
-            <h2 className="t-appointment-display t-appointment-h3 mt-4 text-text">
+            <h2 className="t-appointment-display t-appointment-h2 mt-4 text-text">
               {title}
             </h2>
           ) : null}
@@ -123,15 +133,23 @@ export function FeatureGrid({ eyebrow, title, items }: FeatureGridProps) {
             {treatments.map((treatment, index) => {
               const row = (
                 <>
-                  <span className="min-w-0">
-                    <span className="t-appointment-treatment-title">
-                      {treatment.title}
+                  <span className="t-appointment-treatment-main">
+                    <span
+                      aria-hidden="true"
+                      className="t-appointment-treatment-index t-appointment-num"
+                    >
+                      {String(index + 1).padStart(2, "0")}
                     </span>
-                    {treatment.note ? (
-                      <span className="t-appointment-treatment-note">
-                        {treatment.note}
+                    <span className="min-w-0">
+                      <span className="t-appointment-treatment-title">
+                        {treatment.title}
                       </span>
-                    ) : null}
+                      {treatment.note ? (
+                        <span className="t-appointment-treatment-note">
+                          {treatment.note}
+                        </span>
+                      ) : null}
+                    </span>
                   </span>
 
                   <span className="t-appointment-treatment-meta">
@@ -168,6 +186,10 @@ export function FeatureGrid({ eyebrow, title, items }: FeatureGridProps) {
               );
             })}
           </ul>
+
+          {ledgerNote ? (
+            <p className="t-appointment-ledger-note">{ledgerNote}</p>
+          ) : null}
         </div>
 
         <div
@@ -217,7 +239,20 @@ export function FeatureGrid({ eyebrow, title, items }: FeatureGridProps) {
                 <col className="t-appointment-col-action" />
               </colgroup>
 
-              {days.map((day) => {
+              <thead>
+                <tr className="t-appointment-columns">
+                  <th scope="col">Time</th>
+                  <th scope="col">Treatment</th>
+                  <th scope="col" className="t-appointment-duration">
+                    Duration
+                  </th>
+                  <th scope="col" className="t-appointment-action">
+                    Book
+                  </th>
+                </tr>
+              </thead>
+
+              {days.map((day, dayIndex) => {
                 const availableCount = day.slots.filter(
                   (slot) => slot.available,
                 ).length;
@@ -232,8 +267,15 @@ export function FeatureGrid({ eyebrow, title, items }: FeatureGridProps) {
                               {day.day} {day.date}
                             </time>
                           </span>
-                          <span className="t-appointment-day-count">
-                            {availableCount} available
+                          <span className="t-appointment-day-meta">
+                            {dayIndex === 0 ? (
+                              <span className="t-appointment-day-today">
+                                Today
+                              </span>
+                            ) : null}
+                            <span className="t-appointment-day-count">
+                              {availableCount} available
+                            </span>
                           </span>
                         </div>
                       </th>

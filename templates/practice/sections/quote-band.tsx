@@ -17,6 +17,7 @@ export function QuoteBand({ quote, attribution, cta }: QuoteBandProps) {
 
           {attribution || cta ? (
             <figcaption className="t-practice-quote-aside">
+              <span className="t-practice-quote-label">Client story</span>
               {attribution ? (
                 <cite className="t-practice-quote-attribution">
                   {attribution}

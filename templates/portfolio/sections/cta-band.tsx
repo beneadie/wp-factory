@@ -28,7 +28,7 @@ export function CtaBand({
           ) : null}
           <Link
             href={cta.href}
-            className="t-portfolio-chrome t-portfolio-textlink mt-8"
+            className="t-portfolio-chrome t-portfolio-textlink mt-8 self-start"
           >
             {cta.label}
             <span aria-hidden="true" className="t-portfolio-arrow">

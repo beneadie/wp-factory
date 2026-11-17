@@ -98,6 +98,6 @@ export const statBandFixture: StatBandProps = {
   stats: [
     { value: "Fri 20 Nov", label: "Winter Fair · Hall doors 6pm" },
     { value: "Sat 28 Nov", label: "Bag pack · Village Store, 10am–4pm" },
-    { value: "Sat 12 Dec", label: "Carol service · St Brigid's, 7.30pm" },
+    { value: "Sat 12 Dec", label: "Carol service · St\u00A0Brigid's, 7.30pm" },
   ],
 };

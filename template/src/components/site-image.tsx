@@ -50,6 +50,7 @@ export function SiteImage({
   const [attempt, setAttempt] = useState(0);
   const [failed, setFailed] = useState(false);
   const mountedAt = useRef(0);
+  const imgRef = useRef<HTMLImageElement | null>(null);
 
   useEffect(() => {
     mountedAt.current = Date.now();
@@ -62,6 +63,21 @@ export function SiteImage({
     const wait = Math.max(0, minVisibleMs - elapsed);
     window.setTimeout(() => setShowPlaceholder(false), wait);
   };
+
+  /* A cached image can finish before React hydrates, and then `onLoad` never
+     fires: the img stays at opacity 0 under the placeholder until some later
+     re-render. Check `complete` once after mount and after each retry. */
+  useEffect(() => {
+    const img = imgRef.current;
+    if (!img || !img.complete || img.naturalWidth === 0) return;
+    setLoaded(true);
+    if (placeholder === "none") return;
+    const elapsed = Date.now() - mountedAt.current;
+    window.setTimeout(
+      () => setShowPlaceholder(false),
+      Math.max(0, minVisibleMs - elapsed),
+    );
+  }, [attempt, placeholder, minVisibleMs]);
 
   const handleError = () => {
     if (attempt === 0) {
@@ -99,6 +115,7 @@ export function SiteImage({
         />
       ) : null}
       <img
+        ref={imgRef}
         key={attempt}
         src={attempt === 0 ? src : `${src}${src.includes("?") ? "&" : "?"}retry=1`}
         srcSet={attempt === 0 ? srcSet : undefined}

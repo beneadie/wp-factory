@@ -69,7 +69,7 @@ function NextAvailableCard({ cta }: { cta?: HeroProps["primaryCta"] }) {
 
   return (
     <aside
-      className="t-appointment-card reveal max-w-[28rem] lg:max-w-none"
+      className="t-appointment-card reveal min-w-0 max-w-[28rem] lg:max-w-none"
       aria-label="Next available appointment"
     >
       <div className="flex items-center justify-between gap-4">
@@ -224,8 +224,8 @@ export function Hero({
   return (
     <section className="t-appointment border-b border-border">
       <div className="t-appointment-shell">
-        <div className="grid items-start gap-12 pb-14 pt-12 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:gap-16 lg:pb-24 lg:pt-20">
-          <div className="reveal max-w-[36rem]">
+        <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-12 pb-14 pt-12 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:gap-16 lg:pb-24 lg:pt-20">
+          <div className="reveal min-w-0 max-w-[36rem]">
             {eyebrow ? (
               <p className="t-appointment-eyebrow">{eyebrow}</p>
             ) : null}

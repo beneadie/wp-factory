@@ -45,14 +45,12 @@ export function PageHead({
               <Link
                 key={link.href}
                 href={link.href}
-                className="t-portfolio-page-link flex items-baseline justify-between gap-6 py-5 sm:py-7 sm:pr-6 sm:last:pr-0"
+                className="t-portfolio-page-link flex items-baseline gap-4 py-5 sm:py-7 sm:pr-6 sm:last:pr-0"
               >
-                <span className="flex items-baseline gap-4">
-                  <span className="t-portfolio-chrome t-portfolio-index">
-                    {numeral(index + 1)}
-                  </span>
-                  <span className="t-portfolio-chrome">{link.label}</span>
+                <span className="t-portfolio-chrome t-portfolio-index">
+                  {numeral(index + 1)}
                 </span>
+                <span className="t-portfolio-chrome">{link.label}</span>
                 <span
                   aria-hidden="true"
                   className="t-portfolio-chrome t-portfolio-arrow"

@@ -29,7 +29,12 @@ export function StatBand({ stats, eyebrow }: PracticeStatBandProps) {
                 key={`${stat.label}-${stat.value}-${index}`}
                 className="t-practice-stat-cell"
               >
-                <dt className="t-practice-stat-label">{stat.label}</dt>
+                <dt className="t-practice-stat-label">
+                  <span className="t-practice-stat-index" aria-hidden="true">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  {stat.label}
+                </dt>
                 <dd className="t-practice-stat-value">{stat.value}</dd>
               </div>
             ))}

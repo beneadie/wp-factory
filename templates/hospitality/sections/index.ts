@@ -31,4 +31,5 @@ export type {
   HospitalityCtaBandProps,
   HospitalityHoursRow,
 } from "./cta-band";
+export type { HospitalityStatBandProps } from "./stat-band";
 export * from "./fixtures";

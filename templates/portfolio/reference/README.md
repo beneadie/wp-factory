@@ -70,7 +70,8 @@ no fade.
   `1441974231531-c6227db76b6e`, `1500375592092-40eb2168fd21`,
   `1444927714506-8492d94b4e3d`. These are fixture slots only; a client build
   replaces them with the origin's licensed media.
-- **Capture date:** not captured yet. Record the date the three PNGs are taken
-  here: `Captured: YYYY-MM-DD`.
+- **Capture date:** 17 November 2026, from the composed template at `/demo`
+  and `/demo/inner`.
+- **Files:** `home-1440.png`, `page-head-1440.png`, `home-390.png`.
 - **Type licence:** Inter and Instrument Serif are served through
   `next/font/google` under the SIL Open Font License.

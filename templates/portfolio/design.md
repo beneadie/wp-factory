@@ -28,7 +28,8 @@ edge of its text column.
 Placement:
 
 - **Hero** — `01` at the top-right of the photograph, opposite the eyebrow.
-  On the inverse image it is held at 70% paper, not accent.
+  On the inverse image it is full paper, not accent and not faded: at 11px a
+  tinted numeral disappears over a cloud.
 - **FeatureGrid** — the index number sits at the top of the text column, with
   the year at that column's right edge. The row itself alternates image left /
   image right at 7/5; the text column keeps its internal order.
@@ -108,8 +109,8 @@ but the Instrument Serif voice is lost.
 - Hero `variant`: `full` is the composition this template ships with (the
   fixture declares it); the component default remains `split` per the contract.
   `centered`/no image gives a text-only statement. Choose a hero crop that is
-  mid-to-dark in the top and bottom thirds: the flat 28% scrim is deliberately
-  not a gradient and cannot rescue a white sky behind 11px chrome.
+  mid-to-dark in the top and bottom thirds: the flat 36% scrim is deliberately
+  not a gradient and still cannot rescue a white sky behind 11px chrome.
 - The section order and which sections a page uses. Optional eyebrows,
   taglines, ledes and CTAs may be dropped without breaking composition.
 - Section rhythm may be tightened to 64px desktop, never below.

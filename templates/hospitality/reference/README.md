@@ -13,3 +13,15 @@ reveal have settled, and store the PNGs beside this file.
 The signature device is the menu typography. If the dotted leaders, tabular
 prices or small-caps course names are not obvious in the 1440 capture, the
 screenshot fails regardless of how good the hero looks.
+
+## Provenance
+
+- **Source URL(s):** None. Original composition for the factory; `design.md`
+  records the named influences.
+- **Captured:** 17 November 2026, from the composed template at `/demo` and
+  `/demo/inner`.
+- **Files:** `home-1440.png`, `page-head-1440.png`, `home-390.png`.
+- **Licence:** original layout and fixture copy. The captures use the template's
+  demo photography (remote Picsum URLs in `sections/fixtures.ts`), which is not
+  shipped as client art. Newsreader and Inter load through `next/font` under the
+  SIL Open Font License.

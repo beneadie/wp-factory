@@ -9,6 +9,7 @@ import { StatBand } from "./stat-band";
 export * from "@/lib/section-types";
 export * from "./fixtures";
 export { CtaBand, FeatureGrid, Hero, PageHead, QuoteBand, StatBand };
+export type { AppointmentFeatureGridProps } from "./feature-grid";
 
 export const sections: Sections = {
   Hero,

@@ -26,6 +26,8 @@ export type HospitalityMenuCourse = {
 
 export type HospitalityFeatureItem = FeatureGridProps["items"][number] & {
   image?: SectionImage;
+  /** Short department or counter label, e.g. "Bakery". Optional. */
+  meta?: string;
 };
 
 export type HospitalityFeatureGridProps = Omit<FeatureGridProps, "items"> & {
@@ -34,6 +36,8 @@ export type HospitalityFeatureGridProps = Omit<FeatureGridProps, "items"> & {
   menu?: HospitalityMenuCourse[];
   menuLabel?: string;
   menuNote?: string;
+  /** Closing small print under the menu, e.g. "Prices in euro". */
+  menuFoot?: string[];
 };
 
 export function FeatureGrid({
@@ -43,6 +47,7 @@ export function FeatureGrid({
   menu,
   menuLabel = "From the menu",
   menuNote,
+  menuFoot,
 }: HospitalityFeatureGridProps) {
   return (
     <section className="t-hospitality-features t-hospitality-section">
@@ -85,6 +90,12 @@ export function FeatureGrid({
                       <span className="t-hospitality-eyebrow">Today</span>
                     </div>
                   )}
+                </div>
+                <div className="t-hospitality-card-meta">
+                  <span className="t-hospitality-card-meta-index">
+                    No. {String(index + 1).padStart(2, "0")}
+                  </span>
+                  {item.meta ? <span>{item.meta}</span> : null}
                 </div>
                 <div className="t-hospitality-card-caption">
                   <div className="flex items-start justify-between gap-4">
@@ -130,7 +141,12 @@ export function FeatureGrid({
                   className="t-hospitality-menu-course"
                 >
                   <div className="t-hospitality-course-head">
-                    <h3 className="t-hospitality-course-title">{course.title}</h3>
+                    <h3 className="t-hospitality-course-title">
+                      <span aria-hidden="true" className="t-hospitality-course-index">
+                        {String(courseIndex + 1).padStart(2, "0")}
+                      </span>
+                      {course.title}
+                    </h3>
                     {course.note ? (
                       <span className="t-hospitality-course-note">
                         {course.note}
@@ -166,6 +182,14 @@ export function FeatureGrid({
                 </div>
               ))}
             </div>
+
+            {menuFoot && menuFoot.length > 0 ? (
+              <p className="t-hospitality-menu-foot">
+                {menuFoot.map((line) => (
+                  <span key={line}>{line}</span>
+                ))}
+              </p>
+            ) : null}
           </div>
         ) : null}
       </div>

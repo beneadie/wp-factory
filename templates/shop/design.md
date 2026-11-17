@@ -24,7 +24,7 @@ The card splits on ` · `, puts `€185` on the baseline and the rest under the 
 ## Spacing and motion
 
 - Container 1240px, 24px gutters. Sections 88px desktop / 52px mobile.
-- Hero: title to CTA row 32px; CTA row to image pair 48–64px (and 48–64px from title when there are no CTAs). Pair columns 1.45 / 0.85 / 0.7 with 32px gaps at 1024+, 24px below. The 1:1 detail is offset 48px on desktop, 24px on mobile. The lede sits as a caption at the bottom of the third column.
+- Hero: title to CTA row 32px; CTA row to image pair 48–64px (and 48–64px from title when there are no CTAs). Pair columns 1.45 / 0.85 / 0.7 with 32px gaps at 1024+, 24px below. The 1:1 detail is offset 48px on desktop, 24px on mobile. At 1024+ the lede is a captioned note in the third column at the foot of the pair (hairline, label, 34ch text). Below 1024 the same copy sits under the title, before the CTAs.
 - Cards: 4:5 media, 20/24px body padding, 16px baseline rule, 24–32px grid gaps.
 - PageHead: 96/56px top, 88/52px bottom, one 56–64px gap before the link hairline.
 - Motion uses only the shared `.reveal` (420ms rise) and `.reveal-image` (700ms clip) primitives. The card cross-fade is 700ms `--duration-slow`; hover ticks are 240ms `--duration-fast`; pill ticks are 140ms `--duration-micro`. All of it collapses to an instant state under `prefers-reduced-motion`.
@@ -53,7 +53,7 @@ The card splits on ` · `, puts `€185` on the baseline and the rest under the 
 
 ## Visual self-check
 
-1. **Hero, 1440.** An eyebrow on a hairline, a three-line display statement, then a 4:5 whole and a 1:1 detail offset by 48px. It reads as a collection header, not a hero banner; nothing is full-bleed.
+1. **Hero, 1440.** An eyebrow on a hairline, a three-line display statement, then a 4:5 whole and a 1:1 detail offset by 48px, with the lede as a captioned note at the foot of the third column. It reads as a collection header, not a hero banner; nothing is full-bleed.
 2. **Card at rest and on focus.** One hairline frame, no shadow, 4:5 crop. Name and price are legible before any interaction. Hovering or tabbing cross-fades a closer crop in, the View pill inverts, and the card shows a 2px accent focus outline.
 3. **PageHead, no image, no body.** The eyebrow, display line, hairline and three numbered links are enough. The empty space is composed, not accidental.
 4. **Mobile, 390.** The image pair stays a pair rather than collapsing to one; the title never clips; cards are a single column with the baseline row aligned; the quote is readable; stats form a clean 2×2.

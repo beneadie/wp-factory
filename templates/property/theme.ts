@@ -40,7 +40,8 @@ export const themeFontClassNames = {
   variables: themeFontVariables,
 } as const;
 
-export const theme = {
+/** Font choices for adapters that want the families, not just the CSS vars. */
+export const themeFonts = {
   fonts: {
     display: sourceSerif,
     sans: inter,
@@ -51,3 +52,30 @@ export const theme = {
 
 /** Canonical name the composed layout imports. */
 export const fontVariables = themeFontVariables;
+
+/**
+ * The non-CSS decisions the substrate reads. Mirrors `TemplateTheme` in
+ * templates/_shared/CONTRACT.md; do not add fields here.
+ */
+export interface TemplateTheme {
+  /** Must equal the templates/<name> directory name. */
+  name: string;
+  /** Which family drives headings: the serif or the sans. */
+  displayFace: "serif" | "sans";
+  /** Default hero composition for a page with no explicit variant. */
+  heroVariant: "split" | "full" | "centered";
+  /** Whether sections alternate bg-bg / bg-surface. */
+  bandedSections: boolean;
+  /** Prose measure preset; maps to a --prose-measure override. */
+  proseMeasure: "narrow" | "standard" | "wide";
+}
+
+export const theme: TemplateTheme = {
+  name: "property",
+  displayFace: "serif",
+  heroVariant: "full",
+  bandedSections: false,
+  proseMeasure: "standard",
+};
+
+export default theme;

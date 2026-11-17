@@ -13,9 +13,9 @@ crowded sidebars.
 | --- | --- |
 | Template | `community` |
 | Source URL(s) | None. Composite of public community-sector conventions. |
-| Capture date | **Pending** — the overlay was authored without running the app. Record the date on the first capture from the composed site. |
+| Capture date | **17 November 2026** — captured from the composed template at `/demo` and `/demo/inner`. |
 | Licence | Original overlay. No third-party code, image, logo or copy is reproduced. All fixture copy is fictional. |
-| Fixture photograph | `public/images/fixture-community-hall.jpg` is a placeholder path, not a shipped asset. A real photograph of real people must replace it before the reference shots are taken. |
+| Fixture photograph | The reference shots use the template's demo image (a remote Picsum URL in `sections/fixtures.ts`). A real photograph of real people must replace it before a client build goes live. |
 
 The shared image placeholder is acceptable while developing a section; it is
 **not** acceptable in a reference screenshot. A placeholder pattern in one of

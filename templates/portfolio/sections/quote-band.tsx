@@ -31,7 +31,7 @@ export function QuoteBand({
           </figure>
 
           {cta ? (
-            <div className="lg:col-span-2 lg:col-start-1 lg:row-start-1 lg:pb-1">
+            <div className="lg:col-span-3 lg:col-start-1 lg:row-start-1 lg:pb-1">
               <Link
                 href={cta.href}
                 className="t-portfolio-chrome t-portfolio-textlink t-portfolio-textlink-inverse"

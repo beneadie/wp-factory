@@ -24,7 +24,15 @@ export function FeatureGrid({
       <div className="t-practice-container">
         {eyebrow || title ? (
           <header className="t-practice-feature-head reveal">
-            {eyebrow ? <p className="t-practice-eyebrow">{eyebrow}</p> : null}
+            <div className="t-practice-feature-meta">
+              {eyebrow ? <p className="t-practice-eyebrow">{eyebrow}</p> : null}
+              {items.length > 0 ? (
+                <p className="t-practice-feature-note">
+                  {String(items.length).padStart(2, "0")} services · one
+                  partner-led team
+                </p>
+              ) : null}
+            </div>
             {title ? (
               <h2 className="t-practice-display t-practice-feature-title">
                 {title}

@@ -10,7 +10,12 @@ export function CtaBand({ title, body, cta }: CtaBandProps) {
     <section className="t-practice-cta">
       <div className="t-practice-container">
         <div className="t-practice-cta-inner reveal">
-          <h2 className="t-practice-display t-practice-cta-title">{title}</h2>
+          <div>
+            <p className="t-practice-eyebrow t-practice-cta-eyebrow">
+              Next step
+            </p>
+            <h2 className="t-practice-display t-practice-cta-title">{title}</h2>
+          </div>
           <div className="t-practice-cta-copy">
             {body ? <p className="t-practice-cta-body">{body}</p> : null}
             <div className="t-practice-cta-actions">

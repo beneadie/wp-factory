@@ -6,6 +6,9 @@
 sites/
 logs/
 
+# local template previews and screenshot scratch
+.density/
+
 # queue state
 factory/queue.db
 .factory.lock

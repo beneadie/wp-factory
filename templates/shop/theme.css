@@ -134,9 +134,9 @@
 
 .t-shop-title {
   font-family: var(--font-display);
-  font-size: clamp(2rem, 1.45rem + 2.2vw, 3.25rem);
+  font-size: clamp(2.15rem, 1.55rem + 2.4vw, 3.5rem);
   font-weight: 400;
-  line-height: 1.06;
+  line-height: 1.04;
   letter-spacing: -0.01em;
   color: rgb(var(--color-text));
   text-wrap: balance;
@@ -144,9 +144,9 @@
 
 .t-shop-quote {
   font-family: var(--font-display);
-  font-size: clamp(1.75rem, 1.35rem + 2vw, 3.25rem);
+  font-size: clamp(1.9rem, 1.45rem + 2.2vw, 3.5rem);
   font-weight: 400;
-  line-height: 1.12;
+  line-height: 1.08;
   letter-spacing: -0.01em;
   color: rgb(var(--color-inverse-text));
   text-wrap: pretty;
@@ -356,9 +356,9 @@
    The collection header
    ========================================================================== */
 
-/* The title and the standfirst share a twelve-column header above the pair.
-   The standfirst sits in the right margin, on the last line of the title, so
-   the top-right of the collection header is composed rather than empty. */
+/* Below 1024 the lede sits under the title. At 1024+ it moves to the caption
+   gutter in the third column of the pair, so the copy is never stranded in a
+   second, competing column above the images. */
 .t-shop-hero-head {
   display: block;
 }
@@ -379,6 +379,25 @@
   border: 1px solid rgb(var(--color-border));
   border-radius: var(--radius-md);
   background-color: rgb(var(--color-surface));
+}
+
+/* The third column is a caption gutter: the lede returns there as marginalia
+   at the foot of the pair, so the right of the composition is set rather than
+   left as air. Below 1024 the lede stays under the title instead. */
+.t-shop-hero-note {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .t-shop-hero-note {
+    display: flex;
+    flex-direction: column;
+    align-self: end;
+    gap: 14px;
+    padding-top: 16px;
+    padding-bottom: 4px;
+    border-top: 1px solid rgb(var(--color-border));
+  }
 }
 
 .t-shop-hero-detail {

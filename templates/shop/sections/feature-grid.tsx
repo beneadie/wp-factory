@@ -142,7 +142,7 @@ export function FeatureGrid({
           <div>
             {eyebrow ? <p className="t-shop-eyebrow">{eyebrow}</p> : null}
             {title ? (
-              <h2 className="t-shop-title reveal mt-4 max-w-[20ch]">{title}</h2>
+              <h2 className="t-shop-title reveal mt-4 max-w-[22ch]">{title}</h2>
             ) : null}
           </div>
           <p className="t-shop-index hidden pb-1 sm:block">
@@ -150,7 +150,7 @@ export function FeatureGrid({
           </p>
         </div>
 
-        <ul className="mt-12 grid gap-6 sm:grid-cols-3 lg:gap-8">
+        <ul className="mt-10 grid gap-6 sm:grid-cols-3 lg:gap-8">
           {items.map((item, index) => (
             <ProductCard
               key={`${item.href ?? item.title}-${index}`}
